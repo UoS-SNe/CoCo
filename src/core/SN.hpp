@@ -6,10 +6,10 @@
 #include <vector>
 #include <limits>
 #include "utils.hpp"
-#include "vmath/loadtxt.hpp"
-#include "vmath/convert.hpp"
-#include "vmath/stat.hpp"
-#include "vmath/algebra.hpp"
+#include "../vmath/loadtxt.hpp"
+#include "../vmath/convert.hpp"
+#include "../vmath/stat.hpp"
+#include "../vmath/algebra.hpp"
 
 using namespace std;
 using namespace vmath;

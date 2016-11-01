@@ -13,12 +13,11 @@ LDFLAGS = -lgsl -lnest3 -lgfortran -llapack -Wl,-no_compact_unwind
 .c.o:
 	$(CC) $(CFLAGS) $< -o $@
 
-CORE = src/utils.cpp src/SN.cpp src/Workspace.cpp src/priors.cpp
-MODELS = src/Model.cpp
-SOLVERS = src/Solver.cpp src/MultiNest.cpp
+CORE = src/core/utils.cpp src/core/priors.cpp src/core/SN.cpp
+LC = src/lc/Workspace.cpp src/lc/Model.cpp src/lc/Solver.cpp src/lc/MultiNest.cpp
 LCEXEC = src/LCFit.cpp
 
-LCFIT = ${CORE:.cpp=.o} ${CCORE:.c=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${LCEXEC:.cpp=.o}
+LCFIT = ${CORE:.cpp=.o} ${LC:.cpp=.o} ${LCEXEC:.cpp=.o}
 
 all: lcfit
 
@@ -26,4 +25,4 @@ lcfit: $(LCFIT)
 	$(CXX) $(LCFIT) $(LDFLAGS) -o $@
 
 clean:
-	rm -f *.o src/*.o modelfit lc
+	rm -f *.o src/*.o src/lc/*.o src/core/*.o modelfit lc

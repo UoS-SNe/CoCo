@@ -2,18 +2,14 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
-#include "Workspace.hpp"
-#include "SN.hpp"
-#include "utils.hpp"
+#include "core/utils.hpp"
+#include "core/SN.hpp"
 #include "vmath/loadtxt.hpp"
 #include "vmath/algebra.hpp"
-#include "Model.hpp"
-#include "Solver.hpp"
-#include "MultiNest.hpp"
-
-#ifdef PARALLEL
-	#include "mpi.h"
-#endif
+#include "lc/Workspace.hpp"
+#include "lc/Model.hpp"
+#include "lc/Solver.hpp"
+#include "lc/MultiNest.hpp"
 
 using namespace std;
 
@@ -156,33 +152,19 @@ void fitSN(shared_ptr<Workspace> w, int ID) {
 
 /* Main program */
 int main(int argc, char *argv[]) {
-    int procID = 0; //Process ID for MPI runs, procID=0 (master) should do all the outputs
+    vector<string> options;
+    shared_ptr<Workspace> w(new Workspace());
 
-    #ifdef PARALLEL
-     	MPI_Init(&argc, &argv);
-    	MPI_Comm_rank(MPI_COMM_WORLD, &procID);
-    #endif
+    getArgv(argc, argv, options);
+    applyOptions(options, w);
+    fillUnassigned(w);
 
-    // Do setup only when on the master process
-    if (procID == 0) {
-        vector<string> options;
-        shared_ptr<Workspace> w(new Workspace());
+    // Create the chains and recon directories
+    createDirectory("chains");
+    createDirectory("recon");
 
-        getArgv(argc, argv, options);
-        applyOptions(options, w);
-        fillUnassigned(w);
+    // TODO - This is a test
+    fitSN(w, 0);
 
-        // Create the chains and recon directories
-        createDirectory("chains");
-        createDirectory("recon");
-
-        // TODO - This is a test
-        fitSN(w, 0);
-	}
-
-	// Rememeber to finalise the MPI session before quiting the program
-    #ifdef PARALLEL
-    	MPI_Finalize();
-    #endif
 	return 0;
 }

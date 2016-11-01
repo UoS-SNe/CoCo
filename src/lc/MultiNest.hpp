@@ -6,13 +6,13 @@
 #include <iostream>
 #include <limits>
 #include <stdio.h>
-#include "multinest.h"
 #include "Solver.hpp"
 #include "Workspace.hpp"
-#include "priors.hpp"
-#include "vmath/loadtxt.hpp"
-#include "vmath/convert.hpp"
-#include "vmath/range.hpp"
+#include "../core/multinest.h"
+#include "../core/priors.hpp"
+#include "../vmath/loadtxt.hpp"
+#include "../vmath/convert.hpp"
+#include "../vmath/range.hpp"
 
 using namespace std;
 
