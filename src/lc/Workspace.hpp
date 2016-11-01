@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <string>
-#include "SN.hpp"
+#include "../core/SN.hpp"
 #include "Model.hpp"
 
 using namespace std;

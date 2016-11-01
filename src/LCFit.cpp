@@ -3,10 +3,10 @@
 #include <iomanip>
 #include <string>
 #include "core/utils.hpp"
+#include "core/SN.hpp"
 #include "vmath/loadtxt.hpp"
 #include "vmath/algebra.hpp"
 #include "lc/Workspace.hpp"
-#include "lc/SN.hpp"
 #include "lc/Model.hpp"
 #include "lc/Solver.hpp"
 #include "lc/MultiNest.hpp"
