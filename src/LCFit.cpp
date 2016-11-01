@@ -25,16 +25,6 @@ void help() {
 }
 
 
-/* Split options into a vector of arguments */
-void getArgv(int argc, char **argv, vector<string> &options) {
-    options.clear();
-
-    for (size_t i = 1; i < argc; ++i) {
-        options.push_back(argv[i]);
-    }
-}
-
-
 /* Assign input options to workspace parameters */
 void applyOptions(vector<string> &options, shared_ptr<Workspace> w) {
     if (options.size() < 1 || options[0] == "-h" || options[0] == "--help") {

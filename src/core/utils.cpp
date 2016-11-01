@@ -1,6 +1,15 @@
 #include "utils.hpp"
 
 
+void getArgv(int argc, char **argv, vector<string> &options) {
+    options.clear();
+
+    for (size_t i = 1; i < argc; ++i) {
+        options.push_back(argv[i]);
+    }
+}
+
+
 void split(const string &s, char delim, vector<string> &elems) {
     elems.clear();
     stringstream ss(s);
