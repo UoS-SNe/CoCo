@@ -186,9 +186,3 @@ int main(int argc, char *argv[]) {
     #endif
 	return 0;
 }
-
-
-// List the filters which you want to use for phase and then calculate the phase based on that light curve
-// Not sure how I'm going to do that yet ...
-// Also I think that the supernovae are meant to be fit simulataniously in all filters or at least have the same explosion dates or something like that
-// need to check now Natasha normalised the data

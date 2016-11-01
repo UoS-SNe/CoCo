@@ -5,7 +5,6 @@
 #include <algorithm>
 #include <vector>
 #include <limits>
-#include "Filters.hpp"
 #include "utils.hpp"
 #include "vmath/loadtxt.hpp"
 #include "vmath/convert.hpp"

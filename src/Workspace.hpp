@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <string>
-#include "Filters.hpp"
 #include "SN.hpp"
 #include "Model.hpp"
 
