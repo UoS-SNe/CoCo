@@ -14,7 +14,7 @@ LDFLAGS = -lgsl -lnest3 -lgfortran -llapack -Wl,-no_compact_unwind
 	$(CC) $(CFLAGS) $< -o $@
 
 CORE = src/core/utils.cpp src/core/priors.cpp src/core/SN.cpp
-LC = src/lc/Workspace.cpp src/lc/Model.cpp src/lc/Solver.cpp src/lc/MultiNest.cpp
+LC = src/lc/Workspace.cpp src/lc/Model.cpp src/lc/MultiNest.cpp
 LCEXEC = src/LCFit.cpp
 
 SPEC =

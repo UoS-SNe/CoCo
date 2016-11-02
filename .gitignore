@@ -29,3 +29,9 @@
 *.app
 lcfit
 specfit
+
+# Data directories
+chains
+recon
+data
+shared

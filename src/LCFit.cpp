@@ -8,7 +8,6 @@
 #include "vmath/algebra.hpp"
 #include "lc/Workspace.hpp"
 #include "lc/Model.hpp"
-#include "lc/Solver.hpp"
 #include "lc/MultiNest.hpp"
 
 using namespace std;

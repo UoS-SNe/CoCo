@@ -158,9 +158,15 @@ void LogLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
 
 
 
-MultiNest::MultiNest(shared_ptr<Workspace> &w) : Solver(w) {
+MultiNest::MultiNest(shared_ptr<Workspace> &w) {
     w_ = w;
-    chainRoot = "chains/" + w_->SNe_[w_->SNID_].name_ + "/" + w_->SNe_[w_->SNID_].name_ + "_";
+    chainRoot = "chains/" + w_->SNe_[w_->SNID_].name_ + "/";
+    chainRoot += w_->SNe_[w_->SNID_].name_ + "_";
+
+    mean = vector<double>(w_->model_.npar_, 0);
+    sigma = vector<double>(w_->model_.npar_, 0);
+    median = vector<double>(w_->model_.npar_, 0);
+    median_sigma = vector<double>(w_->model_.npar_, 0);
 }
 
 
