@@ -114,7 +114,7 @@ void fitSN(shared_ptr<Workspace> w, int ID) {
     ofstream reconLCFile;
     ofstream reconStatFile;
     reconLCFile.open("recon/" + w->SNe_[w->SNID_].name_ + ".dat");
-    reconStatFile.open("recon/" + w->SNe_[w->SNID_].name_ + "_stats.dat");
+    reconStatFile.open("recon/" + w->SNe_[w->SNID_].name_ + ".stat");
 
     // Loop though every available filter
     for (size_t i = 0; i < w->SNe_[w->SNID_].filterList_.size(); ++i) {
