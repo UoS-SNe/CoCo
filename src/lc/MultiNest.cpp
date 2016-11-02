@@ -57,7 +57,7 @@ void LogLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
     double tMin = w->data_.x_[iMin];
     double fluxMax = w->data_.y_[iMax];
     double fluxMin = w->data_.y_[iMin];
-    double tLast = *max_element(w->data_.x_.begin(), w->data_.x_.end());
+    double tLast = max<double>(w->data_.x_);
 
     // Check if the earliest data point is the highest flux
     double sBreak;
@@ -162,11 +162,6 @@ MultiNest::MultiNest(shared_ptr<Workspace> &w) {
     w_ = w;
     chainRoot = "chains/" + w_->SNe_[w_->SNID_].name_ + "/";
     chainRoot += w_->SNe_[w_->SNID_].name_ + "_";
-
-    mean = vector<double>(w_->model_.npar_, 0);
-    sigma = vector<double>(w_->model_.npar_, 0);
-    median = vector<double>(w_->model_.npar_, 0);
-    median_sigma = vector<double>(w_->model_.npar_, 0);
 }
 
 
@@ -208,10 +203,10 @@ void MultiNest::solve() {
 }
 
 
-void MultiNest::readSummary() {
+void MultiNest::read() {
     // Load summary file containing best fit parameters
     string summaryPath = filterRoot + "summary.txt";
-    vector< vector<double> > summary = vmath::loadtxt<double>(summaryPath, (w_->model_.npar_) * 4 + 2);
+    vector< vector<double> > summary = loadtxt<double>(summaryPath, (w_->model_.npar_) * 4 + 2);
 
     // Find the highest logLike -> Best fit
     vector<double> logLike = summary[w_->model_.npar_ * 4 + 1];
@@ -222,41 +217,46 @@ void MultiNest::readSummary() {
     for (int i = 0; i < w_->model_.npar_; ++i) {
         fitParams_[i] = summary[2 * w_->model_.npar_ + i][indexBest];
     }
-}
 
+    // Create the time axes for the light curve in range: tmin-15 --> tmax+20
+    w_->dataRecon_.x_ = range<double>(-15, w_->SNe_[w_->SNID_].mjdMax_ - w_->SNe_[w_->SNID_].mjdMin_ + 20, 1);
 
-void MultiNest::reconstruct() {
+    // Find the light curve for the best fit parameters
+    w_->model_.params_ = fitParams_;
+    w_->dataRecon_.bestFit_ = w_->model_(w_->dataRecon_.x_);
+
     // Load and transpose post_equal_weights file used to Monte Carlo the light curve
     string PEWPath = filterRoot + "post_equal_weights.dat";
-    vector< vector<double> > PEW = vmath::loadtxt<double>(PEWPath, (w_->model_.npar_) + 1);
-    PEW = vmath::transpose<double>(PEW);
+
+    // PEW <=> Post Equal Weights
+    vector< vector<double> > PEW = loadtxt<double>(PEWPath, (w_->model_.npar_) + 1);
+    PEW = transpose<double>(PEW);
 
     // Initialise the light curve reconstruction vectors
-    w_->dataRecon_.x_ = vmath::range<double>(-15, w_->SNe_[w_->SNID_].mjdMax_ - w_->SNe_[w_->SNID_].mjdMin_ + 20, 1);
     w_->dataRecon_.y_ = vector<double>(w_->dataRecon_.x_.size(), 0);
     w_->dataRecon_.sigma_ = vector<double>(w_->dataRecon_.x_.size(), 0);
+    w_->dataRecon_.median_ = vector<double>(w_->dataRecon_.x_.size(), 0);
+    w_->dataRecon_.medianSigma_ = vector<double>(w_->dataRecon_.x_.size(), 0);
 
     // For each PEW point calculate the model and append to the correct vector
-    vector<double> tempModel(w_->data_.y_.size(), 0);
+    vector< vector<double> > ModelCube(PEW.size());
     for (size_t i = 0; i < PEW.size(); ++i) {
         w_->model_.params_.assign(PEW[i].begin(), PEW[i].end()-1);
-        tempModel = w_->model_(w_->dataRecon_.x_);
-
-        w_->dataRecon_.y_ = vmath::add<double>(w_->dataRecon_.y_, tempModel);
-        tempModel = vmath::power(tempModel, 2);
-        w_->dataRecon_.sigma_ = vmath::add<double>(w_->dataRecon_.sigma_, tempModel);
+        ModelCube[i] = w_->model_(w_->dataRecon_.x_);
     }
 
-    // Find the mean and sigma by averaging
-    w_->dataRecon_.y_ = vmath::div<double>(w_->dataRecon_.y_, PEW.size());
-    w_->dataRecon_.sigma_ = vmath::div<double>(w_->dataRecon_.sigma_, PEW.size());
-    w_->dataRecon_.sigma_ = vmath::sub<double>(w_->dataRecon_.sigma_, vmath::power<double>(w_->dataRecon_.y_, 2));
-    w_->dataRecon_.sigma_ = vmath::power<double>(w_->dataRecon_.sigma_, 0.5);
+    // For each simulated data point calculate the stats
+    ModelCube = transpose<double>(ModelCube);
+    for (size_t i = 0; i < ModelCube.size(); ++i) {
+        w_->dataRecon_.y_[i] = mean<double>(ModelCube[i]);
+        w_->dataRecon_.sigma_[i] = stdev<double>(ModelCube[i]);
+        w_->dataRecon_.median_[i] = median<double>(ModelCube[i]);
+        w_->dataRecon_.medianSigma_[i] = medianSigma<double>(ModelCube[i]);
+    }
 }
 
 
 void MultiNest::fit() {
     solve();
-    readSummary();
-    reconstruct();
+    read();
 }

@@ -12,8 +12,10 @@
 #include "../vmath/loadtxt.hpp"
 #include "../vmath/convert.hpp"
 #include "../vmath/range.hpp"
+#include "../vmath/stat.hpp"
 
 using namespace std;
+using namespace vmath;
 
 
 void dumper(int&, int&, int&, double**, double**, double**, double&, double&, double&, void*);
@@ -27,16 +29,11 @@ public:
     string filterRoot;
 
     vector<double> fitParams_;
-    vector<double> mean;
-    vector<double> sigma;
-    vector<double> median;
-    vector<double> median_sigma;
 
     MultiNest(shared_ptr<Workspace>&);
     void setup();
     void solve();
-    void readSummary();
-    void reconstruct();
+    void read();
     void fit();
 };
 

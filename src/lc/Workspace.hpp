@@ -13,6 +13,10 @@ struct Data {
     vector<double> x_;
     vector<double> y_;
     vector<double> sigma_;
+
+    vector<double> bestFit_;
+    vector<double> median_;
+    vector<double> medianSigma_;
 };
 
 
