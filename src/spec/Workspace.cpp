@@ -8,6 +8,5 @@ Workspace::Workspace() {
     SpecListFile_ = "None";
     filterPath_ = "data/filters";
 
-    fileList_.resize(0);
     filterList_.resize(0);
 }
