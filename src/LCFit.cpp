@@ -128,7 +128,7 @@ void fitSN(shared_ptr<Workspace> w, int ID) {
         solver.fit();
 
         // Reset the units to original
-        w->dataRecon_.x_ = add<double>(w->dataRecon_.x_, w->SNe_[w->SNID_].mjdMin_);
+        w->dataRecon_.x_ = add<double>(w->dataRecon_.x_, w->SNe_[w->SNID_].mjdMinList_[w->FLTID_]);
         w->dataRecon_.y_ = mult<double>(w->dataRecon_.y_, w->SNe_[w->SNID_].normalization_[w->FLTID_]);
         w->dataRecon_.sigma_ = mult<double>(w->dataRecon_.sigma_, w->SNe_[w->SNID_].normalization_[w->FLTID_]);
         w->dataRecon_.bestFit_ = mult<double>(w->dataRecon_.bestFit_, w->SNe_[w->SNID_].normalization_[w->FLTID_]);

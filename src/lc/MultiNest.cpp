@@ -219,7 +219,7 @@ void MultiNest::read() {
     }
 
     // Create the time axes for the light curve in range: tmin-15 --> tmax+20
-    w_->dataRecon_.x_ = range<double>(-15, w_->SNe_[w_->SNID_].mjdMax_ - w_->SNe_[w_->SNID_].mjdMin_ + 20, 1);
+    w_->dataRecon_.x_ = range<double>(-15, w_->SNe_[w_->SNID_].mjdMaxList_[w_->FLTID_] - w_->SNe_[w_->SNID_].mjdMinList_[w_->FLTID_] + 20, 1);
 
     // Find the light curve for the best fit parameters
     w_->model_.params_ = fitParams_;
