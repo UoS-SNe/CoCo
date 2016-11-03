@@ -1,5 +1,5 @@
-#ifndef COCO_WORKSPACE_HPP_
-#define COCO_WORKSPACE_HPP_
+#ifndef COCO_LC_WORKSPACE_HPP_
+#define COCO_LC_WORKSPACE_HPP_
 
 #include <vector>
 #include <string>
@@ -27,7 +27,6 @@ public:
 
     // File names
     string LCListFile_;
-    string chainDir_;
 
     // Lists
     vector<string> fileList_;
