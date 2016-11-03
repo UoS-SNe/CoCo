@@ -111,11 +111,16 @@ void fillUnassigned(shared_ptr<Workspace> w) {
 	// Load all data
     w->SNe_.resize(w->specList_.size());
     for (size_t i = 0; i < w->specList_.size(); ++i) {
-		if (fileExists(w->specList_[i])) {
+		if (fileExists(w->specList_[i]) ||
+        fileExists("recon/" + w->snNameList_[i] + ".dat")) {
 			w->SNe_[i].specFile_ = w->specList_[i];
+            w->SNe_[i].lcFile_ = "recon/" + w->snNameList_[i] + ".dat";
             w->SNe_[i].SNName_ = w->snNameList_[i];
             w->SNe_[i].z_ = w->zList_[i];
-		}
+
+        } else {
+            w->SNe_.pop_back();
+        }
 	}
 
     // Make a filter list

@@ -17,6 +17,7 @@ struct SpecPoint {
 struct SN {
     // Input
     string specFile_;
+    string lcFile_;
     string SNName_;
     double z_;
 
