@@ -51,6 +51,7 @@ void LogLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
     lnew /= 2.0;
 
     // Some (serious) corrections for special cases (Natasha's magic)
+    /*
     int iMax = distance(w->data_.y_.begin(), max_element(w->data_.y_.begin(), w->data_.y_.end()));
     int iMin = distance(w->data_.y_.begin(), min_element(w->data_.y_.begin(), w->data_.y_.end()));
     double tMax = w->data_.x_[iMax];
@@ -153,7 +154,7 @@ void LogLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
             lnew -= pow(((w->model_(t) - fluxCorr) / 0.1), 2.0);
         }
         fluxCorr = w->model_(t);
-    }
+    } */
 }
 
 

@@ -23,6 +23,10 @@
 *.a
 *.lib
 
+# macOS files
+.DS_Store
+
+
 # Executables
 *.exe
 *.out
