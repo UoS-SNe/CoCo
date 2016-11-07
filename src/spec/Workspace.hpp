@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include "../core/Filters.hpp"
+#include "../core/LC.hpp"
 
 using namespace std;
 
@@ -22,7 +23,10 @@ struct SN {
     double z_;
 
     // Loaded files
+    vector<double> wav_;
+    vector<double> flux_;
     vector<SpecPoint> spec_;
+    LC lc_;
 };
 
 

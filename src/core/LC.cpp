@@ -4,7 +4,15 @@ using namespace std;
 using namespace vmath;
 
 
+LC::LC() {}
+
+
 LC::LC(string file) {
+    set(file);
+}
+
+
+void LC::set(string file) {
     readData(file);
     setFilterList();
     makeDataLists();

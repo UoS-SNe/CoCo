@@ -9,6 +9,7 @@
 #include <gsl/gsl_spline.h>
 #include <gsl/gsl_errno.h>
 #include "core/utils.hpp"
+#include "core/LC.hpp"
 #include "vmath/loadtxt.hpp"
 #include "vmath/convert.hpp"
 #include "spec/Workspace.hpp"
@@ -110,13 +111,23 @@ void fillUnassigned(shared_ptr<Workspace> w) {
 
 	// Load all data
     w->SNe_.resize(w->specList_.size());
+    vector< vector<double> > specFile;
     for (size_t i = 0; i < w->specList_.size(); ++i) {
 		if (fileExists(w->specList_[i]) ||
         fileExists("recon/" + w->snNameList_[i] + ".dat")) {
+            // Load propertries
 			w->SNe_[i].specFile_ = w->specList_[i];
             w->SNe_[i].lcFile_ = "recon/" + w->snNameList_[i] + ".dat";
             w->SNe_[i].SNName_ = w->snNameList_[i];
             w->SNe_[i].z_ = w->zList_[i];
+
+            // Load spectrum
+            specFile = loadtxt<double>(w->SNe_[i].specFile_, 2);
+            w->SNe_[i].wav_ = specFile[0];
+            w->SNe_[i].flux_ = specFile[1];
+
+            // Load light curve
+            w->SNe_[i].lc_ = LC(w->SNe_[i].lcFile_);
 
         } else {
             w->SNe_.pop_back();
@@ -136,9 +147,10 @@ int main(int argc, char *argv[]) {
 
     getArgv(argc, argv, options);
     applyOptions(options, w);
+    fillUnassigned(w);
 
+    // Load the filter responses
     w->filters_ = shared_ptr<Filters>(new Filters(w->filterPath_));
-    cout << w->filters_->filters_[0].name_ << endl;
 
     return 0;
 }

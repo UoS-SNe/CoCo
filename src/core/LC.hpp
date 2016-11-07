@@ -43,7 +43,9 @@ public:
     vector< vector<double> > fluxErrList_;
     vector<string> filterList_;
 
+    LC();
     LC(string);
+    void set(string);
 	void readData(string);
     void restoreCompleteLC();
     void setFilterList();
