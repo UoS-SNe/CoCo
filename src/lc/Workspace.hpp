@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <string>
-#include "../core/SN.hpp"
+#include "../core/LC.hpp"
 #include "Model.hpp"
 
 using namespace std;
@@ -33,7 +33,7 @@ public:
     vector<string> filterList_;
 
     // List of SN objects
-    vector<SN> SNe_;
+    vector<LC> SNe_;
 
     // Current supernova
     short SNID_;

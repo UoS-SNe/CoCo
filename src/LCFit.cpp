@@ -3,7 +3,7 @@
 #include <iomanip>
 #include <string>
 #include "core/utils.hpp"
-#include "core/SN.hpp"
+#include "core/LC.hpp"
 #include "vmath/loadtxt.hpp"
 #include "vmath/algebra.hpp"
 #include "lc/Workspace.hpp"
