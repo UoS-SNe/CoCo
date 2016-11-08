@@ -23,92 +23,61 @@ void dumper(int &nSamples, int &nlive, int &nPar, double **physLive, double **po
 
 
 void LogLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
-	// for_spec_likelihood *FSL = (for_spec_likelihood *) context;
-	// // fill the parameters from cube
-	// double params[FSL->npar];
-	// for(size_t i = 0; i < FSL->npar; i++) {
-	// 	params[i] = flatPrior(Cube[i], 0, 100);
-	// }
-	// double param_l[FSL->npar];
-    //
-	// //todo fill with correct values from filter responsec!!!
-	// // Set the x position for the spline
-	// for (int m = 0; m < FSL->npar; m++) {
-	// 	if (FSL->Spec_info[1][m] == 'g')
-	// 		param_l[m]= 4735.00 ;
-	// 	else if (FSL->Spec_info[1][m] == 'r')
-	// 		param_l[m]= 6200;
-	// 	else if (FSL->Spec_info[1][m] == 'i')
-	// 		param_l[m]= 7480;
-	// 	else if (FSL->Spec_info[1][m] == 'z')
-	// 		param_l[m]= 8805;
-	// 	else if (FSL->Spec_info[1][m] == 'B')
-	// 		param_l[m]= 4365;
-	// 	else if (FSL->Spec_info[1][m] == 'V')
-	// 		param_l[m]= 5455;
-	// 	else if (FSL->Spec_info[1][m] == 'R')
-	// 		param_l[m]= 6485;
-	// 	else if (FSL->Spec_info[1][m] == 'I')
-	// 		param_l[m]= 8040;
-	//  }
-    //
-	// // spline control points
-	// vector<double> spline_x(FSL->npar+2);
-	// vector<double> spline_y(FSL->npar+2);
-    //
-	// // Set 1st and last x spline control point
-	// spline_x[0] = *min_element(FSL->wavelength.begin(),FSL->wavelength.end());
-	// spline_x[FSL->npar+1] = *max_element(FSL->wavelength.begin(),FSL->wavelength.end());
-	// // Set spline x and y mid control points
-	// for (int q = 1; q <= FSL->npar; q++ )
-	// 	spline_x[q] = param_l[q-1];
-	// for (int w = 1; w <= FSL->npar; w++ )
-	// 	spline_y[w] = params[w-1];
-    //
-	// //Set 1st and last y control points
-	// spline_y[0] = spline_x[0] * ((spline_y[1] - spline_y[2]) / (spline_x[1] - spline_x[2]))
-    // spline_y[0] += ((spline_x[1] * spline_y[2] - spline_y[1] * spline_x[2]) / (spline_x[1]-spline_x[2]));
-	// spline_y[FSL->npar+1] = spline_x[FSL->npar+1] * ((spline_y[FSL->npar-1] - spline_y[FSL->npar]) / (spline_x[FSL->npar-1] - spline_x[FSL->npar]))
-    // spline_y[FSL->npar+1] += ((spline_x[FSL->npar-1] * spline_y[FSL->npar] - spline_y[FSL->npar-1] * spline_x[FSL->npar]) / (spline_x[FSL->npar-1] - spline_x[FSL->npar]));
-    //
-	// //initialise gsl spline
-	// gsl_interp_accel *acc = gsl_interp_accel_alloc();
-	// gsl_spline *spline = gsl_spline_alloc(gsl_interp_cspline, FSL->npar+2);
-	// gsl_spline_init (spline, spline_x.data(), spline_y.data(), FSL->npar+2);
-	// vector<double> SED_corrected(FSL->SED.size(), 0);
-    //
-	// // mangle the spectra
-	// double SED_max = *max_element(FSL->SED.begin(), FSL->SED.end());
-	// double SED_min = *min_element(FSL->SED.begin(), FSL->SED.end());
-	// double SED_mean = accumulate(FSL->SED.begin(), FSL->SED.end(), 0.0) / FSL->SED.size();
-    //
-    // double mangle;
-	// for (size_t i = 0; i < FSL->wavelength.size(); ++i) {
-	// 	mangle = gsl_spline_eval(spline, FSL->wavelength[i], acc);
-	// 	SED_corrected[i] = FSL->SED[i] * mangle / SED_mean;
-	// }
-    //
-    //
-	// double sigma = 0.01;
-	// string temp_name, temp_name_next;
-	// lnew = 0;
-    //
-	// double LCphot_min = *min_element(FSL->LC.begin(), FSL->LC.end());
-	// for ( int i = 0; i < FSL->wavelength.size(); i++ ) {
-	// 	SED_corrected[i] *= LCphot_min;
-	// }
-    //
-    //
-	// for (size_t q = 0; q < FSL->Spec_info[1].size(); ++q) {
-	// 	stringstream ss;
-	// 	ss << FSL->Spec_info[1][q];
-	// 	ss >> temp_name;
-	// 	lnew -= pow((FSL->filter->flux(SED_corrected, "SDSS_"+temp_name) - (FSL->LC[q])) / (FSL->LC_err[q]), 2);
-    //
-	// }
-	// lnew /= 2;
-    //
-    // FSL->SED_new = SED_corrected;
+    class Workspace *w = (struct Workspace *) context;
+
+    // Apply the prior to the parameters
+    for (size_t i = 0; i < npars; i++) {
+        Cube[i] = flatPrior(Cube[i], 0, 100);
+    }
+
+    // Convert the C array of parameters to a C++ vector
+    w->SNe_[w->SNID_].params_.resize(ndim);
+    w->SNe_[w->SNID_].params_.assign(Cube, Cube + ndim);
+
+	// spline control points
+	vector<double> splineX(npars+2);
+	vector<double> splineY(npars+2);
+
+    // Set central control points
+    for (size_t i = 0; i < npars; ++i) {
+        splineX[i+1] = w->filters_->filters_[w->filters_->filterID_[w->SNe_[w->SNID_].lc_.filterList_[i]]].centralWavelength_;
+        splineY[i+1] = w->SNe_[w->SNID_].params_[i];
+    }
+
+    // Set first control point
+    splineX[0] = min<double>(w->SNe_[w->SNID_].wav_);
+    splineY[0] = splineX[0] * ((splineY[1] - splineY[2]) / (splineX[1] - splineX[2]));
+    splineY[0] += ((splineX[1] * splineY[2] - splineY[1] * splineX[2]) / (splineX[1]-splineX[2]));
+
+    // Set last control point
+    splineX[npars+1] = max<double>(w->SNe_[w->SNID_].wav_);
+	splineY[npars+1] = splineX[npars+1] * ((splineY[npars-1] - splineY[npars]) / (splineX[npars-1] - splineX[npars]));
+    splineY[npars+1] += ((splineX[npars-1] * splineY[npars] - splineY[npars-1] * splineX[npars]) / (splineX[npars-1] - splineX[npars]));
+
+	//initialise gsl spline
+	gsl_interp_accel *acc = gsl_interp_accel_alloc();
+	gsl_spline *spline = gsl_spline_alloc(gsl_interp_cspline, npars+2);
+	gsl_spline_init (spline, splineX.data(), splineY.data(), npars+2);
+	vector<double> sedCorrected(w->SNe_[w->SNID_].flux_.size(), 0);
+
+	// mangle the spectra
+	double sedMean = accumulate(w->SNe_[w->SNID_].flux_.begin(), w->SNe_[w->SNID_].flux_.end(), 0.0) / w->SNe_[w->SNID_].flux_.size();
+	for (size_t i = 0; i < w->SNe_[w->SNID_].wav_.size(); ++i) {
+		sedCorrected[i] = w->SNe_[w->SNID_].flux_[i] / sedMean;
+        sedCorrected[i] *= gsl_spline_eval(spline, w->SNe_[w->SNID_].wav_[i], acc);
+	}
+
+    // Calculate likelihood
+    lnew = 0;
+    string filterName;
+    sedCorrected = mult<double>(sedCorrected, min<double>(w->SNe_[w->SNID_].lcFlux_));
+	for (size_t i = 0; i < w->SNe_[w->SNID_].lc_.filterList_.size(); ++i) {
+		filterName = w->filters_->filters_[w->filters_->filterID_[w->SNe_[w->SNID_].lc_.filterList_[i]]].name_;
+		lnew -= pow((w->filters_->flux(sedCorrected, filterName) - w->SNe_[w->SNID_].lcFlux_[i]) / w->SNe_[w->SNID_].lcFluxError_[i], 2);
+	}
+	lnew /= 2;
+
+    w->SNe_[w->SNID_].fluxCorrected_ = sedCorrected;
 }
 
 

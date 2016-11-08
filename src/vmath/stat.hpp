@@ -2,6 +2,7 @@
 #define COCO_VMATH_STAT_HPP_
 
 #include <math.h>
+#include <stdlib.h>
 #include <vector>
 #include <algorithm>
 #include <numeric>
@@ -21,6 +22,17 @@ template<typename T>
 T min(vector<T> &vec) {
     return *min_element(vec.begin(), vec.end());
 }
+
+
+template<typename T>
+T nearest(vector<T> &vec, T val) {
+    auto i = min_element(vec.begin(), vec.end(), [=](T x, T y) {
+        return fabs(x - val) < fabs(y - val);
+    });
+
+    return distance(vec.begin(), i);
+}
+
 
 template <typename T>
 T sum(vector<T> &vec) {

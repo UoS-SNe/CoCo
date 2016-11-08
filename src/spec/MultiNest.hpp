@@ -6,6 +6,9 @@
 #include <iostream>
 #include <limits>
 #include <stdio.h>
+#include <gsl/gsl_bspline.h>
+#include <gsl/gsl_spline.h>
+#include <gsl/gsl_errno.h>
 #include "../core/multinest.h"
 #include "../core/priors.hpp"
 #include "../vmath/loadtxt.hpp"

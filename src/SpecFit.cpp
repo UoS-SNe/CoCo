@@ -5,9 +5,6 @@
 #include <algorithm>
 #include <iterator>
 #include <vector>
-#include <gsl/gsl_bspline.h>
-#include <gsl/gsl_spline.h>
-#include <gsl/gsl_errno.h>
 #include "core/utils.hpp"
 #include "core/LC.hpp"
 #include "vmath/loadtxt.hpp"
@@ -24,9 +21,11 @@ void help() {
     cout << "currently maintained by Szymon Prajs (S.Prajs@soton.ac.uk) ";
     cout << "and Rob Firth.\n";
     cout << "\nUsage:\n";
-    cout << "./specfit spectra_setup_file.*\n";
+    cout << "./specfit spectra_setup_file.list\n";
     cout << "or\n";
-    cout << "./specfit spectrum_file.* SN_Name Redshift";
+    cout << "./specfit spectrum_file.* SN_name MJD rsedshift\n\n";
+    cout << " spectra_setup_file.list must have the following columns:\n";
+    cout << "Spectrum_file_path SN_name MJD redshift\n";
     cout << endl;
 }
 
@@ -45,18 +44,19 @@ void applyOptions(vector<string> &options, shared_ptr<Workspace> w) {
         loadtxt<string>(w->SpecListFile_, 3, w->infoList_);
         w->specList_ = w->infoList_[0];
         w->snNameList_ = w->infoList_[1];
-        w->zList_ = castString<double>(w->infoList_[2]);
+        w->mjdList_ = castString<double>(w->infoList_[2]);
+        w->zList_ = castString<double>(w->infoList_[3]);
         skipOptions = 1;
 
-    } else if (options.size() > 2) {
+    } else if (options.size() == 4) {
         w->specList_ = {options[0]};
         w->snNameList_ = {options[1]};
-        w->zList_ = {atof(options[2].c_str())};
+        w->mjdList_ = {atof(options[2].c_str())};
+        w->zList_ = {atof(options[3].c_str())};
         skipOptions = 3;
 
-
     } else {
-        cout << "You need to provide either a *.list or 3 paramters" << endl;
+        cout << "You need to provide either a *.list or 4 paramters" << endl;
         exit(0);
     }
 
@@ -119,6 +119,7 @@ void fillUnassigned(shared_ptr<Workspace> w) {
 			w->SNe_[i].specFile_ = w->specList_[i];
             w->SNe_[i].lcFile_ = "recon/" + w->snNameList_[i] + ".dat";
             w->SNe_[i].SNName_ = w->snNameList_[i];
+            w->SNe_[i].mjd_ = w->mjdList_[i];
             w->SNe_[i].z_ = w->zList_[i];
 
             // Load spectrum
@@ -133,6 +134,9 @@ void fillUnassigned(shared_ptr<Workspace> w) {
             w->SNe_.pop_back();
         }
 	}
+
+    // Make light curve slices matching the spectrum
+    w->lcSlice();
 
     // Make a filter list
     if (w->filterList_.size() == 0) {
@@ -151,6 +155,7 @@ int main(int argc, char *argv[]) {
 
     // Load the filter responses
     w->filters_ = shared_ptr<Filters>(new Filters(w->filterPath_));
+    w->SNID_ = 0;
 
     return 0;
 }
