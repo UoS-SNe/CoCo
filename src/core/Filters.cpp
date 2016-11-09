@@ -1,6 +1,11 @@
 #include "Filters.hpp"
 
 
+bool FilterData::operator<(const FilterData &rhs) const {
+    return (centralWavelength_ < rhs.centralWavelength_);
+}
+
+
 Filters::Filters(string path) : folderPath_(path) {
     readFolder();
 }
@@ -10,24 +15,25 @@ void Filters::readFolder() {
     vector<string> list = loadtxt<string>(folderPath_ + "/list.txt", 1)[0];
 
     vector<string> temp;
-    for (int i = 0; i < list.size(); ++i) {
-        fileList_.push_back(list[i]);
-        split(list[i],'.',temp);
+    for (size_t i = 0; i < list.size(); ++i) {
+        loadFilter(list[i]);
+    }
+    sort(filters_.begin(), filters_.end());
 
-        filterID_[temp[0]] = i;
-        filterName_[i] = temp[0];
-
-        loadFilter(i);
+    for (size_t i = 0; i < list.size(); ++i) {
+        filterID_[filters_[i].name_] = i;
+        filterName_[i] = filters_[i].name_;
     }
 }
 
 
-void Filters::loadFilter(int ID) {
+void Filters::loadFilter(string fileName) {
     FilterData filter;
+    filter.name_ = split(fileName, '.')[0];
 
     vector< vector<double> > data;
-    string path = folderPath_+ "/" +fileList_[ID];
-    loadtxt<double>(path,2,data);
+    string path = folderPath_+ "/" + fileName;
+    loadtxt<double>(path, 2, data);
 
     double janskyConst = 3631 * 1e-23 * 299792458 * 1e10;
     vector<double> waveSq = mult<double>(data[0], data[0]);
@@ -35,7 +41,6 @@ void Filters::loadFilter(int ID) {
     jansky = mult<double>(jansky, data[1]);
     double fluxZp = trapz<double>(jansky, data[0][1] - data[0][0]);
 
-    filter.name_ = filterName_[ID];
     filter.inputWavelength_ = data[0];
     filter.inputBandpass_ = data[1];
     filter.wavelength_ = filter.inputWavelength_;

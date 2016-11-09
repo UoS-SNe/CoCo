@@ -1,6 +1,8 @@
 #ifndef COCO_CORE_FILTERS_HPP_
 #define COCO_CORE_FILTERS_HPP_
 
+#include <algorithm>
+#include <functional>
 #include <vector>
 #include <map>
 #include <memory>
@@ -31,6 +33,8 @@ struct FilterData {
     double min_;
     double max_;
     double centralWavelength_;
+
+    bool operator<(const FilterData&) const;
 };
 
 class Filters {
@@ -41,7 +45,7 @@ private:
 
     // private functions
     void readFolder();
-    void loadFilter(int);
+    void loadFilter(string);
 
 public:
     // public data members
