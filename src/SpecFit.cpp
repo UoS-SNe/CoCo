@@ -10,6 +10,7 @@
 #include "vmath/loadtxt.hpp"
 #include "vmath/convert.hpp"
 #include "spec/Workspace.hpp"
+#include "spec/MultiNest.hpp"
 
 using namespace std;
 using namespace vmath;
@@ -41,7 +42,7 @@ void applyOptions(vector<string> &options, shared_ptr<Workspace> w) {
     double skipOptions;
     w->SpecListFile_ = options[0];
     if (options[0].substr(options[0].find_last_of(".") + 1) == "list") {
-        loadtxt<string>(w->SpecListFile_, 3, w->infoList_);
+        loadtxt<string>(w->SpecListFile_, 4, w->infoList_);
         w->specList_ = w->infoList_[0];
         w->snNameList_ = w->infoList_[1];
         w->mjdList_ = castString<double>(w->infoList_[2]);
@@ -113,7 +114,7 @@ void fillUnassigned(shared_ptr<Workspace> w) {
     w->SNe_.resize(w->specList_.size());
     vector< vector<double> > specFile;
     for (size_t i = 0; i < w->specList_.size(); ++i) {
-		if (fileExists(w->specList_[i]) ||
+        if (fileExists(w->specList_[i]) ||
         fileExists("recon/" + w->snNameList_[i] + ".dat")) {
             // Load propertries
 			w->SNe_[i].specFile_ = w->specList_[i];
@@ -135,9 +136,6 @@ void fillUnassigned(shared_ptr<Workspace> w) {
         }
 	}
 
-    // Make light curve slices matching the spectrum
-    w->lcSlice();
-
     // Make a filter list
     if (w->filterList_.size() == 0) {
         // TODO - Look for filters in LC files
@@ -156,6 +154,12 @@ int main(int argc, char *argv[]) {
     // Load the filter responses
     w->filters_ = shared_ptr<Filters>(new Filters(w->filterPath_));
     w->SNID_ = 0;
+
+    // Make light curve slices matching the spectrum
+    w->lcSlice();
+
+    MultiNest solver(w);
+    solver.solve();
 
     return 0;
 }

@@ -24,6 +24,8 @@ void LogLike(double*,int&,int&,double&,void*);
 class MultiNest {
 public:
     shared_ptr<Workspace> w_;
+    string chainRoot;
+    string specRoot;
 
     MultiNest(shared_ptr<Workspace>);
     void solve();

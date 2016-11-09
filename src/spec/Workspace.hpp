@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <iterator>
 #include "../core/Filters.hpp"
 #include "../core/LC.hpp"
 
@@ -26,6 +27,7 @@ struct SN {
     LC lc_;
     vector<double> lcFlux_;
     vector<double> lcFluxError_;
+    vector<double> lcCentralWavelength_;
     vector<string> lcFilters_;
 
     //Fit parameters

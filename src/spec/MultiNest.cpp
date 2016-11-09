@@ -40,7 +40,7 @@ void LogLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
 
     // Set central control points
     for (size_t i = 0; i < npars; ++i) {
-        splineX[i+1] = w->filters_->filters_[w->filters_->filterID_[w->SNe_[w->SNID_].lc_.filterList_[i]]].centralWavelength_;
+        splineX[i+1] = w->SNe_[w->SNID_].lcCentralWavelength_[i];
         splineY[i+1] = w->SNe_[w->SNID_].params_[i];
     }
 
@@ -72,30 +72,37 @@ void LogLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
     string filterName;
     sedCorrected = mult<double>(sedCorrected, min<double>(w->SNe_[w->SNID_].lcFlux_));
 	for (size_t i = 0; i < w->SNe_[w->SNID_].lc_.filterList_.size(); ++i) {
-		filterName = w->filters_->filters_[w->filters_->filterID_[w->SNe_[w->SNID_].lc_.filterList_[i]]].name_;
+		filterName = w->SNe_[w->SNID_].lcFilters_[i];
 		lnew -= pow((w->filters_->flux(sedCorrected, filterName) - w->SNe_[w->SNID_].lcFlux_[i]) / w->SNe_[w->SNID_].lcFluxError_[i], 2);
 	}
 	lnew /= 2;
 
-    w->SNe_[w->SNID_].fluxCorrected_ = sedCorrected;
+    // TODO - Filters::flux() need to rescale the filter wavelength,
+    // In the current state it doesn't work at all.
+    //
+    // Check if the spectrum is overlapping with the filters and remove data accordingly 
+
 }
 
 
 MultiNest::MultiNest(shared_ptr<Workspace> w) {
     w_ = w;
+    chainRoot = "chains/" + w_->SNe_[w_->SNID_].SNName_ + "/";
+    chainRoot += w_->SNe_[w_->SNID_].SNName_ + "_";
 }
 
 
 void MultiNest::solve() {
     int seed = -1;			// random no. generator seed, if < 0 then take the seed from system clock
     int IS = 0;				// do Nested Importance Sampling?
-	int mmodal = 0;			// do mode separation?
+	int mmodal = 1;			// do mode separation?
 	int ceff = 0;			// run in constant efficiency mode?
 	int nClsPar = 2;		// no. of parameters to do mode separation on
-	int updInt = 10000;		// after how many iterations feedback & output files should be updated
-	int maxModes = 1;		// expected max no. of modes (used only for memory allocation)
+    int nlive = 100;		// number of live points
+	int updInt = 1000;		// after how many iterations feedback & output files should be updated
+	int maxModes = 10;		// expected max no. of modes (used only for memory allocation)
 	int fb = 0;			    // need feedback on standard output?
-	int resume = 0;			// resume from a previous job?
+    int resume = 0;			// resume from a previous job?
 	int outfile = 1;		// write output files?
 	int initMPI = 0;		// initialize MPI routines?, relevant only if compiling with MPI
     int maxiter = 0;		// max no. of iterations, a non-positive value means infinity.
@@ -104,5 +111,18 @@ void MultiNest::solve() {
     double efr = 0.1;		// set the required efficiency
 	double logZero = -1E90;	// points with loglike < logZero will be ignored by MultiNest
 
+    int nPar = w_->SNe_[w_->SNID_].lcFilters_.size();
+    int ndims = nPar;
+    int pWrap[ndims];		// which parameters to have periodic boundary conditions?
+    for (size_t i = 0; i < ndims; ++i) {
+        pWrap[i] = 0;
+    }
+
+    specRoot = chainRoot + to_string(int(w_->SNe_[w_->SNID_].mjd_))+ "-";  // root for output files
     void *context = (void*) w_.get();
+
+    // calling MultiNest
+    nested::run(IS, mmodal, ceff, nlive, tol, efr, ndims, nPar, nClsPar,
+                maxModes, updInt, Ztol, specRoot.c_str(), seed, pWrap, fb, resume,
+                outfile, initMPI, logZero, maxiter, LogLike, dumper, context);
 }
