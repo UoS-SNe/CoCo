@@ -22,21 +22,12 @@ void dumper(int &nSamples, int &nlive, int &nPar, double **physLive, double **po
 }
 
 
-void LogLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
-    class Workspace *w = (struct Workspace *) context;
+vector<double> splineModel(Workspace *w){
+    int npars = w->SNe_[w->SNID_].params_.size();
 
-    // Apply the prior to the parameters
-    for (size_t i = 0; i < npars; i++) {
-        Cube[i] = flatPrior(Cube[i], 0, 100);
-    }
-
-    // Convert the C array of parameters to a C++ vector
-    w->SNe_[w->SNID_].params_.resize(ndim);
-    w->SNe_[w->SNID_].params_.assign(Cube, Cube + ndim);
-
-	// spline control points
-	vector<double> splineX(npars+2);
-	vector<double> splineY(npars+2);
+    // spline control points
+    vector<double> splineX(npars+2);
+    vector<double> splineY(npars+2);
 
     // Set central control points
     for (size_t i = 0; i < npars; ++i) {
@@ -51,36 +42,51 @@ void LogLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
 
     // Set last control point
     splineX[npars+1] = max<double>(w->SNe_[w->SNID_].wav_);
-	splineY[npars+1] = splineX[npars+1] * ((splineY[npars-1] - splineY[npars]) / (splineX[npars-1] - splineX[npars]));
+    splineY[npars+1] = splineX[npars+1] * ((splineY[npars-1] - splineY[npars]) / (splineX[npars-1] - splineX[npars]));
     splineY[npars+1] += ((splineX[npars-1] * splineY[npars] - splineY[npars-1] * splineX[npars]) / (splineX[npars-1] - splineX[npars]));
 
-	//initialise gsl spline
-	gsl_interp_accel *acc = gsl_interp_accel_alloc();
-	gsl_spline *spline = gsl_spline_alloc(gsl_interp_cspline, npars+2);
-	gsl_spline_init (spline, splineX.data(), splineY.data(), npars+2);
-	vector<double> sedCorrected(w->SNe_[w->SNID_].flux_.size(), 0);
+    //initialise gsl spline
+    gsl_interp_accel *acc = gsl_interp_accel_alloc();
+    gsl_spline *spline = gsl_spline_alloc(gsl_interp_cspline, npars+2);
+    gsl_spline_init (spline, splineX.data(), splineY.data(), npars+2);
+    vector<double> sedCorrected(w->SNe_[w->SNID_].flux_.size(), 0);
 
-	// mangle the spectra
-	double sedMean = accumulate(w->SNe_[w->SNID_].flux_.begin(), w->SNe_[w->SNID_].flux_.end(), 0.0) / w->SNe_[w->SNID_].flux_.size();
-	for (size_t i = 0; i < w->SNe_[w->SNID_].wav_.size(); ++i) {
-		sedCorrected[i] = w->SNe_[w->SNID_].flux_[i] / sedMean;
+    // mangle the spectra
+    double sedMean = accumulate(w->SNe_[w->SNID_].flux_.begin(), w->SNe_[w->SNID_].flux_.end(), 0.0) / w->SNe_[w->SNID_].flux_.size();
+    for (size_t i = 0; i < w->SNe_[w->SNID_].wav_.size(); ++i) {
+        sedCorrected[i] = w->SNe_[w->SNID_].flux_[i] / sedMean;
         sedCorrected[i] *= gsl_spline_eval(spline, w->SNe_[w->SNID_].wav_[i], acc);
-	}
+    }
+
+    return mult<double>(sedCorrected, min<double>(w->SNe_[w->SNID_].lcFlux_));
+}
+
+
+void LogLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
+    class Workspace *w = (struct Workspace *) context;
+
+    // Apply the prior to the parameters
+    for (size_t i = 0; i < npars; i++) {
+        Cube[i] = flatPrior(Cube[i], 0, 100);
+    }
+
+    // Convert the C array of parameters to a C++ vector
+    w->SNe_[w->SNID_].params_.resize(ndim);
+    w->SNe_[w->SNID_].params_.assign(Cube, Cube + ndim);
+
+    // Calculate the corrected spectrum
+    vector<double> sedCorrected = splineModel(w);
 
     // Calculate likelihood
     lnew = 0;
     string filterName;
-    sedCorrected = mult<double>(sedCorrected, min<double>(w->SNe_[w->SNID_].lcFlux_));
 	for (size_t i = 0; i < w->SNe_[w->SNID_].lc_.filterList_.size(); ++i) {
 		filterName = w->SNe_[w->SNID_].lcFilters_[i];
 		lnew -= pow((w->filters_->flux(sedCorrected, filterName) - w->SNe_[w->SNID_].lcFlux_[i]) / w->SNe_[w->SNID_].lcFluxError_[i], 2);
 	}
 	lnew /= 2;
 
-    // TODO - Filters::flux() need to rescale the filter wavelength,
-    // In the current state it doesn't work at all.
-    //
-    // Check if the spectrum is overlapping with the filters and remove data accordingly 
+    // TODO - Check if the spectrum is overlapping with the filters and remove data accordingly
 
 }
 
@@ -118,11 +124,47 @@ void MultiNest::solve() {
         pWrap[i] = 0;
     }
 
-    specRoot = chainRoot + to_string(int(w_->SNe_[w_->SNID_].mjd_))+ "-";  // root for output files
+    specRoot = chainRoot + to_string(int(w_->SNe_[w_->SNID_].mjd_)) + "-";  // root for output files
     void *context = (void*) w_.get();
 
     // calling MultiNest
     nested::run(IS, mmodal, ceff, nlive, tol, efr, ndims, nPar, nClsPar,
                 maxModes, updInt, Ztol, specRoot.c_str(), seed, pWrap, fb, resume,
                 outfile, initMPI, logZero, maxiter, LogLike, dumper, context);
+}
+
+
+void MultiNest::read() {
+    int npars = w_->SNe_[w_->SNID_].lcFilters_.size();
+
+    // Load summary file containing best fit parameters
+    string summaryPath = specRoot + "summary.txt";
+    vector< vector<double> > summary = loadtxt<double>(summaryPath, (npars) * 4 + 2);
+
+    // Find the highest logLike -> Best fit
+    vector<double> logLike = summary[w_->SNe_[w_->SNID_].lcFilters_.size() * 4 + 1];
+    int indexBest = distance(logLike.begin(), max_element(logLike.begin()+1, logLike.end()));
+
+    // Load the parameters for the best fit
+    w_->SNe_[w_->SNID_].params_ = vector<double>(npars, 0);
+    for (size_t i = 0; i < npars; ++i) {
+        w_->SNe_[w_->SNID_].params_[i] = summary[2 * npars + i][indexBest];
+    }
+
+    // Reconstrunct the best fit mangled spectrum
+    vector<double> sedCorrected = splineModel(w_.get());
+
+    // Save the spectrum into a reconstruction directory
+    ofstream reconSpecFile;
+    reconSpecFile.open("recon/" + w_->SNe_[w_->SNID_].SNName_ + "_" + to_string(int(w_->SNe_[w_->SNID_].mjd_)) + ".spec");
+    for (size_t i = 0; i < sedCorrected.size(); ++i) {
+        reconSpecFile << w_->SNe_[w_->SNID_].wav_[i] << " " << sedCorrected[i] << '\n';
+    }
+    reconSpecFile.close();
+}
+
+
+void MultiNest::fit() {
+    solve();
+    read();
 }

@@ -143,6 +143,14 @@ void fillUnassigned(shared_ptr<Workspace> w) {
 }
 
 
+void fitSpec(shared_ptr<Workspace> w, int ID) {
+    w->SNID_ = ID;
+    w->filters_->rescale(w->SNe_[w->SNID_].wav_);
+    MultiNest solver(w);
+    solver.fit();
+}
+
+
 int main(int argc, char *argv[]) {
     vector<string> options;
     shared_ptr<Workspace> w(new Workspace());
@@ -153,13 +161,14 @@ int main(int argc, char *argv[]) {
 
     // Load the filter responses
     w->filters_ = shared_ptr<Filters>(new Filters(w->filterPath_));
-    w->SNID_ = 0;
 
     // Make light curve slices matching the spectrum
     w->lcSlice();
 
-    MultiNest solver(w);
-    solver.solve();
+    // Do all sorts of magic
+    for (size_t i = 0; i < w->SNe_.size(); ++i) {
+        fitSpec(w, i);
+    }
 
     return 0;
 }

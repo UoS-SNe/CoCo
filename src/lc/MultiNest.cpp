@@ -215,7 +215,7 @@ void MultiNest::read() {
 
     // Load the parameters for the best fit
     fitParams_ = vector<double>(w_->model_.npar_, 0);
-    for (int i = 0; i < w_->model_.npar_; ++i) {
+    for (size_t i = 0; i < w_->model_.npar_; ++i) {
         fitParams_[i] = summary[2 * w_->model_.npar_ + i][indexBest];
     }
 

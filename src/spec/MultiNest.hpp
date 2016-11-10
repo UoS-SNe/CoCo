@@ -20,6 +20,7 @@
 
 void dumper(int&, int&, int&, double**, double**, double**, double&, double&, double&, void*);
 void LogLike(double*,int&,int&,double&,void*);
+vector<double> splineModel(shared_ptr<Workspace>);
 
 class MultiNest {
 public:
@@ -29,6 +30,8 @@ public:
 
     MultiNest(shared_ptr<Workspace>);
     void solve();
+    void read();
+    void fit();
 };
 
 #endif
