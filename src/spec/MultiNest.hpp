@@ -1,37 +1,34 @@
-#ifndef COCO_LC_MULTINEST_HPP_
-#define COCO_LC_MULTINEST_HPP_
+#ifndef COCO_SPEC_MULTINEST_HPP_
+#define COCO_SPEC_MULTINEST_HPP_
 
 #include <vector>
 #include <string>
 #include <iostream>
 #include <limits>
 #include <stdio.h>
-#include "Workspace.hpp"
+#include <gsl/gsl_bspline.h>
+#include <gsl/gsl_spline.h>
+#include <gsl/gsl_errno.h>
 #include "../core/multinest.h"
 #include "../core/priors.hpp"
 #include "../vmath/loadtxt.hpp"
 #include "../vmath/convert.hpp"
 #include "../vmath/range.hpp"
 #include "../vmath/stat.hpp"
-
-using namespace std;
-using namespace vmath;
+#include "Workspace.hpp"
 
 
 void dumper(int&, int&, int&, double**, double**, double**, double&, double&, double&, void*);
 void LogLike(double*,int&,int&,double&,void*);
-
+vector<double> splineModel(shared_ptr<Workspace>);
 
 class MultiNest {
 public:
     shared_ptr<Workspace> w_;
     string chainRoot;
-    string filterRoot;
+    string specRoot;
 
-    vector<double> fitParams_;
-
-    MultiNest(shared_ptr<Workspace>&);
-    void setup();
+    MultiNest(shared_ptr<Workspace>);
     void solve();
     void read();
     void fit();

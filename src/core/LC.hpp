@@ -1,5 +1,5 @@
-#ifndef COCO_SN_H_
-#define COCO_SN_H_
+#ifndef COCO_CORE_LC_H_
+#define COCO_CORE_LC_H_
 
 #include <memory>
 #include <algorithm>
@@ -15,7 +15,7 @@ using namespace std;
 using namespace vmath;
 
 
-class SN {
+class LC {
 private:
 	vector<double> completeMJD_;
     vector<double> completeFlux_;
@@ -43,7 +43,9 @@ public:
     vector< vector<double> > fluxErrList_;
     vector<string> filterList_;
 
-    SN(string);
+    LC();
+    LC(string);
+    void set(string);
 	void readData(string);
     void restoreCompleteLC();
     void setFilterList();

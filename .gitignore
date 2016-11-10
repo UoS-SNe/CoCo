@@ -23,8 +23,20 @@
 *.a
 *.lib
 
+# macOS files
+.DS_Store
+
+
 # Executables
 *.exe
 *.out
 *.app
 lcfit
+specfit
+
+# Data directories
+chains
+recon
+data
+shared
+test*

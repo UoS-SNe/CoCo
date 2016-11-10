@@ -2,17 +2,36 @@
 #define COCO_VMATH_STAT_HPP_
 
 #include <math.h>
+#include <stdlib.h>
 #include <vector>
+#include <algorithm>
+#include <numeric>
 
 using namespace std;
 
-namespace vmath {  // NAMESPACE vmath
+namespace vmath {
+
 
 template<typename T>
-T max(const vector<T> &vec) {
+T max(vector<T> &vec) {
     return *max_element(vec.begin(), vec.end());
 }
 
+
+template<typename T>
+T min(vector<T> &vec) {
+    return *min_element(vec.begin(), vec.end());
+}
+
+
+template<typename T>
+T nearest(vector<T> &vec, T val) {
+    auto i = min_element(vec.begin(), vec.end(), [=](T x, T y) {
+        return fabs(x - val) < fabs(y - val);
+    });
+
+    return distance(vec.begin(), i);
+}
 
 
 template <typename T>
@@ -22,23 +41,40 @@ T sum(vector<T> &vec) {
 
 
 template <typename T>
-T mean(const vector<T> &vec) {
+T mean(vector<T> &vec) {
     return sum<T>(vec) / vec.size();
 }
 
 
-template<typename T>
-T min(const vector<T> &vec) {
-    return *min_element(vec.begin(), vec.end());
+template <typename T>
+T median(vector<T> vec) {
+    sort(vec.begin(), vec.end());
+    if (vec.size() % 2 == 0) {
+        return (vec[vec.size() / 2 - 1] + vec[vec.size() / 2]) / 2;
+    } else {
+        return vec[vec.size() / 2];
+    }
+}
+
+
+template <typename T>
+T medianSigma(vector<T> vec) {
+    sort(vec.begin(), vec.end());
+    T med = median<T>(vec);
+
+    T A = med - vec[round(0.16 * vec.size())];
+    T B = vec[vec.size() - round(0.16 * vec.size())] - med;
+
+    return std::min(A, B);
 }
 
 
 template<typename T>
-T standardDiv(const vector<T> &vec) {
+T stdev(vector<T> &vec) {
     T res = 0.0;
     T m = mean<T>(vec);
 
-    for_each(vec.begin(), vec.end(), [&](const T d) {
+    for_each(vec.begin(), vec.end(), [&](T d) {
         res += pow(d - m, 2);
     });
 

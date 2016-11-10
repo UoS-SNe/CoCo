@@ -8,7 +8,6 @@ Workspace::Workspace() {
     LCListFile_ = "None";
     fileList_.resize(0);
     filterList_.resize(0);
-    chainDir_ = "chain/test_";
 
     SNID_ = 0;
     FLTID_ = 0;

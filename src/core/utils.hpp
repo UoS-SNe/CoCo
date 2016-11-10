@@ -20,6 +20,9 @@
 using namespace std;
 
 
+/* Split options into a vector of arguments */
+void getArgv(int, char**, vector<string>&);
+
 void split(const string&, char, vector<string>&);
 vector<string> split(const string&, char);
 

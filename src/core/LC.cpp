@@ -1,10 +1,18 @@
-#include "SN.hpp"
+#include "LC.hpp"
 
 using namespace std;
 using namespace vmath;
 
 
-SN::SN(string file) {
+LC::LC() {}
+
+
+LC::LC(string file) {
+    set(file);
+}
+
+
+void LC::set(string file) {
     readData(file);
     setFilterList();
     makeDataLists();
@@ -12,7 +20,7 @@ SN::SN(string file) {
 }
 
 
-void SN::readData(string file) {
+void LC::readData(string file) {
     name_ = baseName(file);
     vector< vector<string> > data;
     loadtxt<string>(file, 4, data);
@@ -26,7 +34,7 @@ void SN::readData(string file) {
 }
 
 
-void SN::restoreCompleteLC() {
+void LC::restoreCompleteLC() {
 	mjd_ = completeMJD_;
     flux_ = completeFlux_;
     fluxErr_ = completeFluxErr_;
@@ -34,14 +42,14 @@ void SN::restoreCompleteLC() {
 }
 
 
-void SN::setFilterList() {
+void LC::setFilterList() {
     filterList_ = filter_;
     removeDuplicates<string>(filterList_);
 }
 
 
 // TODO - Test for real data
-void SN::removeData(double start, double end) {
+void LC::removeData(double start, double end) {
     vector<double>::iterator mjd_it = mjd_.begin();
     vector<double>::iterator flux_it = flux_.begin();
     vector<double>::iterator fluxErr_it = fluxErr_.begin();
@@ -64,7 +72,7 @@ void SN::removeData(double start, double end) {
 }
 
 
-void SN::removeData(string filter) {
+void LC::removeData(string filter) {
     vector<double>::iterator mjd_it = mjd_.begin();
     vector<double>::iterator flux_it = flux_.begin();
     vector<double>::iterator fluxErr_it = fluxErr_.begin();
@@ -87,7 +95,7 @@ void SN::removeData(string filter) {
 }
 
 
-void SN::makeDataLists() {
+void LC::makeDataLists() {
     mjdList_.resize(filterList_.size());
     tList_.resize(filterList_.size());
     fluxList_.resize(filterList_.size());
@@ -120,7 +128,7 @@ void SN::makeDataLists() {
 }
 
 
-void SN::normalizeDataLists() {
+void LC::normalizeDataLists() {
     normalization_.resize(filterList_.size());
 
     for (size_t j = 0; j < filterList_.size(); ++j) {

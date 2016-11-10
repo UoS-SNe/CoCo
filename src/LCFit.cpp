@@ -3,12 +3,11 @@
 #include <iomanip>
 #include <string>
 #include "core/utils.hpp"
-#include "core/SN.hpp"
+#include "core/LC.hpp"
 #include "vmath/loadtxt.hpp"
 #include "vmath/algebra.hpp"
 #include "lc/Workspace.hpp"
 #include "lc/Model.hpp"
-#include "lc/Solver.hpp"
 #include "lc/MultiNest.hpp"
 
 using namespace std;
@@ -22,16 +21,6 @@ void help() {
     cout << "\nUsage:\n";
     cout << "lcfit lightcurve_file.*   or  lightcurve_files_list.list";
     cout << endl;
-}
-
-
-/* Split options into a vector of arguments */
-void getArgv(int argc, char **argv, vector<string> &options) {
-    options.clear();
-
-    for (size_t i = 1; i < argc; ++i) {
-        options.push_back(argv[i]);
-    }
 }
 
 
@@ -122,8 +111,10 @@ void fitSN(shared_ptr<Workspace> w, int ID) {
     MultiNest solver(w);
 
     // Open a text file for the recon file
-    ofstream reconFile;
-    reconFile.open("recon/" + w->SNe_[w->SNID_].name_ + ".dat");
+    ofstream reconLCFile;
+    ofstream reconStatFile;
+    reconLCFile.open("recon/" + w->SNe_[w->SNID_].name_ + ".dat");
+    reconStatFile.open("recon/" + w->SNe_[w->SNID_].name_ + ".stat");
 
     // Loop though every available filter
     for (size_t i = 0; i < w->SNe_[w->SNID_].filterList_.size(); ++i) {
@@ -137,16 +128,28 @@ void fitSN(shared_ptr<Workspace> w, int ID) {
         solver.fit();
 
         // Reset the units to original
-        w->dataRecon_.x_ = add<double>(w->dataRecon_.x_, w->SNe_[w->SNID_].mjdMin_);
+        w->dataRecon_.x_ = add<double>(w->dataRecon_.x_, w->SNe_[w->SNID_].mjdMinList_[w->FLTID_]);
         w->dataRecon_.y_ = mult<double>(w->dataRecon_.y_, w->SNe_[w->SNID_].normalization_[w->FLTID_]);
         w->dataRecon_.sigma_ = mult<double>(w->dataRecon_.sigma_, w->SNe_[w->SNID_].normalization_[w->FLTID_]);
+        w->dataRecon_.bestFit_ = mult<double>(w->dataRecon_.bestFit_, w->SNe_[w->SNID_].normalization_[w->FLTID_]);
+        w->dataRecon_.median_ = mult<double>(w->dataRecon_.median_, w->SNe_[w->SNID_].normalization_[w->FLTID_]);
+        w->dataRecon_.medianSigma_ = mult<double>(w->dataRecon_.medianSigma_, w->SNe_[w->SNID_].normalization_[w->FLTID_]);
 
-        // Write the data to reconFile text file buffor
+        // Write the data to reconLCFile text file buffor
         for (size_t j = 0; j < w->dataRecon_.x_.size(); ++j) {
-            reconFile << w->dataRecon_.x_[j] << " " << w->dataRecon_.y_[j] << " " << w->dataRecon_.sigma_[j] << " " << w->SNe_[w->SNID_].filterList_[i] << "\n";
+            reconLCFile << w->dataRecon_.x_[j] << " " << w->dataRecon_.y_[j] << " ";
+            reconLCFile << w->dataRecon_.sigma_[j] << " " << w->SNe_[w->SNID_].filterList_[i] << "\n";
+
+            reconStatFile << w->dataRecon_.x_[j] << " " << w->dataRecon_.y_[j] << " ";
+            reconStatFile << w->dataRecon_.sigma_[j] << " " << w->dataRecon_.bestFit_[j] << " ";
+            reconStatFile << w->dataRecon_.median_[j] << " " << w->dataRecon_.medianSigma_[j] << " ";
+            reconStatFile << w->SNe_[w->SNID_].filterList_[i] << "\n";
+
         }
     }
-    reconFile.close();
+
+    reconLCFile.close();
+    reconStatFile.close();
 }
 
 
@@ -163,8 +166,9 @@ int main(int argc, char *argv[]) {
     createDirectory("chains");
     createDirectory("recon");
 
-    // TODO - This is a test
-    fitSN(w, 0);
+    for (size_t i = 0; i < w->SNe_.size(); ++i) {
+        fitSN(w, i);
+    }
 
 	return 0;
 }

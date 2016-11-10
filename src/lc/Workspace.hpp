@@ -1,9 +1,9 @@
-#ifndef COCO_WORKSPACE_HPP_
-#define COCO_WORKSPACE_HPP_
+#ifndef COCO_LC_WORKSPACE_HPP_
+#define COCO_LC_WORKSPACE_HPP_
 
 #include <vector>
 #include <string>
-#include "../core/SN.hpp"
+#include "../core/LC.hpp"
 #include "Model.hpp"
 
 using namespace std;
@@ -13,6 +13,10 @@ struct Data {
     vector<double> x_;
     vector<double> y_;
     vector<double> sigma_;
+
+    vector<double> bestFit_;
+    vector<double> median_;
+    vector<double> medianSigma_;
 };
 
 
@@ -23,14 +27,13 @@ public:
 
     // File names
     string LCListFile_;
-    string chainDir_;
 
     // Lists
     vector<string> fileList_;
     vector<string> filterList_;
 
     // List of SN objects
-    vector<SN> SNe_;
+    vector<LC> SNe_;
 
     // Current supernova
     short SNID_;
