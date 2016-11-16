@@ -6,7 +6,7 @@
 #include "core/LC.hpp"
 #include "vmath/loadtxt.hpp"
 #include "vmath/algebra.hpp"
-#include "lc/Workspace.hpp"
+#include "lc/WorkspaceLC.hpp"
 #include "lc/Model.hpp"
 #include "lc/MultiNest.hpp"
 
@@ -25,7 +25,7 @@ void help() {
 
 
 /* Assign input options to workspace parameters */
-void applyOptions(vector<string> &options, shared_ptr<Workspace> w) {
+void applyOptions(vector<string> &options, shared_ptr<WorkspaceLC> w) {
     if (options.size() < 1 || options[0] == "-h" || options[0] == "--help") {
         help();
         exit(0);
@@ -81,7 +81,7 @@ void applyOptions(vector<string> &options, shared_ptr<Workspace> w) {
 
 
 /* Automatically fill in all unassigned properties with defaults */
-void fillUnassigned(shared_ptr<Workspace> w) {
+void fillUnassigned(shared_ptr<WorkspaceLC> w) {
     // Do a sanity check for the LC files
     if (w->fileList_.size() == 0) {
         cout << "Something went seriously wrong.";
@@ -105,7 +105,7 @@ void fillUnassigned(shared_ptr<Workspace> w) {
 
 
 /* Run the fitting routine for the SN with a given ID */
-void fitSN(shared_ptr<Workspace> w, int ID) {
+void fitSN(shared_ptr<WorkspaceLC> w, int ID) {
     w->SNID_ = ID;
     createDirectory(w->SNe_[w->SNID_].name_, "chains");
     MultiNest solver(w);
@@ -156,7 +156,7 @@ void fitSN(shared_ptr<Workspace> w, int ID) {
 /* Main program */
 int main(int argc, char *argv[]) {
     vector<string> options;
-    shared_ptr<Workspace> w(new Workspace());
+    shared_ptr<WorkspaceLC> w(new WorkspaceLC());
 
     getArgv(argc, argv, options);
     applyOptions(options, w);

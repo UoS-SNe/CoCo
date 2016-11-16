@@ -1,9 +1,9 @@
- #include "Workspace.hpp"
+ #include "WorkspaceSpec.hpp"
 
 using namespace std;
 
 
-Workspace::Workspace() {
+WorkspaceSpec::WorkspaceSpec() {
     // Initialise all variables with defaults designed to halt the code if empty
     SpecListFile_ = "None";
     filterPath_ = "data/filters";
@@ -12,7 +12,7 @@ Workspace::Workspace() {
 }
 
 
-void Workspace::lcSlice() {
+void WorkspaceSpec::lcSlice() {
     int minIndex = 0;
     vector<string> filterTemp;
     int fIndex;
@@ -23,7 +23,7 @@ void Workspace::lcSlice() {
         SNe_[i].lcFlux_.clear();
         SNe_[i].lcFluxError_.clear();
         SNe_[i].lcCentralWavelength_.clear();
-        
+
         // Sort filters according to their central wavelength (core/Filters sorting)
         filterTemp = SNe_[i].lc_.filterList_;
         for (auto filter : filters_->filters_) {

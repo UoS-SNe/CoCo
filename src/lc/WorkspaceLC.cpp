@@ -1,9 +1,9 @@
-#include "Workspace.hpp"
+#include "WorkspaceLC.hpp"
 
 using namespace std;
 
 
-Workspace::Workspace() {
+WorkspaceLC::WorkspaceLC() {
     // Initialise all variables with defaults designed to halt the code if empty
     LCListFile_ = "None";
     fileList_.resize(0);

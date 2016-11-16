@@ -14,10 +14,10 @@ LDFLAGS = -lgsl -lnest3 -lgfortran -llapack -Wl,-no_compact_unwind
 	$(CC) $(CFLAGS) $< -o $@
 
 CORE = src/core/utils.cpp src/core/priors.cpp src/core/LC.cpp src/core/Filters.cpp
-LC = src/lc/Workspace.cpp src/lc/Model.cpp src/lc/MultiNest.cpp
+LC = src/lc/WorkspaceLC.cpp src/lc/Model.cpp src/lc/MultiNest.cpp
 LCEXEC = src/LCFit.cpp
 
-SPEC = src/spec/Workspace.cpp src/spec/MultiNest.cpp
+SPEC = src/spec/WorkspaceSpec.cpp src/spec/MultiNest.cpp
 SPECEXEC = src/SpecFit.cpp
 
 SIM =
@@ -41,5 +41,5 @@ lcsim: $(LCSIM)
 
 
 clean:
-	rm -f *.o src/*.o src/lc/*.o src/core/*.o
+	rm -f *.o src/*.o src/lc/*.o src/spec/*.o src/core/*.o
 	rm -f lcfit specfit lcsim

@@ -23,7 +23,7 @@ void dumper(int &nSamples, int &nlive, int &nPar, double **physLive, double **po
 
 
 void LogLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
-    class Workspace *w = (struct Workspace *) context;
+    class WorkspaceLC *w = (struct WorkspaceLC *) context;
 
     // Apply the prior to the parameters
     for (size_t i = 0; i < npars; i++) {
@@ -159,7 +159,7 @@ void LogLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
 
 
 
-MultiNest::MultiNest(shared_ptr<Workspace> &w) {
+MultiNest::MultiNest(shared_ptr<WorkspaceLC> &w) {
     w_ = w;
     chainRoot = "chains/" + w_->SNe_[w_->SNID_].name_ + "/";
     chainRoot += w_->SNe_[w_->SNID_].name_ + "_";

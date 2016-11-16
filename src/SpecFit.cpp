@@ -9,7 +9,7 @@
 #include "core/LC.hpp"
 #include "vmath/loadtxt.hpp"
 #include "vmath/convert.hpp"
-#include "spec/Workspace.hpp"
+#include "spec/WorkspaceSpec.hpp"
 #include "spec/MultiNest.hpp"
 
 using namespace std;
@@ -32,7 +32,7 @@ void help() {
 
 
 /* Assign input options to workspace parameters */
-void applyOptions(vector<string> &options, shared_ptr<Workspace> w) {
+void applyOptions(vector<string> &options, shared_ptr<WorkspaceSpec> w) {
     if (options.size() < 1 || options[0] == "-h" || options[0] == "--help") {
         help();
         exit(0);
@@ -101,7 +101,7 @@ void applyOptions(vector<string> &options, shared_ptr<Workspace> w) {
 
 
 /* Automatically fill in all unassigned properties with defaults */
-void fillUnassigned(shared_ptr<Workspace> w) {
+void fillUnassigned(shared_ptr<WorkspaceSpec> w) {
     // Do a sanity check for the LC files
     if (w->specList_.size() == 0) {
         cout << "Something went seriously wrong.";
@@ -143,7 +143,7 @@ void fillUnassigned(shared_ptr<Workspace> w) {
 }
 
 
-void fitSpec(shared_ptr<Workspace> w, int ID) {
+void fitSpec(shared_ptr<WorkspaceSpec> w, int ID) {
     w->SNID_ = ID;
     w->filters_->rescale(w->SNe_[w->SNID_].wav_);
     MultiNest solver(w);
@@ -153,7 +153,7 @@ void fitSpec(shared_ptr<Workspace> w, int ID) {
 
 int main(int argc, char *argv[]) {
     vector<string> options;
-    shared_ptr<Workspace> w(new Workspace());
+    shared_ptr<WorkspaceSpec> w(new WorkspaceSpec());
 
     getArgv(argc, argv, options);
     applyOptions(options, w);

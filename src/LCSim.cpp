@@ -4,7 +4,7 @@
 #include "core/utils.hpp"
 #include "core/LC.hpp"
 #include "vmath/loadtxt.hpp"
-#include "lc/Workspace.hpp"
+#include "lc/WorkspaceLC.hpp"
 #include "lc/Model.hpp"
 #include "lc/MultiNest.hpp"
 

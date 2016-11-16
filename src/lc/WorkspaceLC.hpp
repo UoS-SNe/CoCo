@@ -1,5 +1,5 @@
-#ifndef COCO_LC_WORKSPACE_HPP_
-#define COCO_LC_WORKSPACE_HPP_
+#ifndef COCO_LC_WORKSPACELC_HPP_
+#define COCO_LC_WORKSPACELC_HPP_
 
 #include <vector>
 #include <string>
@@ -20,10 +20,10 @@ struct Data {
 };
 
 
-class Workspace {
+class WorkspaceLC {
 public:
     // Constructor
-    Workspace();
+    WorkspaceLC();
 
     // File names
     string LCListFile_;

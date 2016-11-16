@@ -22,7 +22,7 @@ void dumper(int &nSamples, int &nlive, int &nPar, double **physLive, double **po
 }
 
 
-vector<double> splineModel(Workspace *w){
+vector<double> splineModel(WorkspaceSpec *w){
     int npars = w->SNe_[w->SNID_].params_.size();
 
     // spline control points
@@ -63,7 +63,7 @@ vector<double> splineModel(Workspace *w){
 
 
 void LogLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
-    class Workspace *w = (struct Workspace *) context;
+    class WorkspaceSpec *w = (struct WorkspaceSpec *) context;
 
     // Apply the prior to the parameters
     for (size_t i = 0; i < npars; i++) {
@@ -91,7 +91,7 @@ void LogLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
 }
 
 
-MultiNest::MultiNest(shared_ptr<Workspace> w) {
+MultiNest::MultiNest(shared_ptr<WorkspaceSpec> w) {
     w_ = w;
     chainRoot = "chains/" + w_->SNe_[w_->SNID_].SNName_ + "/";
     chainRoot += w_->SNe_[w_->SNID_].SNName_ + "_";

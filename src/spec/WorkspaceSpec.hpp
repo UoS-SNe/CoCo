@@ -35,10 +35,10 @@ struct SN {
 };
 
 
-class Workspace {
+class WorkspaceSpec {
 public:
     // Constructor
-    Workspace();
+    WorkspaceSpec();
 
     // Active IDs
     short SNID_;
