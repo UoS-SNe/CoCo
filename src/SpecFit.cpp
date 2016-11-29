@@ -49,7 +49,7 @@ void applyOptions(vector<string> &options, shared_ptr<WorkspaceSpec> w) {
         w->zList_ = castString<double>(w->infoList_[3]);
         skipOptions = 1;
 
-    } else if (options.size() == 4) {
+    } else if (options.size() >= 4) {
         w->specList_ = {options[0]};
         w->snNameList_ = {options[1]};
         w->mjdList_ = {atof(options[2].c_str())};

@@ -29,11 +29,17 @@ public:
     string LCListFile_;
 
     // Lists
+    vector< vector<string> > infoList_;
     vector<string> fileList_;
     vector<string> filterList_;
 
     // List of SN objects
     vector<LC> SNe_;
+
+    // Input lists for LCSim
+    vector<string> snNameList_;
+    vector<string> uniqueSNList_;
+    vector<double> zList_;
 
     // Current supernova
     short SNID_;
