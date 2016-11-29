@@ -1,6 +1,8 @@
 #include <vector>
 #include <iostream>
 #include <string>
+#include <algorithm>
+#include <stdlib.h>
 #include "core/utils.hpp"
 #include "vmath/loadtxt.hpp"
 
@@ -40,12 +42,47 @@ void applyOptions(vector<string> &options, shared_ptr<Workspace> w) {
 }
 
 
+void readRecon() {
+    vector<string> spectra;
+    dirlist("recon", spectra);
+
+    string extension = "";
+    for (auto it = spectra.begin(); it != spectra.end();) {
+        extension = split(*it, '.')[1];
+        if (extension != "spec") {
+            it = spectra.erase(it);
+        } else {
+            ++it;
+        }
+    }
+    sort(spectra.begin(), spectra.end());
+
+    vector<string> SNName;
+    vector<double> MJD;
+
+    string base = "";
+    vector<string> tempSplit;
+    for (auto file : spectra) {
+        base = baseName(file);
+        split(base, '_', tempSplit);
+
+        SNName.push_back(tempSplit[0]);
+        MJD.push_back(atof(tempSplit[1].c_str()));
+    }
+
+    vector<string> SNList = SNName;
+    removeDuplicates<string>(SNList);
+}
+
+
 int main (int argc, char* argv[]) {
     vector<string> options;
     shared_ptr<Workspace> w(new Workspace());
 
     getArgv(argc, argv, options);
     applyOptions(options, w);
+
+    readRecon();
 
     return 0;
 }
