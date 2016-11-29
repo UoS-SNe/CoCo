@@ -33,6 +33,7 @@
 *.app
 lcfit
 specfit
+specphase
 lcsim
 
 # Data directories
