@@ -85,9 +85,6 @@ void LogLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
 		lnew -= pow((w->filters_->flux(sedCorrected, filterName) - w->SNe_[w->SNID_].lcFlux_[i]) / w->SNe_[w->SNID_].lcFluxError_[i], 2);
 	}
 	lnew /= 2;
-
-    // TODO - Check if the spectrum is overlapping with the filters and remove data accordingly
-
 }
 
 

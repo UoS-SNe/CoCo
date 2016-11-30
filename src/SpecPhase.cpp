@@ -4,14 +4,43 @@
 #include <algorithm>
 #include <stdlib.h>
 #include "core/utils.hpp"
+#include "core/Filters.hpp"
 #include "vmath/loadtxt.hpp"
+#include "vmath/convert.hpp"
 
 using namespace std;
+using namespace vmath;
 
 
-struct Workspace {
+class Workspace {
+public:
+    // Filter related variables
     string filter_;
+    string filterPath_;
+    shared_ptr<Filters> filters_;
+    short FLTID_;
+
+    // Spectra files related variable
+    vector<string> SNName_;
+    vector<string> spectra_;
+
+    // Synthetic photometry
+    vector<double> MJD_;
+    vector<double> synthFlux_;
+    vector<double> synthMJD_;
+
+    // Temporary vectors for the spectrum wavelengths and bandpasses
+    vector<double> wav_;
+    vector<double> flux_;
+
+    // Constructor
+    Workspace();
 };
+
+
+Workspace::Workspace() {
+    filterPath_ = "data/filters";
+}
 
 
 void help() {
@@ -41,37 +70,70 @@ void applyOptions(vector<string> &options, shared_ptr<Workspace> w) {
     }
 }
 
-
-void readRecon() {
-    vector<string> spectra;
-    dirlist("recon", spectra);
+/* Find all mangled spectra in the Recon folder and split by SN name */
+void readRecon(shared_ptr<Workspace> w) {
+    w->spectra_.clear();
+    dirlist("recon", w->spectra_);
 
     string extension = "";
-    for (auto it = spectra.begin(); it != spectra.end();) {
+    for (auto it = w->spectra_.begin(); it != w->spectra_.end();) {
         extension = split(*it, '.')[1];
         if (extension != "spec") {
-            it = spectra.erase(it);
+            it = w->spectra_.erase(it);
         } else {
             ++it;
         }
     }
-    sort(spectra.begin(), spectra.end());
+    sort(w->spectra_.begin(), w->spectra_.end());
 
-    vector<string> SNName;
-    vector<double> MJD;
+    w->SNName_.clear();
+    w->MJD_.clear();
 
     string base = "";
     vector<string> tempSplit;
-    for (auto file : spectra) {
+    for (auto file : w->spectra_) {
         base = baseName(file);
         split(base, '_', tempSplit);
 
-        SNName.push_back(tempSplit[0]);
-        MJD.push_back(atof(tempSplit[1].c_str()));
+        w->SNName_.push_back(tempSplit[0]);
+        w->MJD_.push_back(atof(tempSplit[1].c_str()));
     }
 
-    vector<string> SNList = SNName;
+    vector<string> SNList = w->SNName_;
     removeDuplicates<string>(SNList);
+}
+
+
+void syntheticFlux(shared_ptr<Workspace> w) {
+    vector< vector<string> > tempList;
+
+    // Loop though each spectrum and reset current when new SN found
+    string currentSN = "";
+    for (size_t i = 0; i < w->SNName_.size(); ++i) {
+        if (currentSN != w->SNName_[i]) {
+            if (currentSN != "") {
+                /*TODO - fitPhase() before clearing*/
+            }
+            currentSN = w->SNName_[i];
+            w->synthFlux_.clear();
+            w->synthMJD_.clear();
+        }
+
+        // Load spectra into temporary vectors
+        w->synthMJD_.push_back(w->MJD_[i]);
+        loadtxt<string>("recon/" + w->spectra_[i], 2, tempList);
+        w->wav_ = castString<double>(tempList[0]);
+        w->flux_ = castString<double>(tempList[1]);
+
+        // rescale filter responses and find synthetic flux
+        w->filters_->rescale(w->wav_);
+        w->synthFlux_.push_back(w->filters_->flux(w->flux_, w->filter_));
+
+        cout << w->synthFlux_.size() << " " << w->synthMJD_.back() << " " << w->synthFlux_.back() << endl;
+    }
+
+    // Need to run fitPhase for the last SN
+    /*TODO - fitPhase() run again*/
 }
 
 
@@ -82,7 +144,12 @@ int main (int argc, char* argv[]) {
     getArgv(argc, argv, options);
     applyOptions(options, w);
 
-    readRecon();
+    // Read in filters and find the ID of the filter used to determine the phase
+    w->filters_ = shared_ptr<Filters>(new Filters(w->filterPath_));
+    w->FLTID_ = w->filters_->filterID_[w->filter_];
+
+    readRecon(w);
+    syntheticFlux(w);
 
     return 0;
 }
