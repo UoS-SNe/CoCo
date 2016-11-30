@@ -9,6 +9,7 @@
 #include "core/LC.hpp"
 #include "vmath/loadtxt.hpp"
 #include "vmath/convert.hpp"
+#include "vmath/algebra.hpp"
 #include "spec/WorkspaceSpec.hpp"
 #include "spec/MultiNest.hpp"
 
@@ -113,6 +114,7 @@ void fillUnassigned(shared_ptr<WorkspaceSpec> w) {
 	// Load all data
     w->SNe_.resize(w->specList_.size());
     vector< vector<double> > specFile;
+    double sedMean;
     for (size_t i = 0; i < w->specList_.size(); ++i) {
         if (fileExists(w->specList_[i]) ||
         fileExists("recon/" + w->snNameList_[i] + ".dat")) {
@@ -127,6 +129,10 @@ void fillUnassigned(shared_ptr<WorkspaceSpec> w) {
             specFile = loadtxt<double>(w->SNe_[i].specFile_, 2);
             w->SNe_[i].wav_ = specFile[0];
             w->SNe_[i].flux_ = specFile[1];
+
+            // TODO - Check if this makes the spectrum math the photometry
+            sedMean = accumulate(w->SNe_[i].flux_.begin(), w->SNe_[i].flux_.end(), 0.0) / w->SNe_[i].flux_.size();
+            w->SNe_[i].flux_ = div<double>(w->SNe_[i].flux_, sedMean);
 
             // Load light curve
             w->SNe_[i].lc_ = LC(w->SNe_[i].lcFile_, false);

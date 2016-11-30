@@ -52,13 +52,11 @@ vector<double> splineModel(WorkspaceSpec *w){
     vector<double> sedCorrected(w->SNe_[w->SNID_].flux_.size(), 0);
 
     // mangle the spectra
-    double sedMean = accumulate(w->SNe_[w->SNID_].flux_.begin(), w->SNe_[w->SNID_].flux_.end(), 0.0) / w->SNe_[w->SNID_].flux_.size();
     for (size_t i = 0; i < w->SNe_[w->SNID_].wav_.size(); ++i) {
-        sedCorrected[i] = w->SNe_[w->SNID_].flux_[i] / sedMean;
-        sedCorrected[i] *= gsl_spline_eval(spline, w->SNe_[w->SNID_].wav_[i], acc);
+        sedCorrected[i] = w->SNe_[w->SNID_].flux_[i] * gsl_spline_eval(spline, w->SNe_[w->SNID_].wav_[i], acc);
     }
 
-    return mult<double>(sedCorrected, min<double>(w->SNe_[w->SNID_].lcFlux_));
+    return sedCorrected;
 }
 
 
@@ -67,7 +65,7 @@ void LogLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
 
     // Apply the prior to the parameters
     for (size_t i = 0; i < npars; i++) {
-        Cube[i] = flatPrior(Cube[i], 0, 100);
+        Cube[i] = flatPrior(Cube[i], -100, 100);
     }
 
     // Convert the C array of parameters to a C++ vector
