@@ -51,5 +51,10 @@ void WorkspaceSpec::lcSlice() {
                 }
             }
         }
+
+        // Normalise light curve slices for mangling
+        SNe_[i].normFlux_ = accumulate(SNe_[i].lcFlux_.begin(), SNe_[i].lcFlux_.end(), 0.0) / SNe_[i].lcFlux_.size();
+        SNe_[i].lcFlux_ = div<double>(SNe_[i].lcFlux_, SNe_[i].normFlux_);
+        SNe_[i].lcFluxError_ = div<double>(SNe_[i].lcFluxError_, SNe_[i].normFlux_);
     }
 }

@@ -15,6 +15,7 @@
 #include "../vmath/convert.hpp"
 #include "../vmath/range.hpp"
 #include "../vmath/stat.hpp"
+#include "../vmath/algebra.hpp"
 #include "WorkspaceSpec.hpp"
 
 

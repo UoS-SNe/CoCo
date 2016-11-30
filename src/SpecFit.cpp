@@ -129,7 +129,7 @@ void fillUnassigned(shared_ptr<WorkspaceSpec> w) {
             w->SNe_[i].flux_ = specFile[1];
 
             // Load light curve
-            w->SNe_[i].lc_ = LC(w->SNe_[i].lcFile_);
+            w->SNe_[i].lc_ = LC(w->SNe_[i].lcFile_, false);
 
         } else {
             w->SNe_.pop_back();

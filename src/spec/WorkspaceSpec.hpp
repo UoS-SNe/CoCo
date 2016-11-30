@@ -6,6 +6,7 @@
 #include <iterator>
 #include "../core/Filters.hpp"
 #include "../core/LC.hpp"
+#include "../vmath/algebra.hpp"
 
 using namespace std;
 
@@ -32,6 +33,7 @@ struct SN {
 
     //Fit parameters
     vector<double> params_;
+    double normFlux_;
 };
 
 
