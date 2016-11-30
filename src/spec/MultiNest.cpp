@@ -73,7 +73,17 @@ void LogLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
     w->SNe_[w->SNID_].params_.assign(Cube, Cube + ndim);
 
     // Calculate the corrected spectrum
-    vector<double> sedCorrected = mult<double>(w->SNe_[w->SNID_].flux_, splineModel(w));
+    vector<double> spline = splineModel(w);
+    vector<double> sedCorrected = mult<double>(w->SNe_[w->SNID_].flux_, spline);
+
+    // Check is spline is negative anywhere
+    bool negative = false;
+    for (auto point : spline) {
+        if (point < 0) {
+            negative = true;
+            break;
+        }
+    }
 
     // Calculate likelihood
     lnew = 0;
@@ -83,6 +93,10 @@ void LogLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
 		lnew -= pow((w->filters_->flux(sedCorrected, filterName) - w->SNe_[w->SNID_].lcFlux_[i]) / w->SNe_[w->SNID_].lcFluxError_[i], 2);
 	}
 	lnew /= 2;
+
+    if (negative == true) {
+        lnew *= 1000;
+    }
 }
 
 
