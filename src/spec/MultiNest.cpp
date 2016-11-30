@@ -49,14 +49,14 @@ vector<double> splineModel(WorkspaceSpec *w){
     gsl_interp_accel *acc = gsl_interp_accel_alloc();
     gsl_spline *spline = gsl_spline_alloc(gsl_interp_cspline, npars+2);
     gsl_spline_init (spline, splineX.data(), splineY.data(), npars+2);
-    vector<double> sedCorrected(w->SNe_[w->SNID_].flux_.size(), 0);
+    vector<double> returnSpline(w->SNe_[w->SNID_].flux_.size(), 0);
 
     // mangle the spectra
     for (size_t i = 0; i < w->SNe_[w->SNID_].wav_.size(); ++i) {
-        sedCorrected[i] = w->SNe_[w->SNID_].flux_[i] * gsl_spline_eval(spline, w->SNe_[w->SNID_].wav_[i], acc);
+        returnSpline[i] = gsl_spline_eval(spline, w->SNe_[w->SNID_].wav_[i], acc);
     }
 
-    return sedCorrected;
+    return returnSpline;
 }
 
 
@@ -73,7 +73,7 @@ void LogLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
     w->SNe_[w->SNID_].params_.assign(Cube, Cube + ndim);
 
     // Calculate the corrected spectrum
-    vector<double> sedCorrected = splineModel(w);
+    vector<double> sedCorrected = mult<double>(w->SNe_[w->SNID_].flux_, splineModel(w));
 
     // Calculate likelihood
     lnew = 0;
@@ -147,16 +147,23 @@ void MultiNest::read() {
     }
 
     // Reconstrunct the best fit mangled spectrum
-    vector<double> sedCorrected = splineModel(w_.get());
+    vector<double> spline = splineModel(w_.get());
+    vector<double> sedCorrected = mult<double>(w_->SNe_[w_->SNID_].flux_, spline);
     sedCorrected = mult<double>(sedCorrected, w_->SNe_[w_->SNID_].normFlux_);
 
     // Save the spectrum into a reconstruction directory
     ofstream reconSpecFile;
     reconSpecFile.open("recon/" + w_->SNe_[w_->SNID_].SNName_ + "_" + to_string(int(w_->SNe_[w_->SNID_].mjd_)) + ".spec");
+
+    ofstream reconSplineFile;
+    reconSplineFile.open("recon/" + w_->SNe_[w_->SNID_].SNName_ + "_" + to_string(int(w_->SNe_[w_->SNID_].mjd_)) + ".spline");
+
     for (size_t i = 0; i < sedCorrected.size(); ++i) {
         reconSpecFile << w_->SNe_[w_->SNID_].wav_[i] / (1.0 + w_->SNe_[w_->SNID_].z_) << " " << sedCorrected[i] << '\n';
+        reconSplineFile << w_->SNe_[w_->SNID_].wav_[i] / (1.0 + w_->SNe_[w_->SNID_].z_) << " " << spline[i] << '\n';
     }
     reconSpecFile.close();
+    reconSplineFile.close();
 }
 
 
