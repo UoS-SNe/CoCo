@@ -101,9 +101,9 @@ MultiNest::MultiNest(shared_ptr<WorkspaceSpec> w) {
 void MultiNest::solve() {
     int seed = -1;			// random no. generator seed, if < 0 then take the seed from system clock
     int IS = 0;				// do Nested Importance Sampling?
-	int mmodal = 1;			// do mode separation?
+	int mmodal = 0;			// do mode separation?
 	int ceff = 0;			// run in constant efficiency mode?
-	int nClsPar = 2;		// no. of parameters to do mode separation on
+	int nClsPar = 0;		// no. of parameters to do mode separation on
     int nlive = 100;		// number of live points
 	int updInt = 1000;		// after how many iterations feedback & output files should be updated
 	int maxModes = 10;		// expected max no. of modes (used only for memory allocation)

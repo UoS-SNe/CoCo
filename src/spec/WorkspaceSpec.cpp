@@ -13,9 +13,12 @@ WorkspaceSpec::WorkspaceSpec() {
 
 
 void WorkspaceSpec::lcSlice() {
-    int minIndex = 0;
+    int nearIndex = 0;
     vector<string> filterTemp;
     int fIndex;
+
+    double specWavMin = 0;
+    double specWavMax = 0;
 
     // make a slice for every spectum file
     for (size_t i = 0; i < SNe_.size(); ++i) {
@@ -23,6 +26,10 @@ void WorkspaceSpec::lcSlice() {
         SNe_[i].lcFlux_.clear();
         SNe_[i].lcFluxError_.clear();
         SNe_[i].lcCentralWavelength_.clear();
+
+        // Find the wavelength coverage of the
+        specWavMin = min<double>(SNe_[i].wav_);
+        specWavMax = max<double>(SNe_[i].wav_);
 
         // Sort filters according to their central wavelength (core/Filters sorting)
         filterTemp = SNe_[i].lc_.filterList_;
@@ -32,12 +39,16 @@ void WorkspaceSpec::lcSlice() {
             if (it != filterTemp.end()) {
                 fIndex = distance(filterTemp.begin(), it);
 
-                // find the lightcurve point closest to the spectrum
-                minIndex = nearest<double>(SNe_[i].lc_.mjdList_[fIndex], SNe_[i].mjd_);
-                SNe_[i].lcFlux_.push_back(SNe_[i].lc_.fluxList_[fIndex][minIndex]);
-                SNe_[i].lcFluxError_.push_back(SNe_[i].lc_.fluxErrList_[fIndex][minIndex]);
-                SNe_[i].lcFilters_.push_back(filterTemp[fIndex]);
-                SNe_[i].lcCentralWavelength_.push_back(filter.centralWavelength_);
+                if (specWavMin < min<double>(filter.wavelength_) &&
+                specWavMax > max<double>(filter.wavelength_)) {
+
+                    // find the lightcurve point closest to the spectrum
+                    nearIndex = nearest<double>(SNe_[i].lc_.mjdList_[fIndex], SNe_[i].mjd_);
+                    SNe_[i].lcFlux_.push_back(SNe_[i].lc_.fluxList_[fIndex][nearIndex]);
+                    SNe_[i].lcFluxError_.push_back(SNe_[i].lc_.fluxErrList_[fIndex][nearIndex]);
+                    SNe_[i].lcFilters_.push_back(filterTemp[fIndex]);
+                    SNe_[i].lcCentralWavelength_.push_back(filter.centralWavelength_);
+                }
             }
         }
     }
