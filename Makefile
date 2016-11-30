@@ -48,4 +48,4 @@ lcsim: $(LCSIM)
 
 clean:
 	rm -f *.o src/*.o src/lc/*.o src/spec/*.o src/core/*.o
-	rm -f lcfit specfit lcsim
+	rm -f lcfit specfit specphase lcsim
