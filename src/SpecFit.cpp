@@ -7,6 +7,7 @@
 #include <vector>
 #include "core/utils.hpp"
 #include "core/LC.hpp"
+#include "core/Cosmology.hpp"
 #include "vmath/loadtxt.hpp"
 #include "vmath/convert.hpp"
 #include "vmath/algebra.hpp"
@@ -124,6 +125,7 @@ void fillUnassigned(shared_ptr<WorkspaceSpec> w) {
             w->SNe_[i].SNName_ = w->snNameList_[i];
             w->SNe_[i].mjd_ = w->mjdList_[i];
             w->SNe_[i].z_ = w->zList_[i];
+            w->cosmology_->set(w->SNe_[i].z_);
 
             // Load spectrum
             specFile = loadtxt<double>(w->SNe_[i].specFile_, 2);
@@ -160,6 +162,7 @@ void fitSpec(shared_ptr<WorkspaceSpec> w, int ID) {
 int main(int argc, char *argv[]) {
     vector<string> options;
     shared_ptr<WorkspaceSpec> w(new WorkspaceSpec());
+    w->cosmology_ = shared_ptr<Cosmology>(new Cosmology());
 
     getArgv(argc, argv, options);
     applyOptions(options, w);

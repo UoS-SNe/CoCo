@@ -5,6 +5,7 @@
 #include <string>
 #include <iterator>
 #include "../core/Filters.hpp"
+#include "../core/Cosmology.hpp"
 #include "../core/LC.hpp"
 #include "../vmath/algebra.hpp"
 
@@ -47,6 +48,9 @@ public:
 
     // Filter data
     shared_ptr<Filters> filters_;
+
+    // Cosmology routines
+    shared_ptr<Cosmology> cosmology_;
 
     // File names
     string SpecListFile_;
