@@ -126,6 +126,7 @@ void fillUnassigned(shared_ptr<WorkspaceSpec> w) {
             w->SNe_[i].mjd_ = w->mjdList_[i];
             w->SNe_[i].z_ = w->zList_[i];
             w->cosmology_->set(w->SNe_[i].z_);
+            w->SNe_[i].lumDisCorrection_ = (w->cosmology_->lumDis_ / 1e-5);
 
             // Load spectrum
             specFile = loadtxt<double>(w->SNe_[i].specFile_, 2);

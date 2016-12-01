@@ -19,7 +19,8 @@ struct SN {
     string SNName_;
     double mjd_;
     double z_;
-
+    double lumDisCorrection_;
+    
     // Loaded spectrum
     vector<double> wav_;
     vector<double> flux_;

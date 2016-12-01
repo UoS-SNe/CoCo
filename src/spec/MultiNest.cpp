@@ -164,7 +164,7 @@ void MultiNest::read() {
     for (size_t i = 0; i < sedCorrected.size(); ++i) {
         // Move the spetrum to z=0 and write to a text file
         sedCorrected[i] *= (1.0 + w_->SNe_[w_->SNID_].z_);
-        sedCorrected[i] *= w_->cosmology_->lumDis_ / 3.08568e19;
+        sedCorrected[i] *= w_->SNe_[w_->SNID_].lumDisCorrection_;
         reconSpecFile << w_->SNe_[w_->SNID_].wav_[i] / (1.0 + w_->SNe_[w_->SNID_].z_) << " " << sedCorrected[i] << '\n';
         reconSplineFile << w_->SNe_[w_->SNID_].wav_[i] << " " << spline[i] << '\n';
     }
