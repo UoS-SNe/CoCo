@@ -67,7 +67,7 @@ void LogLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
 
     // Apply the prior to the parameters
     for (size_t i = 0; i < npars; i++) {
-        Cube[i] = flatPrior(Cube[i], -100, 100);
+        Cube[i] = flatPrior(Cube[i], 0, 100);
     }
 
     // Convert the C array of parameters to a C++ vector
@@ -78,15 +78,6 @@ void LogLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
     vector<double> spline = splineModel(w);
     vector<double> sedCorrected = mult<double>(w->SNe_[w->SNID_].flux_, spline);
 
-    // Check is spline is negative anywhere
-    bool negative = false;
-    for (auto point : spline) {
-        if (point < 0) {
-            negative = true;
-            break;
-        }
-    }
-
     // Calculate likelihood
     lnew = 0;
     string filterName;
@@ -95,10 +86,6 @@ void LogLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
 		lnew -= pow((w->filters_->flux(sedCorrected, filterName) - w->SNe_[w->SNID_].lcFlux_[i]) / w->SNe_[w->SNID_].lcFluxError_[i], 2);
 	}
 	lnew /= 2;
-
-    if (negative == true) {
-        lnew *= 1000;
-    }
 }
 
 
