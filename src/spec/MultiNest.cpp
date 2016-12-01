@@ -56,6 +56,8 @@ vector<double> splineModel(WorkspaceSpec *w){
         returnSpline[i] = gsl_spline_eval(spline, w->SNe_[w->SNID_].wav_[i], acc);
     }
 
+    gsl_spline_free(spline);
+    gsl_interp_accel_free(acc);
     return returnSpline;
 }
 
