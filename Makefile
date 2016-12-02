@@ -1,4 +1,4 @@
-CC = gcc
+CC = clang
 CXX = clang++
 CFLAGS = -c -O3
 CXXFLAGS = -c -O3 -std=c++11
@@ -14,6 +14,8 @@ LDFLAGS = -lgsl -lnest3 -lgfortran -llapack -Wl,-no_compact_unwind
 	$(CC) $(CFLAGS) $< -o $@
 
 CORE = src/core/utils.cpp src/core/priors.cpp src/core/LC.cpp src/core/Filters.cpp src/core/Cosmology.cpp
+MPFIT = src/core/mpfit.cpp
+
 LC = src/lc/WorkspaceLC.cpp src/lc/Model.cpp src/lc/MultiNest.cpp
 LCEXEC = src/LCFit.cpp
 
@@ -28,7 +30,7 @@ SIMEXEC = src/LCSim.cpp
 
 LCFIT = ${CORE:.cpp=.o} ${LC:.cpp=.o} ${LCEXEC:.cpp=.o}
 SPECFIT = ${CORE:.cpp=.o} ${SPEC:.cpp=.o} ${SPECEXEC:.cpp=.o}
-SPECPHASE = ${CORE:.cpp=.o} ${PHASEEXEC:.cpp=.o}
+SPECPHASE = ${CORE:.cpp=.o} ${MPFIT:.cpp=.o} ${PHASEEXEC:.cpp=.o}
 LCSIM = ${CORE:.cpp=.o} ${SIM:.cpp=.o} ${SIMEXEC:.cpp=.o}
 
 all: lcfit specfit specphase lcsim

@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include "core/utils.hpp"
 #include "core/Filters.hpp"
+#include "core/mpfit.h"
+#include "lc/Model.hpp"
 #include "vmath/loadtxt.hpp"
 #include "vmath/convert.hpp"
 
@@ -32,6 +34,9 @@ public:
     // Temporary vectors for the spectrum wavelengths and bandpasses
     vector<double> wav_;
     vector<double> flux_;
+
+    // Model class
+    Model model_;
 
     // Constructor
     Workspace();
@@ -134,6 +139,40 @@ void syntheticFlux(shared_ptr<Workspace> w) {
 
     // Need to run fitPhase for the last SN
     /*TODO - fitPhase() run again*/
+}
+
+
+int resFunc(int m, int n, double *p, double *residual, double **dvec, void *vars) {
+    class Workspace *w = (class Workspace *) vars;
+    w->model_->modelParams_.assign(p, p + n);
+
+    for (size_t i = 0; i < w->synthFlux_.size(); ++i) {
+            // TODO - Implement
+            residual[i] = 0;
+        }
+    }
+
+    return 0;
+}
+
+
+void fitPhase(shared_ptr<Workspace> w) {
+    // Fit parameters
+    vector<double> par = w->params_;
+
+    // MPFIT setup params - TODO
+    int status;
+    mp_result result;
+    mp_config config;
+    mp_par pars[par.size()];
+    memset(&config, 0, sizeof(config));
+    memset(&result, 0, sizeof(result));
+    memset(&pars,0,sizeof(pars));
+    vector<double> parErr(par.size());
+    result.xerror = parErr.data();
+
+    config.maxiter = 2000;
+    status = mpfit(resFunc, sn->mjd_.size(), par.size(), par.data(), pars, &config, (void*) sn.get(), &result);
 }
 
 
