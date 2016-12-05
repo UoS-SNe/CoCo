@@ -9,6 +9,7 @@
 #include "lc/Model.hpp"
 #include "vmath/loadtxt.hpp"
 #include "vmath/convert.hpp"
+#include "vmath/stat.hpp"
 
 using namespace std;
 using namespace vmath;
@@ -30,6 +31,8 @@ public:
     vector<double> MJD_;
     vector<double> synthFlux_;
     vector<double> synthMJD_;
+    double minMJD_;
+    double maxFlux_;
 
     // Temporary vectors for the spectrum wavelengths and bandpasses
     vector<double> wav_;
@@ -47,6 +50,10 @@ Workspace::Workspace() {
     filterPath_ = "data/filters";
 }
 
+
+// Need to predeclare some functions so it can be used before being defined
+void fitPhase(shared_ptr<Workspace>);
+void fit(shared_ptr<Workspace>);
 
 void help() {
     cout << "CoCo - SpecPhase: \n";
@@ -117,7 +124,7 @@ void syntheticFlux(shared_ptr<Workspace> w) {
     for (size_t i = 0; i < w->SNName_.size(); ++i) {
         if (currentSN != w->SNName_[i]) {
             if (currentSN != "") {
-                /*TODO - fitPhase() before clearing*/
+                fitPhase(w);
             }
             currentSN = w->SNName_[i];
             w->synthFlux_.clear();
@@ -138,7 +145,7 @@ void syntheticFlux(shared_ptr<Workspace> w) {
     }
 
     // Need to run fitPhase for the last SN
-    /*TODO - fitPhase() run again*/
+    fitPhase(w);
 }
 
 
@@ -146,9 +153,8 @@ int resFunc(int m, int n, double *p, double *residual, double **dvec, void *vars
     class Workspace *w = (class Workspace *) vars;
     w->model_.params_.assign(p, p + n);
 
-    for (size_t i = 0; i < w->synthFlux_.size(); ++i) {
-        // TODO - Implement
-        residual[i] = 0;
+    for (size_t i = 0; i < w->synthMJD_.size(); ++i) {
+        residual[i] = (w->synthFlux_[i] / w->maxFlux_) - w->model_(w->synthMJD_[i] - w->minMJD_);
     }
 
     return 0;
@@ -156,6 +162,29 @@ int resFunc(int m, int n, double *p, double *residual, double **dvec, void *vars
 
 
 void fitPhase(shared_ptr<Workspace> w) {
+    // DEBUG - Test data set
+    w->synthMJD_ = {53452.7,53468.7,53477.7,53489.7,53500.7,
+                    53522.7,53527.7,53539.7,53550.7,53578.7};
+    w->synthFlux_ = {9.43604e-17,4.39616e-16,5.8541e-16,1.05009e-15,1.3557e-15,
+                   2.90792e-15,1.80171e-16,5.18103e-17,1.51663e-18,5.28895e-19};
+
+    // Set up fit parameters
+    w->model_.params_ = {1.0, 0.1, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0};
+    w->minMJD_ = min<double>(w->synthMJD_);
+    w->maxFlux_ = max<double>(w->synthFlux_);
+
+    // Do model fitting
+    fit(w);
+
+    // DEBUG: Print fit parameters
+    cout << "Fit params:" << endl;
+    for (auto p : w->model_.params_) {
+        cout << p << endl;
+    }
+}
+
+
+void fit(shared_ptr<Workspace> w) {
     // Fit parameters
     vector<double> par = w->model_.params_;
 
@@ -172,6 +201,8 @@ void fitPhase(shared_ptr<Workspace> w) {
 
     config.maxiter = 2000;
     status = mpfit(resFunc, w->synthFlux_.size(), par.size(), par.data(), pars, &config, (void*) w.get(), &result);
+
+    cout << "DEBUG: Fitting status - " << status << endl;
 }
 
 
