@@ -13,10 +13,10 @@ LDFLAGS = -lgsl -lnest3 -lgfortran -llapack -Wl,-no_compact_unwind
 .c.o:
 	$(CC) $(CFLAGS) $< -o $@
 
-CORE = src/core/utils.cpp src/core/priors.cpp src/core/LC.cpp src/core/Filters.cpp src/core/Cosmology.cpp
+CORE = src/core/utils.cpp src/core/priors.cpp src/core/LC.cpp src/core/Filters.cpp src/core/Cosmology.cpp src/lc/Model.cpp 
 MPFIT = src/core/mpfit.cpp
 
-LC = src/lc/WorkspaceLC.cpp src/lc/Model.cpp src/lc/MultiNest.cpp
+LC = src/lc/WorkspaceLC.cpp src/lc/MultiNest.cpp
 LCEXEC = src/LCFit.cpp
 
 SPEC = src/spec/WorkspaceSpec.cpp src/spec/MultiNest.cpp

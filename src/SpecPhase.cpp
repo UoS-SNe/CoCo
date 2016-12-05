@@ -144,12 +144,11 @@ void syntheticFlux(shared_ptr<Workspace> w) {
 
 int resFunc(int m, int n, double *p, double *residual, double **dvec, void *vars) {
     class Workspace *w = (class Workspace *) vars;
-    w->model_->modelParams_.assign(p, p + n);
+    w->model_.params_.assign(p, p + n);
 
     for (size_t i = 0; i < w->synthFlux_.size(); ++i) {
-            // TODO - Implement
-            residual[i] = 0;
-        }
+        // TODO - Implement
+        residual[i] = 0;
     }
 
     return 0;
@@ -158,7 +157,7 @@ int resFunc(int m, int n, double *p, double *residual, double **dvec, void *vars
 
 void fitPhase(shared_ptr<Workspace> w) {
     // Fit parameters
-    vector<double> par = w->params_;
+    vector<double> par = w->model_.params_;
 
     // MPFIT setup params - TODO
     int status;
@@ -172,7 +171,7 @@ void fitPhase(shared_ptr<Workspace> w) {
     result.xerror = parErr.data();
 
     config.maxiter = 2000;
-    status = mpfit(resFunc, sn->mjd_.size(), par.size(), par.data(), pars, &config, (void*) sn.get(), &result);
+    status = mpfit(resFunc, w->synthFlux_.size(), par.size(), par.data(), pars, &config, (void*) w.get(), &result);
 }
 
 
