@@ -26,13 +26,16 @@ public:
     // Spectra files related variable
     vector<string> SNName_;
     vector<string> spectra_;
+    vector<string> specList_;
 
     // Synthetic photometry
     vector<double> MJD_;
     vector<double> synthFlux_;
     vector<double> synthMJD_;
+    string currentSN_;
     double minMJD_;
     double maxFlux_;
+    double MJDPhaseZero_;
 
     // Temporary vectors for the spectrum wavelengths and bandpasses
     vector<double> wav_;
@@ -40,6 +43,9 @@ public:
 
     // Model class
     Model model_;
+
+    // Output file buffer
+    ofstream phaseOutput_;
 
     // Constructor
     Workspace();
@@ -115,23 +121,26 @@ void readRecon(shared_ptr<Workspace> w) {
     removeDuplicates<string>(SNList);
 }
 
-
+/**/
 void syntheticFlux(shared_ptr<Workspace> w) {
     vector< vector<string> > tempList;
+    w->phaseOutput_.open("phase.list");
 
     // Loop though each spectrum and reset current when new SN found
-    string currentSN = "";
+    w->currentSN_ = "";
     for (size_t i = 0; i < w->SNName_.size(); ++i) {
-        if (currentSN != w->SNName_[i]) {
-            if (currentSN != "") {
+        if (w->currentSN_ != w->SNName_[i]) {
+            if (w->currentSN_ != "") {
                 fitPhase(w);
             }
-            currentSN = w->SNName_[i];
+            w->currentSN_ = w->SNName_[i];
             w->synthFlux_.clear();
             w->synthMJD_.clear();
+            w->specList_.clear();
         }
 
         // Load spectra into temporary vectors
+        w->specList_.push_back(w->spectra_[i]);
         w->synthMJD_.push_back(w->MJD_[i]);
         loadtxt<string>("recon/" + w->spectra_[i], 2, tempList);
         w->wav_ = castString<double>(tempList[0]);
@@ -140,12 +149,12 @@ void syntheticFlux(shared_ptr<Workspace> w) {
         // rescale filter responses and find synthetic flux
         w->filters_->rescale(w->wav_);
         w->synthFlux_.push_back(w->filters_->flux(w->flux_, w->filter_));
-
-        cout << w->synthFlux_.size() << " " << w->synthMJD_.back() << " " << w->synthFlux_.back() << endl;
     }
 
     // Need to run fitPhase for the last SN
     fitPhase(w);
+
+    w->phaseOutput_.close();
 }
 
 
@@ -169,17 +178,26 @@ void fitPhase(shared_ptr<Workspace> w) {
                    2.90792e-15,1.80171e-16,5.18103e-17,1.51663e-18,5.28895e-19};
 
     // Set up fit parameters
-    w->model_.params_ = {1.0, 0.1, 10.0, 10.0, 10.0, 10.0, 10.0, 10.0};
+    w->model_.params_ = {1.0, 0.1, 1.0, 1.0, 10.0, 10.0, 10.0, 10.0};
     w->minMJD_ = min<double>(w->synthMJD_);
     w->maxFlux_ = max<double>(w->synthFlux_);
 
     // Do model fitting
     fit(w);
 
-    // DEBUG: Print fit parameters
-    cout << "Fit params:" << endl;
-    for (auto p : w->model_.params_) {
-        cout << p << endl;
+    // Create a temporary time vector normalised to minMJD
+    vector<double> tempT = sub<double>(w->synthMJD_, w->minMJD_);
+    sort(tempT.begin(), tempT.end());
+    tempT = range<double>(tempT.front() - 20, tempT.back() + 20, 1);
+
+    // Find the peak of the synthetic light curve
+    vector<double> tempLC = w->model_(tempT);
+    size_t indexMax = distance(tempLC.begin(), max_element(tempLC.begin(), tempLC.end()));
+    w->MJDPhaseZero_ = tempT[indexMax] + w->minMJD_;
+
+    // Save the phases for each spectrum into a text file
+    for (size_t i = 0; i < w->specList_.size(); ++i) {
+        w->phaseOutput_ << w->specList_[i] << " " <<  w->currentSN_ << " " << w->MJDPhaseZero_ << " " << w->synthMJD_[i] - w->MJDPhaseZero_ << "\n";
     }
 }
 
@@ -201,8 +219,6 @@ void fit(shared_ptr<Workspace> w) {
 
     config.maxiter = 2000;
     status = mpfit(resFunc, w->synthFlux_.size(), par.size(), par.data(), pars, &config, (void*) w.get(), &result);
-
-    cout << "DEBUG: Fitting status - " << status << endl;
 }
 
 
