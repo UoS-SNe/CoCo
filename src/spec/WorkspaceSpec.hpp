@@ -5,7 +5,9 @@
 #include <string>
 #include <iterator>
 #include "../core/Filters.hpp"
+#include "../core/Cosmology.hpp"
 #include "../core/LC.hpp"
+#include "../vmath/algebra.hpp"
 
 using namespace std;
 
@@ -17,7 +19,8 @@ struct SN {
     string SNName_;
     double mjd_;
     double z_;
-
+    double lumDisCorrection_;
+    
     // Loaded spectrum
     vector<double> wav_;
     vector<double> flux_;
@@ -32,19 +35,23 @@ struct SN {
 
     //Fit parameters
     vector<double> params_;
+    double normFlux_;
 };
 
 
-class Workspace {
+class WorkspaceSpec {
 public:
     // Constructor
-    Workspace();
+    WorkspaceSpec();
 
     // Active IDs
     short SNID_;
 
     // Filter data
     shared_ptr<Filters> filters_;
+
+    // Cosmology routines
+    shared_ptr<Cosmology> cosmology_;
 
     // File names
     string SpecListFile_;

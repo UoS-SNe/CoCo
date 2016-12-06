@@ -7,9 +7,11 @@
 #include <vector>
 #include "core/utils.hpp"
 #include "core/LC.hpp"
+#include "core/Cosmology.hpp"
 #include "vmath/loadtxt.hpp"
 #include "vmath/convert.hpp"
-#include "spec/Workspace.hpp"
+#include "vmath/algebra.hpp"
+#include "spec/WorkspaceSpec.hpp"
 #include "spec/MultiNest.hpp"
 
 using namespace std;
@@ -32,7 +34,7 @@ void help() {
 
 
 /* Assign input options to workspace parameters */
-void applyOptions(vector<string> &options, shared_ptr<Workspace> w) {
+void applyOptions(vector<string> &options, shared_ptr<WorkspaceSpec> w) {
     if (options.size() < 1 || options[0] == "-h" || options[0] == "--help") {
         help();
         exit(0);
@@ -49,7 +51,7 @@ void applyOptions(vector<string> &options, shared_ptr<Workspace> w) {
         w->zList_ = castString<double>(w->infoList_[3]);
         skipOptions = 1;
 
-    } else if (options.size() == 4) {
+    } else if (options.size() >= 4) {
         w->specList_ = {options[0]};
         w->snNameList_ = {options[1]};
         w->mjdList_ = {atof(options[2].c_str())};
@@ -101,7 +103,7 @@ void applyOptions(vector<string> &options, shared_ptr<Workspace> w) {
 
 
 /* Automatically fill in all unassigned properties with defaults */
-void fillUnassigned(shared_ptr<Workspace> w) {
+void fillUnassigned(shared_ptr<WorkspaceSpec> w) {
     // Do a sanity check for the LC files
     if (w->specList_.size() == 0) {
         cout << "Something went seriously wrong.";
@@ -113,6 +115,7 @@ void fillUnassigned(shared_ptr<Workspace> w) {
 	// Load all data
     w->SNe_.resize(w->specList_.size());
     vector< vector<double> > specFile;
+    double sedMean;
     for (size_t i = 0; i < w->specList_.size(); ++i) {
         if (fileExists(w->specList_[i]) ||
         fileExists("recon/" + w->snNameList_[i] + ".dat")) {
@@ -122,14 +125,20 @@ void fillUnassigned(shared_ptr<Workspace> w) {
             w->SNe_[i].SNName_ = w->snNameList_[i];
             w->SNe_[i].mjd_ = w->mjdList_[i];
             w->SNe_[i].z_ = w->zList_[i];
+            w->cosmology_->set(w->SNe_[i].z_);
+            w->SNe_[i].lumDisCorrection_ = (w->cosmology_->lumDis_ / 1e-5);
 
             // Load spectrum
             specFile = loadtxt<double>(w->SNe_[i].specFile_, 2);
             w->SNe_[i].wav_ = specFile[0];
             w->SNe_[i].flux_ = specFile[1];
 
+            // TODO - Check if this makes the spectrum math the photometry
+            sedMean = accumulate(w->SNe_[i].flux_.begin(), w->SNe_[i].flux_.end(), 0.0) / w->SNe_[i].flux_.size();
+            w->SNe_[i].flux_ = div<double>(w->SNe_[i].flux_, sedMean);
+
             // Load light curve
-            w->SNe_[i].lc_ = LC(w->SNe_[i].lcFile_);
+            w->SNe_[i].lc_ = LC(w->SNe_[i].lcFile_, false);
 
         } else {
             w->SNe_.pop_back();
@@ -143,7 +152,7 @@ void fillUnassigned(shared_ptr<Workspace> w) {
 }
 
 
-void fitSpec(shared_ptr<Workspace> w, int ID) {
+void fitSpec(shared_ptr<WorkspaceSpec> w, int ID) {
     w->SNID_ = ID;
     w->filters_->rescale(w->SNe_[w->SNID_].wav_);
     MultiNest solver(w);
@@ -153,7 +162,8 @@ void fitSpec(shared_ptr<Workspace> w, int ID) {
 
 int main(int argc, char *argv[]) {
     vector<string> options;
-    shared_ptr<Workspace> w(new Workspace());
+    shared_ptr<WorkspaceSpec> w(new WorkspaceSpec());
+    w->cosmology_ = shared_ptr<Cosmology>(new Cosmology());
 
     getArgv(argc, argv, options);
     applyOptions(options, w);
