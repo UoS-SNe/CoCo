@@ -27,7 +27,8 @@ public:
 
     // File names
     string LCListFile_;
-
+    string PhaseFile_;
+    
     // Lists
     vector< vector<string> > infoList_;
     vector<string> fileList_;

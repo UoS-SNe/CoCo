@@ -6,6 +6,7 @@ using namespace std;
 WorkspaceLC::WorkspaceLC() {
     // Initialise all variables with defaults designed to halt the code if empty
     LCListFile_ = "None";
+    PhaseFile_ = "None";
     fileList_.resize(0);
     filterList_.resize(0);
 

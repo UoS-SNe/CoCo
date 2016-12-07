@@ -17,10 +17,12 @@ void help() {
     cout << "currently maintained by Szymon Prajs (S.Prajs@soton.ac.uk) ";
     cout << "and Rob Firth.\n";
     cout << "\nUsage:\n";
-    cout << "lcsim *.list\n";
+    cout << "lcsim [PHASE].list [SN Z].list\n";
     cout << "or\n";
-    cout << "./lcsim SN_name rsedshift\n\n";
-    cout << "*.list file must have the following columns:\n";
+    cout << "./lcsim [phase].list SN_name rsedshift\n\n";
+    cout << "[PHASE].list must be created by SpecPhase\n";
+    cout << "and\n";
+    cout << "[SN Z].list file must have the following columns:\n";
     cout << "SN_name redshift\n";
     cout << endl;
 }
@@ -28,22 +30,41 @@ void help() {
 
 /* Assign input options to workspace parameters */
 void applyOptions(vector<string> &options, shared_ptr<WorkspaceLC> w) {
-    if (options.size() < 1 || options[0] == "-h" || options[0] == "--help") {
+    if (options.size() < 2 || options[0] == "-h" || options[0] == "--help") {
         help();
         exit(0);
     }
 
     // First option is a SN name or list of SN names and redshifts
-    w->LCListFile_ = options[0];
-    if (options[0].substr(options[0].find_last_of(".") + 1) == "list") {
-        vmath::loadtxt<string>(w->LCListFile_, 2, w->infoList_);
-        w->snNameList_ = w->infoList_[0];
-        w->zList_ = castString<double>(w->infoList_[1]);
+    w->PhaseFile_ = options[0];
+    w->LCListFile_ = options[1];
 
-    } else if (options.size() >= 2)  {
-        // For any other extension just assign the file as the only LC
-        w->snNameList_ = {options[0]};
-        w->zList_ = {atof(options[1].c_str())};
+    if (options[0].substr(options[0].find_last_of(".") + 1) == "list") {
+        vmath::loadtxt<string>(w->PhaseFile_, 4, w->infoList_);
+        // TODO - Fill in the columnns
+
+    } else {
+        help();
+        exit(0);
+    }
+
+    // If the second parameter is a list then break it down into vectors
+    if (options[1].substr(options[1].find_last_of(".") + 1) == "list") {
+        vmath::loadtxt<string>(w->LCListFile_, 2, w->infoList_);
+        // TODO - Fill in the columnns
+
+    } else {
+        w->LCListFile_ = {options[1]};
+        exit(0);
+    }
+
+    // If the number of paramters of wrong; exit
+    if (options.size() > 2 && options.size() != 5)  {
+        help();
+        exit(0);
+
+    } else {
+
     }
 
 
