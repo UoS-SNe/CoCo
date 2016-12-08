@@ -17,12 +17,10 @@ void help() {
     cout << "currently maintained by Szymon Prajs (S.Prajs@soton.ac.uk) ";
     cout << "and Rob Firth.\n";
     cout << "\nUsage:\n";
-    cout << "lcsim [PHASE].list [SN Z].list\n";
+    cout << "lcsim *.list\n";
     cout << "or\n";
-    cout << "./lcsim [phase].list SN_name rsedshift\n\n";
-    cout << "[PHASE].list must be created by SpecPhase\n";
-    cout << "and\n";
-    cout << "[SN Z].list file must have the following columns:\n";
+    cout << "./lcsim SN_name rsedshift\n\n";
+    cout << "*.list file must have the following columns:\n";
     cout << "SN_name redshift\n";
     cout << endl;
 }
@@ -36,31 +34,22 @@ void applyOptions(vector<string> &options, shared_ptr<WorkspaceLC> w) {
     }
 
     // First option is a SN name or list of SN names and redshifts
-    w->PhaseFile_ = options[0];
-    w->LCListFile_ = options[1];
-
-    if (options[0].substr(options[0].find_last_of(".") + 1) == "list") {
-        vmath::loadtxt<string>(w->PhaseFile_, 4, w->infoList_);
-        // TODO - Fill in the columnns
-
-    } else {
-        help();
-        exit(0);
-    }
+    w->LCListFile_ = options[0];
 
     // If the second parameter is a list then break it down into vectors
-    if (options[1].substr(options[1].find_last_of(".") + 1) == "list") {
+    if (options[0].substr(options[0].find_last_of(".") + 1) == "list") {
         vmath::loadtxt<string>(w->LCListFile_, 2, w->infoList_);
-        // TODO - Fill in the columnns
+        w->snNameList_ = w->infoList_[0];
+        w->zList_ = castString<double>(w->infoList_[1]);
 
     } else {
-        w->LCListFile_ = {options[1]};
+        w->snNameList_ = {options[0]};
         exit(0);
     }
 
     // If the number of paramters of wrong; exit
-    if (options.size() > 2 && options.size() != 5)  {
-        help();
+    if (options.size() > 1)  {
+        w->zList_ = {atof(options[1].c_str())};
         exit(0);
 
     } else {
@@ -119,16 +108,16 @@ void fillUnassigned(shared_ptr<WorkspaceLC> w) {
     // Make a list of unique supernovae
     w->uniqueSNList_ = w->snNameList_;
     removeDuplicates<string>(w->uniqueSNList_);
-
-    // Make a filter list
-    if (w->filterList_.size() == 0) {
-        // TODO - Look for filters in LC files
-    }
 }
 
 
 int main(int argc, char *argv[]) {
-    help();
+    vector<string> options;
+    shared_ptr<WorkspaceLC> w(new WorkspaceLC());
+
+    getArgv(argc, argv, options);
+    applyOptions(options, w);
+    fillUnassigned(w);
 
 	return 0;
 }

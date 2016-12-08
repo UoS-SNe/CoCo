@@ -44,9 +44,6 @@ public:
     // Model class
     Model model_;
 
-    // Output file buffer
-    ofstream phaseOutput_;
-
     // Constructor
     Workspace();
 };
@@ -124,7 +121,6 @@ void readRecon(shared_ptr<Workspace> w) {
 /**/
 void syntheticFlux(shared_ptr<Workspace> w) {
     vector< vector<string> > tempList;
-    w->phaseOutput_.open("phase.list");
 
     // Loop though each spectrum and reset current when new SN found
     w->currentSN_ = "";
@@ -153,8 +149,6 @@ void syntheticFlux(shared_ptr<Workspace> w) {
 
     // Need to run fitPhase for the last SN
     fitPhase(w);
-
-    w->phaseOutput_.close();
 }
 
 
@@ -171,12 +165,6 @@ int resFunc(int m, int n, double *p, double *residual, double **dvec, void *vars
 
 
 void fitPhase(shared_ptr<Workspace> w) {
-    // DEBUG - Test data set
-    w->synthMJD_ = {53452.7,53468.7,53477.7,53489.7,53500.7,
-                    53522.7,53527.7,53539.7,53550.7,53578.7};
-    w->synthFlux_ = {9.43604e-17,4.39616e-16,5.8541e-16,1.05009e-15,1.3557e-15,
-                   2.90792e-15,1.80171e-16,5.18103e-17,1.51663e-18,5.28895e-19};
-
     // Set up fit parameters
     w->model_.params_ = {1.0, 0.1, 1.0, 1.0, 10.0, 10.0, 10.0, 10.0};
     w->minMJD_ = min<double>(w->synthMJD_);
@@ -195,10 +183,16 @@ void fitPhase(shared_ptr<Workspace> w) {
     size_t indexMax = distance(tempLC.begin(), max_element(tempLC.begin(), tempLC.end()));
     w->MJDPhaseZero_ = tempT[indexMax] + w->minMJD_;
 
+    // Output file buffer
+    ofstream phaseOutput;
+
     // Save the phases for each spectrum into a text file
+    phaseOutput.open("recon/" + w->currentSN_ + ".phase");
     for (size_t i = 0; i < w->specList_.size(); ++i) {
-        w->phaseOutput_ << w->specList_[i] << " " <<  w->currentSN_ << " " << w->MJDPhaseZero_ << " " << w->synthMJD_[i] - w->MJDPhaseZero_ << "\n";
+        phaseOutput << w->specList_[i] << " " << w->MJDPhaseZero_ << "\n";
     }
+
+    phaseOutput.close();
 }
 
 
