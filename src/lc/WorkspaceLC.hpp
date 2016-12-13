@@ -28,7 +28,7 @@ public:
     // File names
     string LCListFile_;
     string PhaseFile_;
-    
+
     // Lists
     vector< vector<string> > infoList_;
     vector<string> fileList_;
@@ -41,7 +41,8 @@ public:
     vector<string> snNameList_;
     vector<string> uniqueSNList_;
     vector<double> zList_;
-
+    vector<double> absMag_;
+    vector< vector<string> > filterVector_;
     // Current supernova
     short SNID_;
     short FLTID_;

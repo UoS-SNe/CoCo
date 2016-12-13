@@ -19,9 +19,9 @@ void help() {
     cout << "\nUsage:\n";
     cout << "lcsim *.list\n";
     cout << "or\n";
-    cout << "./lcsim SN_name rsedshift\n\n";
+    cout << "./lcsim SN_name redshift abs_mag filters\n\n";
     cout << "*.list file must have the following columns:\n";
-    cout << "SN_name redshift\n";
+    cout << "SN_name redshift abs_mag filters\n";
     cout << endl;
 }
 
@@ -35,25 +35,27 @@ void applyOptions(vector<string> &options, shared_ptr<WorkspaceLC> w) {
 
     // First option is a SN name or list of SN names and redshifts
     w->LCListFile_ = options[0];
+    w->filterVector_.clear();
 
-    // If the second parameter is a list then break it down into vectors
+    // If the first parameter is a list then break it down into vectors
     if (options[0].substr(options[0].find_last_of(".") + 1) == "list") {
-        vmath::loadtxt<string>(w->LCListFile_, 2, w->infoList_);
+        vmath::loadtxt<string>(w->LCListFile_, 4, w->infoList_);
         w->snNameList_ = w->infoList_[0];
         w->zList_ = castString<double>(w->infoList_[1]);
+        w->absMag_ = castString<double>(w->infoList_[2]);
+        for (auto flt : w->infoList_[3]) {
+            w->filterVector_.push_back(split(flt, ','));
+        }
 
     } else {
         w->snNameList_ = {options[0]};
-        exit(0);
     }
 
-    // If the number of paramters of wrong; exit
+    // TODO - This is very wrong, it will break the code is extra flags are used.
     if (options.size() > 1)  {
         w->zList_ = {atof(options[1].c_str())};
-        exit(0);
-
-    } else {
-
+        w->absMag_ = {atof(options[2].c_str())};
+        w->filterVector_.push_back(split(options[3], ','));
     }
 
 
