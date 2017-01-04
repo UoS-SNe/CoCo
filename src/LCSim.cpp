@@ -105,9 +105,15 @@ void applyOptions(vector<string> &options, shared_ptr<WorkspaceLC> w) {
 
 /* Automatically fill in all unassigned properties with defaults */
 void fillUnassigned(shared_ptr<WorkspaceLC> w) {
-    // Make a list of unique supernovae
-    w->uniqueSNList_ = w->snNameList_;
-    removeDuplicates<string>(w->uniqueSNList_);
+    // TODO - Load or create an array of MJDs at which to generate the photometry.
+}
+
+
+// TODO - Input may change
+/* Simulate photometry for one SN */
+void simulate(string SNName, shared_ptr<WorkspaceLC> w) {
+    // TODO - Phase files will change again soon to 2 columns
+    vector< vector<string> > reconFile = loadtxt<string>("recon/" + SNName + ".phase", 3);
 }
 
 
