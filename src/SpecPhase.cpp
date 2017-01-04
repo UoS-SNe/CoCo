@@ -181,6 +181,7 @@ void fitPhase(shared_ptr<Workspace> w) {
     // Find the peak of the synthetic light curve
     vector<double> tempLC = w->model_(tempT);
     size_t indexMax = distance(tempLC.begin(), max_element(tempLC.begin(), tempLC.end()));
+    double magMax = -2.5 * log10(tempLC[indexMax]) - w->filters_->filters_[w->FLTID_].zp_;
     w->MJDPhaseZero_ = tempT[indexMax] + w->minMJD_;
 
     // Output file buffer
@@ -189,7 +190,7 @@ void fitPhase(shared_ptr<Workspace> w) {
     // Save the phases for each spectrum into a text file
     phaseOutput.open("recon/" + w->currentSN_ + ".phase");
     for (size_t i = 0; i < w->specList_.size(); ++i) {
-        phaseOutput << w->specList_[i] << " " << w->MJDPhaseZero_ << "\n";
+        phaseOutput << w->specList_[i] << " " << w->MJDPhaseZero_ << " " << magMax << "\n";
     }
 
     phaseOutput.close();
