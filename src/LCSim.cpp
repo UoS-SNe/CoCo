@@ -13,9 +13,9 @@ using namespace std;
 
 void help() {
     cout << "CoCo - LCSim: \n";
-    cout << "Originally writen by Natasha Karpenka, ";
-    cout << "currently maintained by Szymon Prajs (S.Prajs@soton.ac.uk) ";
-    cout << "and Rob Firth.\n";
+    cout << "Originally developed by Natasha Karpenka, ";
+    cout << "and implemented by Szymon Prajs (S.Prajs@soton.ac.uk).\n";
+    cout << "Currently maintained by Szymon Prajs and Rob Firth.\n";
     cout << "\nUsage:\n";
     cout << "lcsim *.list\n";
     cout << "or\n";
@@ -28,6 +28,9 @@ void help() {
 
 /* Assign input options to workspace parameters */
 void applyOptions(vector<string> &options, shared_ptr<WorkspaceLC> w) {
+    // Number of inputs to skip before reading extra options
+    short skipOptions = 1;
+
     if (options.size() < 2 || options[0] == "-h" || options[0] == "--help") {
         help();
         exit(0);
@@ -48,11 +51,14 @@ void applyOptions(vector<string> &options, shared_ptr<WorkspaceLC> w) {
         }
 
     } else {
-        w->snNameList_ = {options[0]};
-    }
+        // If a list isn't present and at least 4 parameters are not given, exit.
+        if (options.size() < 4) {
+            help();
+            exit(0);
+        }
 
-    // TODO - This is very wrong, it will break the code is extra flags are used.
-    if (options.size() > 1)  {
+        skipOptions = 4;
+        w->snNameList_ = {options[0]};
         w->zList_ = {atof(options[1].c_str())};
         w->absMag_ = {atof(options[2].c_str())};
         w->filterVector_.push_back(split(options[3], ','));
@@ -61,7 +67,7 @@ void applyOptions(vector<string> &options, shared_ptr<WorkspaceLC> w) {
 
     // Go though each option and assign the correct properties
     vector<string> command;
-    for (size_t i = 1; i < options.size(); ++i) {
+    for (size_t i = skipOptions; i < options.size(); ++i) {
         // Deal with flags by loading pairs of options into commands
         if (options[i] == "-f") {
             if (i+1 < options.size()) {
@@ -99,14 +105,6 @@ void applyOptions(vector<string> &options, shared_ptr<WorkspaceLC> w) {
 
 /* Automatically fill in all unassigned properties with defaults */
 void fillUnassigned(shared_ptr<WorkspaceLC> w) {
-    // Do a sanity check for the LC files
-    if (w->fileList_.size() == 0) {
-        cout << "Something went seriously wrong.";
-        cout << "Please consider report this bug on our GitHub page";
-        cout << endl;
-        exit(0);
-    }
-
     // Make a list of unique supernovae
     w->uniqueSNList_ = w->snNameList_;
     removeDuplicates<string>(w->uniqueSNList_);
