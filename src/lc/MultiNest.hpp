@@ -6,7 +6,7 @@
 #include <iostream>
 #include <limits>
 #include <stdio.h>
-#include "Workspace.hpp"
+#include "WorkspaceLC.hpp"
 #include "../core/multinest.h"
 #include "../core/priors.hpp"
 #include "../vmath/loadtxt.hpp"
@@ -24,13 +24,13 @@ void LogLike(double*,int&,int&,double&,void*);
 
 class MultiNest {
 public:
-    shared_ptr<Workspace> w_;
+    shared_ptr<WorkspaceLC> w_;
     string chainRoot;
     string filterRoot;
 
     vector<double> fitParams_;
 
-    MultiNest(shared_ptr<Workspace>&);
+    MultiNest(shared_ptr<WorkspaceLC>&);
     void setup();
     void solve();
     void read();

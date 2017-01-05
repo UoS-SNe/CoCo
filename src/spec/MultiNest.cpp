@@ -22,7 +22,7 @@ void dumper(int &nSamples, int &nlive, int &nPar, double **physLive, double **po
 }
 
 
-vector<double> splineModel(Workspace *w){
+vector<double> splineModel(WorkspaceSpec *w){
     int npars = w->SNe_[w->SNID_].params_.size();
 
     // spline control points
@@ -49,21 +49,21 @@ vector<double> splineModel(Workspace *w){
     gsl_interp_accel *acc = gsl_interp_accel_alloc();
     gsl_spline *spline = gsl_spline_alloc(gsl_interp_cspline, npars+2);
     gsl_spline_init (spline, splineX.data(), splineY.data(), npars+2);
-    vector<double> sedCorrected(w->SNe_[w->SNID_].flux_.size(), 0);
+    vector<double> returnSpline(w->SNe_[w->SNID_].flux_.size(), 0);
 
     // mangle the spectra
-    double sedMean = accumulate(w->SNe_[w->SNID_].flux_.begin(), w->SNe_[w->SNID_].flux_.end(), 0.0) / w->SNe_[w->SNID_].flux_.size();
     for (size_t i = 0; i < w->SNe_[w->SNID_].wav_.size(); ++i) {
-        sedCorrected[i] = w->SNe_[w->SNID_].flux_[i] / sedMean;
-        sedCorrected[i] *= gsl_spline_eval(spline, w->SNe_[w->SNID_].wav_[i], acc);
+        returnSpline[i] = gsl_spline_eval(spline, w->SNe_[w->SNID_].wav_[i], acc);
     }
 
-    return mult<double>(sedCorrected, min<double>(w->SNe_[w->SNID_].lcFlux_));
+    gsl_spline_free(spline);
+    gsl_interp_accel_free(acc);
+    return returnSpline;
 }
 
 
 void LogLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
-    class Workspace *w = (struct Workspace *) context;
+    class WorkspaceSpec *w = (struct WorkspaceSpec *) context;
 
     // Apply the prior to the parameters
     for (size_t i = 0; i < npars; i++) {
@@ -75,7 +75,8 @@ void LogLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
     w->SNe_[w->SNID_].params_.assign(Cube, Cube + ndim);
 
     // Calculate the corrected spectrum
-    vector<double> sedCorrected = splineModel(w);
+    vector<double> spline = splineModel(w);
+    vector<double> sedCorrected = mult<double>(w->SNe_[w->SNID_].flux_, spline);
 
     // Calculate likelihood
     lnew = 0;
@@ -85,13 +86,10 @@ void LogLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
 		lnew -= pow((w->filters_->flux(sedCorrected, filterName) - w->SNe_[w->SNID_].lcFlux_[i]) / w->SNe_[w->SNID_].lcFluxError_[i], 2);
 	}
 	lnew /= 2;
-
-    // TODO - Check if the spectrum is overlapping with the filters and remove data accordingly
-
 }
 
 
-MultiNest::MultiNest(shared_ptr<Workspace> w) {
+MultiNest::MultiNest(shared_ptr<WorkspaceSpec> w) {
     w_ = w;
     chainRoot = "chains/" + w_->SNe_[w_->SNID_].SNName_ + "/";
     chainRoot += w_->SNe_[w_->SNID_].SNName_ + "_";
@@ -103,7 +101,6 @@ void MultiNest::solve() {
     int IS = 0;				// do Nested Importance Sampling?
 	int mmodal = 1;			// do mode separation?
 	int ceff = 0;			// run in constant efficiency mode?
-	int nClsPar = 2;		// no. of parameters to do mode separation on
     int nlive = 100;		// number of live points
 	int updInt = 1000;		// after how many iterations feedback & output files should be updated
 	int maxModes = 10;		// expected max no. of modes (used only for memory allocation)
@@ -119,6 +116,7 @@ void MultiNest::solve() {
 
     int nPar = w_->SNe_[w_->SNID_].lcFilters_.size();
     int ndims = nPar;
+    int nClsPar = nPar;		// no. of parameters to do mode separation on
     int pWrap[ndims];		// which parameters to have periodic boundary conditions?
     for (size_t i = 0; i < ndims; ++i) {
         pWrap[i] = 0;
@@ -152,15 +150,26 @@ void MultiNest::read() {
     }
 
     // Reconstrunct the best fit mangled spectrum
-    vector<double> sedCorrected = splineModel(w_.get());
+    vector<double> spline = splineModel(w_.get());
+    vector<double> sedCorrected = mult<double>(w_->SNe_[w_->SNID_].flux_, spline);
+    sedCorrected = mult<double>(sedCorrected, w_->SNe_[w_->SNID_].normFlux_);
 
     // Save the spectrum into a reconstruction directory
     ofstream reconSpecFile;
     reconSpecFile.open("recon/" + w_->SNe_[w_->SNID_].SNName_ + "_" + to_string(int(w_->SNe_[w_->SNID_].mjd_)) + ".spec");
+
+    ofstream reconSplineFile;
+    reconSplineFile.open("recon/" + w_->SNe_[w_->SNID_].SNName_ + "_" + to_string(int(w_->SNe_[w_->SNID_].mjd_)) + ".spline");
+
     for (size_t i = 0; i < sedCorrected.size(); ++i) {
-        reconSpecFile << w_->SNe_[w_->SNID_].wav_[i] << " " << sedCorrected[i] << '\n';
+        // Move the spetrum to z=0 and write to a text file
+        sedCorrected[i] *= (1.0 + w_->SNe_[w_->SNID_].z_);
+        sedCorrected[i] *= w_->SNe_[w_->SNID_].lumDisCorrection_;
+        reconSpecFile << w_->SNe_[w_->SNID_].wav_[i] / (1.0 + w_->SNe_[w_->SNID_].z_) << " " << sedCorrected[i] << '\n';
+        reconSplineFile << w_->SNe_[w_->SNID_].wav_[i] << " " << spline[i] << '\n';
     }
     reconSpecFile.close();
+    reconSplineFile.close();
 }
 
 

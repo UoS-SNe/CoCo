@@ -8,15 +8,22 @@ LC::LC() {}
 
 
 LC::LC(string file) {
-    set(file);
+    set(file, true);
 }
 
 
-void LC::set(string file) {
+LC::LC(string file, bool bNorm) {
+    set(file, bNorm);
+}
+
+
+void LC::set(string file, bool bNorm) {
     readData(file);
     setFilterList();
     makeDataLists();
-    normalizeDataLists();
+    if (bNorm) {
+        normalizeDataLists();        
+    }
 }
 
 

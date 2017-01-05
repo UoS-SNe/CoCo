@@ -21,6 +21,7 @@ Model::Model() {
     priorType_ = {1, 1, 0, 0, 0, 0, 0, 1};
 }
 
+
 double Model::func(double t) {
     double flux = params_[0] * (1.0 + params_[1] * pow(t - params_[2], 2.0));
     flux *= exp(-(t-params_[5])/params_[4]);
