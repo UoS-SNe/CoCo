@@ -112,8 +112,7 @@ void fillUnassigned(shared_ptr<WorkspaceLC> w) {
 // TODO - Input may change
 /* Simulate photometry for one SN */
 void simulate(string SNName, shared_ptr<WorkspaceLC> w) {
-    // TODO - Phase files will change again soon to 2 columns
-    vector< vector<string> > reconFile = loadtxt<string>("recon/" + SNName + ".phase", 3);
+    vector< vector<string> > reconFile = loadtxt<string>("recon/" + SNName + ".phase", 2);
 }
 
 
