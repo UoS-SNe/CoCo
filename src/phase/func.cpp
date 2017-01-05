@@ -45,6 +45,7 @@ void syntheticFlux(shared_ptr<WorkspacePhase> w) {
     w->currentSN_ = "";
     for (size_t i = 0; i < w->SNName_.size(); ++i) {
         if (w->currentSN_ != w->SNName_[i]) {
+            // When new SN is found we do the fit for the previous one
             if (w->currentSN_ != "") {
                 fitPhase(w);
             }
@@ -52,6 +53,7 @@ void syntheticFlux(shared_ptr<WorkspacePhase> w) {
             w->synthFlux_.clear();
             w->synthMJD_.clear();
             w->specList_.clear();
+            w->specDataList_.clear();
         }
 
         // Load spectra into temporary vectors
@@ -61,9 +63,11 @@ void syntheticFlux(shared_ptr<WorkspacePhase> w) {
         w->wav_ = castString<double>(tempList[0]);
         w->flux_ = castString<double>(tempList[1]);
 
-        // rescale filter responses and find synthetic flux
+        // Rescale filter responses and find synthetic flux
         w->filters_->rescale(w->wav_);
         w->synthFlux_.push_back(w->filters_->flux(w->flux_, w->filter_));
+
+        // Save the spectrum data for future use
     }
 
     // Need to run fitPhase for the last SN
@@ -100,8 +104,11 @@ void fitPhase(shared_ptr<WorkspacePhase> w) {
     // Find the peak of the synthetic light curve
     vector<double> tempLC = w->model_(tempT);
     size_t indexMax = distance(tempLC.begin(), max_element(tempLC.begin(), tempLC.end()));
-    double magMax = -2.5 * log10(tempLC[indexMax]) - w->filters_->filters_[w->FLTID_].zp_;
     w->MJDPhaseZero_ = tempT[indexMax] + w->minMJD_;
+
+    // Find the factor needed to normalise the spectrum to M = -17
+    double magMax = -2.5 * log10(tempLC[indexMax]) - w->filters_->filters_[w->FLTID_].zp_;
+    double fluxNormalisation = pow(10.0, 0.4 * (magMax - (-17)))
 
     // Output file buffer
     ofstream phaseOutput;
@@ -109,7 +116,7 @@ void fitPhase(shared_ptr<WorkspacePhase> w) {
     // Save the phases for each spectrum into a text file
     phaseOutput.open("recon/" + w->currentSN_ + ".phase");
     for (size_t i = 0; i < w->specList_.size(); ++i) {
-        phaseOutput << w->specList_[i] << " " << w->MJDPhaseZero_ << " " << magMax << "\n";
+        phaseOutput << w->specList_[i] << " " << w->MJDPhaseZero_ << "\n";
     }
 
     phaseOutput.close();

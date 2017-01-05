@@ -21,6 +21,7 @@ public:
     vector<string> SNName_;
     vector<string> spectra_;
     vector<string> specList_;
+    vector< vector< vector<double> > > specDataList_;
 
     // Synthetic photometry
     vector<double> MJD_;
