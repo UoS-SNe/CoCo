@@ -13,43 +13,61 @@ using namespace std;
 
 void help() {
     cout << "CoCo - LCSim: \n";
-    cout << "Originally writen by Natasha Karpenka, ";
-    cout << "currently maintained by Szymon Prajs (S.Prajs@soton.ac.uk) ";
-    cout << "and Rob Firth.\n";
+    cout << "Originally developed by Natasha Karpenka, ";
+    cout << "and implemented by Szymon Prajs (S.Prajs@soton.ac.uk).\n";
+    cout << "Currently maintained by Szymon Prajs and Rob Firth.\n";
     cout << "\nUsage:\n";
     cout << "lcsim *.list\n";
     cout << "or\n";
-    cout << "./lcsim SN_name rsedshift\n\n";
+    cout << "./lcsim SN_name redshift abs_mag filters\n\n";
     cout << "*.list file must have the following columns:\n";
-    cout << "SN_name redshift\n";
+    cout << "SN_name redshift abs_mag filters\n";
     cout << endl;
 }
 
 
 /* Assign input options to workspace parameters */
 void applyOptions(vector<string> &options, shared_ptr<WorkspaceLC> w) {
-    if (options.size() < 1 || options[0] == "-h" || options[0] == "--help") {
+    // Number of inputs to skip before reading extra options
+    short skipOptions = 1;
+
+    if (options.size() < 2 || options[0] == "-h" || options[0] == "--help") {
         help();
         exit(0);
     }
 
     // First option is a SN name or list of SN names and redshifts
     w->LCListFile_ = options[0];
+    w->filterVector_.clear();
+
+    // If the first parameter is a list then break it down into vectors
     if (options[0].substr(options[0].find_last_of(".") + 1) == "list") {
-        vmath::loadtxt<string>(w->LCListFile_, 2, w->infoList_);
+        vmath::loadtxt<string>(w->LCListFile_, 4, w->infoList_);
         w->snNameList_ = w->infoList_[0];
         w->zList_ = castString<double>(w->infoList_[1]);
+        w->absMag_ = castString<double>(w->infoList_[2]);
+        for (auto flt : w->infoList_[3]) {
+            w->filterVector_.push_back(split(flt, ','));
+        }
 
-    } else if (options.size() >= 2)  {
-        // For any other extension just assign the file as the only LC
+    } else {
+        // If a list isn't present and at least 4 parameters are not given, exit.
+        if (options.size() < 4) {
+            help();
+            exit(0);
+        }
+
+        skipOptions = 4;
         w->snNameList_ = {options[0]};
         w->zList_ = {atof(options[1].c_str())};
+        w->absMag_ = {atof(options[2].c_str())};
+        w->filterVector_.push_back(split(options[3], ','));
     }
 
 
     // Go though each option and assign the correct properties
     vector<string> command;
-    for (size_t i = 1; i < options.size(); ++i) {
+    for (size_t i = skipOptions; i < options.size(); ++i) {
         // Deal with flags by loading pairs of options into commands
         if (options[i] == "-f") {
             if (i+1 < options.size()) {
@@ -87,27 +105,24 @@ void applyOptions(vector<string> &options, shared_ptr<WorkspaceLC> w) {
 
 /* Automatically fill in all unassigned properties with defaults */
 void fillUnassigned(shared_ptr<WorkspaceLC> w) {
-    // Do a sanity check for the LC files
-    if (w->fileList_.size() == 0) {
-        cout << "Something went seriously wrong.";
-        cout << "Please consider report this bug on our GitHub page";
-        cout << endl;
-        exit(0);
-    }
+    // TODO - Load or create an array of MJDs at which to generate the photometry.
+}
 
-    // Make a list of unique supernovae
-    w->uniqueSNList_ = w->snNameList_;
-    removeDuplicates<string>(w->uniqueSNList_);
 
-    // Make a filter list
-    if (w->filterList_.size() == 0) {
-        // TODO - Look for filters in LC files
-    }
+// TODO - Input may change
+/* Simulate photometry for one SN */
+void simulate(string SNName, shared_ptr<WorkspaceLC> w) {
+    vector< vector<string> > reconFile = loadtxt<string>("recon/" + SNName + ".phase", 2);
 }
 
 
 int main(int argc, char *argv[]) {
-    help();
+    vector<string> options;
+    shared_ptr<WorkspaceLC> w(new WorkspaceLC());
+
+    getArgv(argc, argv, options);
+    applyOptions(options, w);
+    fillUnassigned(w);
 
 	return 0;
 }
