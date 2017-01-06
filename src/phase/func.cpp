@@ -53,7 +53,6 @@ void syntheticFlux(shared_ptr<WorkspacePhase> w) {
             w->synthFlux_.clear();
             w->synthMJD_.clear();
             w->specList_.clear();
-            w->specDataList_.clear();
         }
 
         // Load spectra into temporary vectors
@@ -66,8 +65,6 @@ void syntheticFlux(shared_ptr<WorkspacePhase> w) {
         // Rescale filter responses and find synthetic flux
         w->filters_->rescale(w->wav_);
         w->synthFlux_.push_back(w->filters_->flux(w->flux_, w->filter_));
-
-        // Save the spectrum data for future use
     }
 
     // Need to run fitPhase for the last SN
@@ -108,7 +105,10 @@ void fitPhase(shared_ptr<WorkspacePhase> w) {
 
     // Find the factor needed to normalise the spectrum to M = -17
     double magMax = -2.5 * log10(tempLC[indexMax]) - w->filters_->filters_[w->FLTID_].zp_;
-    double fluxNormalisation = pow(10.0, 0.4 * (magMax - (-17)))
+    double fluxNormalisation = pow(10.0, 0.4 * (magMax - (-17)));
+
+    // Apply the normalisation factor - can be made optional
+    normaliseSpec(w, fluxNormalisation);
 
     // Output file buffer
     ofstream phaseOutput;
@@ -120,6 +120,27 @@ void fitPhase(shared_ptr<WorkspacePhase> w) {
     }
 
     phaseOutput.close();
+}
+
+
+/* Multiply all fluxes in w.specList_ by a normalisation factor */
+void normaliseSpec(shared_ptr<WorkspacePhase> w, double normFactor) {
+    ofstream specFile;
+    vector< vector<string> > specData;
+
+    for (auto spec : w->specList_) {
+        // Read a spectrum file and apply the correction to flux
+        specData = loadtxt<string>("recon/" + spec, 2);
+        vector<double> flux = castString<double>(specData[1]);
+        flux = mult<double>(flux, normFactor);
+
+        // Overwrite the old spectrum
+        specFile.open("recon/" + spec);
+        for (size_t i; i < flux.size(); ++i) {
+            specFile << specData[0][i] << " " << flux[i] << "\n";
+        }
+        specFile.close();
+    }
 }
 
 
