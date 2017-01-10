@@ -1,11 +1,12 @@
 #include <vector>
 #include <string>
+
 #include "core/Filters.hpp"
 #include "phase/WorkspacePhase.hpp"
 #include "phase/func.hpp"
+#include "core/utils.hpp"
 
 using namespace std;
-using namespace vmath;
 
 
 void help() {
