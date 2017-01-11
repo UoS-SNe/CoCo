@@ -3,7 +3,6 @@
 
 #include <string>
 #include <vector>
-#include <map>
 #include <unordered_map>
 
 
@@ -19,8 +18,6 @@ struct FilterData {
     double min_;
     double max_;
     double centralWavelength_;
-
-    bool operator<(const FilterData&) const;
 };
 
 class Filters {
@@ -35,10 +32,7 @@ private:
 
 public:
     // public data members
-    std::map<std::string,int> filterID_;
-    std::map<int,std::string> filterName_;
     std::unordered_map<std::string, FilterData> filter_;
-    std::vector<FilterData> filters_; //DEPRECATED
 
     // constructor
     Filters(std::string);

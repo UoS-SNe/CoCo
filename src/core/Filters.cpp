@@ -17,11 +17,6 @@
 #include "utils.hpp"
 
 
-bool FilterData::operator<(const FilterData &rhs) const {
-    return (centralWavelength_ < rhs.centralWavelength_);
-}
-
-
 Filters::Filters(std::string path) : folderPath_(path) {
     readFolder();
 }
@@ -30,15 +25,8 @@ Filters::Filters(std::string path) : folderPath_(path) {
 void Filters::readFolder() {
     std::vector<std::string> list = vmath::loadtxt<std::string>(folderPath_ + "/list.txt", 1)[0];
 
-    std::vector<std::string> temp;
     for (size_t i = 0; i < list.size(); ++i) {
         loadFilter(list[i]);
-    }
-    std::sort(filters_.begin(), filters_.end());
-
-    for (size_t i = 0; i < list.size(); ++i) {
-        filterID_[filters_[i].name_] = i;
-        filterName_[i] = filters_[i].name_;
     }
 }
 
@@ -79,7 +67,6 @@ void Filters::loadFilter(std::string fileName) {
         if (filter.min_ != -1 && filter.max_ != -1) break;
     }
 
-    filters_.push_back(filter); //DEPRECATED
     filter_.insert(std::make_pair(filter.name_, filter));
 }
 
@@ -89,12 +76,6 @@ void Filters::rescale(const std::vector<double> &wavelength) {
         flt.second.wavelength_ = wavelength;
         flt.second.bandpass_ = vmath::interp<double>(wavelength, flt.second.inputWavelength_, flt.second.inputBandpass_);
     }
-
-    // DEPRECATED
-    for (int i = 0; i < filters_.size(); ++i) {
-        filters_[i].wavelength_ = wavelength;
-        filters_[i].bandpass_ = vmath::interp<double>(wavelength,filters_[i].inputWavelength_,filters_[i].inputBandpass_);
-    }
 }
 
 
@@ -103,12 +84,6 @@ void Filters::rescale(double start, double end, double step) {
     for (auto flt : filter_) {
         flt.second.wavelength_ = wavelength;
         flt.second.bandpass_ = vmath::interp<double>(wavelength, flt.second.inputWavelength_, flt.second.inputBandpass_);
-    }
-
-    // DEPRECATED
-    for (int i = 0; i < filters_.size(); ++i) {
-        filters_[i].wavelength_ = wavelength;
-        filters_[i].bandpass_ = vmath::interp<double>(wavelength,filters_[i].inputWavelength_,filters_[i].inputBandpass_);
     }
 }
 
@@ -123,18 +98,6 @@ void Filters::rescale(double step) {
 
         flt.second.wavelength_ = vmath::range<double>(start, end, step);
         flt.second.bandpass_ = vmath::interp<double>(flt.second.wavelength_, flt.second.inputWavelength_, flt.second.inputBandpass_);
-    }
-
-    // DEPRECATED
-    for (int i = 0; i < filters_.size(); ++i) {
-        start = filters_[i].inputWavelength_.front();
-        start -= fmod(start, step);
-        end = filters_[i].inputWavelength_.back();
-        end -= fmod(end, step);
-        end += step;
-
-        filters_[i].wavelength_ = vmath::range<double>(start, end, step);
-        filters_[i].bandpass_ = vmath::interp<double>(filters_[i].wavelength_,filters_[i].inputWavelength_,filters_[i].inputBandpass_);
     }
 }
 
