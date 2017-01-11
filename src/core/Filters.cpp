@@ -2,10 +2,6 @@
 
 #include <math.h>
 
-#include <algorithm>
-#include <functional>
-#include <memory>
-#include <fstream>
 #include <iostream>
 
 #include "../vmath/loadtxt.hpp"
