@@ -4,10 +4,7 @@
 
 #include <algorithm>
 #include <functional>
-#include <vector>
-#include <map>
 #include <memory>
-#include <string>
 #include <fstream>
 #include <iostream>
 
@@ -16,6 +13,7 @@
 #include "../vmath/interp.hpp"
 #include "../vmath/range.hpp"
 #include "../vmath/algebra.hpp"
+
 #include "utils.hpp"
 
 
@@ -81,11 +79,18 @@ void Filters::loadFilter(std::string fileName) {
         if (filter.min_ != -1 && filter.max_ != -1) break;
     }
 
-    filters_.push_back(filter);
+    filters_.push_back(filter); //DEPRECATED
+    filter_.insert(std::make_pair(filter.name_, filter));
 }
 
 
 void Filters::rescale(const std::vector<double> &wavelength) {
+    for (auto flt : filter_) {
+        flt.second.wavelength_ = wavelength;
+        flt.second.bandpass_ = vmath::interp<double>(wavelength, flt.second.inputWavelength_, flt.second.inputBandpass_);
+    }
+
+    // DEPRECATED
     for (int i = 0; i < filters_.size(); ++i) {
         filters_[i].wavelength_ = wavelength;
         filters_[i].bandpass_ = vmath::interp<double>(wavelength,filters_[i].inputWavelength_,filters_[i].inputBandpass_);
@@ -95,6 +100,12 @@ void Filters::rescale(const std::vector<double> &wavelength) {
 
 void Filters::rescale(double start, double end, double step) {
     std::vector<double> wavelength = vmath::range<double>(start, end, step);
+    for (auto flt : filter_) {
+        flt.second.wavelength_ = wavelength;
+        flt.second.bandpass_ = vmath::interp<double>(wavelength, flt.second.inputWavelength_, flt.second.inputBandpass_);
+    }
+
+    // DEPRECATED
     for (int i = 0; i < filters_.size(); ++i) {
         filters_[i].wavelength_ = wavelength;
         filters_[i].bandpass_ = vmath::interp<double>(wavelength,filters_[i].inputWavelength_,filters_[i].inputBandpass_);
@@ -103,6 +114,18 @@ void Filters::rescale(double start, double end, double step) {
 
 void Filters::rescale(double step) {
     double start, end;
+    for (auto flt : filter_) {
+        start = flt.second.inputWavelength_.front();
+        start -= fmod(start, step);
+        end = flt.second.inputWavelength_.back();
+        end -= fmod(end, step);
+        end += step;
+
+        flt.second.wavelength_ = vmath::range<double>(start, end, step);
+        flt.second.bandpass_ = vmath::interp<double>(flt.second.wavelength_, flt.second.inputWavelength_, flt.second.inputBandpass_);
+    }
+
+    // DEPRECATED
     for (int i = 0; i < filters_.size(); ++i) {
         start = filters_[i].inputWavelength_.front();
         start -= fmod(start, step);
@@ -116,13 +139,12 @@ void Filters::rescale(double step) {
 }
 
 double Filters::flux(const std::vector<double>& SED, const std::string& filterName) {
-    if (filterID_.find(filterName) == filterID_.end()) {
+    if (filter_.find(filterName) == filter_.end()) {
         return 0;
 
     } else {
-        int ID = filterID_.at(filterName);
-        std::vector<double> filteredSED = vmath::mult<double>(SED, filters_[ID].bandpass_);
-        double integFlux = vmath::trapz<double>(filteredSED, filters_[ID].wavelength_[1] - filters_[ID].wavelength_[0]);
-        return integFlux / filters_[ID].area_;
+        std::vector<double> filteredSED = vmath::mult<double>(SED, filter_[filterName].bandpass_);
+        double integFlux = vmath::trapz<double>(filteredSED, filter_[filterName].wavelength_[1] - filter_[filterName].wavelength_[0]);
+        return integFlux / filter_[filterName].area_;
     }
 }

@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <unordered_map>
 
 
 struct FilterData {
@@ -36,7 +37,8 @@ public:
     // public data members
     std::map<std::string,int> filterID_;
     std::map<int,std::string> filterName_;
-    std::vector<FilterData> filters_;
+    std::unordered_map<std::string, FilterData> filter_;
+    std::vector<FilterData> filters_; //DEPRECATED
 
     // constructor
     Filters(std::string);

@@ -121,7 +121,7 @@ void fitPhase(shared_ptr<WorkspacePhase> w) {
     w->MJDPhaseZero_ = tempT[indexMax] + w->minMJD_;
 
     // Find the factor needed to normalise the spectrum to M = -17
-    double magMax = -2.5 * log10(tempLC[indexMax]) - w->filters_->filters_[w->FLTID_].zp_;
+    double magMax = -2.5 * log10(tempLC[indexMax]) - w->filters_->filter_[w->filter_].zp_;
     double fluxNormalisation = pow(10.0, 0.4 * (magMax - (-17)));
 
     // Apply the normalisation factor - can be made optional

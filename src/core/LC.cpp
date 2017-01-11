@@ -22,7 +22,7 @@ void LC::set(string file, bool bNorm) {
     setFilterList();
     makeDataLists();
     if (bNorm) {
-        normalizeDataLists();        
+        normalizeDataLists();
     }
 }
 
