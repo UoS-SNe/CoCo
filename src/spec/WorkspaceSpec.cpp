@@ -33,21 +33,21 @@ void WorkspaceSpec::lcSlice() {
 
         // Sort filters according to their central wavelength (core/Filters sorting)
         filterTemp = SNe_[i].lc_.filterList_;
-        for (auto filter : filters_->filters_) {
-            auto it = find(filterTemp.begin(), filterTemp.end(), filter.name_);
+        for (auto filter : filters_->filter_) {
+            auto it = find(filterTemp.begin(), filterTemp.end(), filter.second.name_);
 
             if (it != filterTemp.end()) {
                 fIndex = distance(filterTemp.begin(), it);
 
-                if (specWavMin < min<double>(filter.wavelength_) &&
-                specWavMax > max<double>(filter.wavelength_)) {
+                if (specWavMin < min<double>(filter.second.wavelength_) &&
+                specWavMax > max<double>(filter.second.wavelength_)) {
 
                     // find the lightcurve point closest to the spectrum
                     nearIndex = nearest<double>(SNe_[i].lc_.mjdList_[fIndex], SNe_[i].mjd_);
                     SNe_[i].lcFlux_.push_back(SNe_[i].lc_.fluxList_[fIndex][nearIndex]);
                     SNe_[i].lcFluxError_.push_back(SNe_[i].lc_.fluxErrList_[fIndex][nearIndex]);
                     SNe_[i].lcFilters_.push_back(filterTemp[fIndex]);
-                    SNe_[i].lcCentralWavelength_.push_back(filter.centralWavelength_);
+                    SNe_[i].lcCentralWavelength_.push_back(filter.second.centralWavelength_);
                 }
             }
         }

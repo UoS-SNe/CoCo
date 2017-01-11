@@ -1,5 +1,5 @@
-#ifndef COCO_CORE_LC_H_
-#define COCO_CORE_LC_H_
+#ifndef COCO_CORE_LC2_H_
+#define COCO_CORE_LC2_H_
 
 #include <memory>
 #include <algorithm>
