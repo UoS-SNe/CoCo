@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+<<<<<<< HEAD
 #include "../vmath/loadtxt.hpp"
 #include "../vmath/convert.hpp"
 
@@ -26,10 +27,27 @@ SN::SN(std::string fileName) {
     }
 }
 
+=======
+
+
+// Initialises empty data structure
+SN::SN() {
+
+}
+
+
+// Single file initialisation, either spectra or light curve
+SN::SN(std::string fileName) {
+
+}
+
+
+>>>>>>> 87b6b9d316866ed9cd8fb54f76adfcc9a499306a
 // Double file initialisation, both spectra and light curve
 SN::SN(std::string firstFile, std::string secondFile) {
 
 }
+<<<<<<< HEAD
 
 
 // Load light curve from an input data file
@@ -79,3 +97,5 @@ void SN::restoreCompleteLC() {
         lc.second.fluxErr_ = lc.second.completeFluxErr_;
     }
 }
+=======
+>>>>>>> 87b6b9d316866ed9cd8fb54f76adfcc9a499306a
