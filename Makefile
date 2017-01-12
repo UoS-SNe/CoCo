@@ -22,6 +22,7 @@ LCEXEC = src/LCFit.cpp
 SPEC = src/spec/WorkspaceSpec.cpp src/spec/MultiNest.cpp
 SPECEXEC = src/SpecFit.cpp
 
+PHASE = src/phase/WorkspacePhase.cpp src/phase/func.cpp
 PHASEEXEC = src/SpecPhase.cpp
 
 SIM =
@@ -30,7 +31,7 @@ SIMEXEC = src/LCSim.cpp
 
 LCFIT = ${CORE:.cpp=.o} ${LC:.cpp=.o} ${LCEXEC:.cpp=.o}
 SPECFIT = ${CORE:.cpp=.o} ${SPEC:.cpp=.o} ${SPECEXEC:.cpp=.o}
-SPECPHASE = ${CORE:.cpp=.o} ${LC:.cpp=.o} ${MPFIT:.cpp=.o} ${PHASEEXEC:.cpp=.o}
+SPECPHASE = ${CORE:.cpp=.o} ${LC:.cpp=.o} ${MPFIT:.cpp=.o} ${PHASE:.cpp=.o} ${PHASEEXEC:.cpp=.o}
 LCSIM = ${CORE:.cpp=.o} ${LC:.cpp=.o} ${SIM:.cpp=.o} ${SIMEXEC:.cpp=.o}
 
 all: lcfit specfit specphase lcsim
@@ -49,5 +50,5 @@ lcsim: $(LCSIM)
 
 
 clean:
-	rm -f *.o src/*.o src/lc/*.o src/spec/*.o src/core/*.o
+	rm -f *.o src/*.o src/lc/*.o src/phase/*.o src/spec/*.o src/core/*.o
 	rm -f lcfit specfit specphase lcsim
