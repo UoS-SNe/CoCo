@@ -26,6 +26,10 @@ SN::SN(std::string fileName) {
     }
 }
 
+SN::SN(std::string firstName, std::string secondName) {
+
+}
+
 
 // Load light curve from an input data file
 void SN::loadLC(std::string fileName) {

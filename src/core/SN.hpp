@@ -25,7 +25,6 @@ struct LCData {
 };
 
 
-
 // Data structure for specta
 struct SpecData {
     std::vector<double> rawWav_;
