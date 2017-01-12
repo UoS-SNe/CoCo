@@ -5,11 +5,7 @@
 #include <unordered_map>
 #include <string>
 
-<<<<<<< HEAD
 
-
-=======
->>>>>>> 87b6b9d316866ed9cd8fb54f76adfcc9a499306a
 // Data structure for light curve (one filter per object)
 struct LCData {
 	std::vector<double> completeMJD_;
@@ -29,10 +25,7 @@ struct LCData {
 };
 
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 87b6b9d316866ed9cd8fb54f76adfcc9a499306a
 // Data structure for specta
 struct SpecData {
     std::vector<double> rawWav_;
@@ -44,10 +37,7 @@ struct SpecData {
 };
 
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 87b6b9d316866ed9cd8fb54f76adfcc9a499306a
 // Data structure for one epoch of data contains a slice though a light curve
 // and a spectrum if available
 struct SNEpoch {
@@ -60,10 +50,8 @@ struct SNEpoch {
 };
 
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 87b6b9d316866ed9cd8fb54f76adfcc9a499306a
+
 // Supernova(SN) class prividing the main data object in the code.
 // The class can be initialised multiple ways depending on the usage:
 // 1)  SN() - Initialises an empty data structure, used when light curves and
@@ -98,13 +86,10 @@ public:
     SN();
     SN(std::string);
     SN(std::string,std::string);
-<<<<<<< HEAD
 
     // Data loading routines
     void loadLC(std::string);
     void restoreCompleteLC();
-=======
->>>>>>> 87b6b9d316866ed9cd8fb54f76adfcc9a499306a
 };
 
 
