@@ -32,6 +32,7 @@ vector<string> dirlist(const string&);
 bool compareStrings(string, string);
 bool fileExists(const string&);
 string baseName(const string&);
+string fileExtention(const string&);
 
 string getCWD();
 void createDirectory(string);

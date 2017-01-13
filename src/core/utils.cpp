@@ -73,6 +73,11 @@ string baseName(const string &path) {
     return filename.substr(0, filename.find_last_of('.'));
 }
 
+string fileExtention(const string& path) {
+    return path.substr(path.find_last_of(".") + 1);
+}
+
+
 
 string getCWD() {
     char charCurDir[PATH_MAX];

@@ -1,58 +1,75 @@
+// TODO - Clean unnecessary includes
 #include <vector>
 #include <iostream>
 #include <iomanip>
 #include <string>
-#include "core/utils.hpp"
-#include "core/LC.hpp"
+#include <unordered_map>
+
 #include "vmath/loadtxt.hpp"
 #include "vmath/algebra.hpp"
+
+#include "core/utils.hpp"
+#include "core/LC.hpp"
 #include "lc/WorkspaceLC.hpp"
 #include "lc/Model.hpp"
 #include "lc/MultiNest.hpp"
 
-using namespace std;
+#include "core/SN.hpp"
 
 
+// Data structure for parameters that are passed between functions
+struct Workspace {
+    // User inputs
+    std::string inputFileName_;
+    std::vector<std::string> fileList_;
+    std::vector<std::string> filterList_;
+
+    // Hash table of SN light curves
+    std::unordered_map<std::string, SN> sn_;
+};
+
+
+// Display a help message if needed
 void help() {
-    cout << "TO_BE_NAMED: \n";
-    cout << "Originally writen by Natasha Karpenka, ";
-    cout << "currently maintained by Szymon Prajs (S.Prajs@soton.ac.uk) ";
-    cout << "and Rob Firth.\n";
-    cout << "\nUsage:\n";
-    cout << "lcfit lightcurve_file.*   or  lightcurve_files_list.list";
-    cout << endl;
+    std::cout << "TO_BE_NAMED: \n";
+    std::cout << "Originally writen by Natasha Karpenka, ";
+    std::cout << "currently maintained by Szymon Prajs (S.Prajs@soton.ac.uk) ";
+    std::cout << "and Rob Firth.\n";
+    std::cout << "\nUsage:\n";
+    std::cout << "lcfit lightcurve_file.*   or  lightcurve_files_list.list";
+    std::cout << std::endl;
 }
 
 
-/* Assign input options to workspace parameters */
-void applyOptions(vector<string> &options, shared_ptr<WorkspaceLC> w) {
+// Assign input options to workspace parameters
+void applyOptions(std::vector<std::string> &options, shared_ptr<Workspace> w) {
     if (options.size() < 1 || options[0] == "-h" || options[0] == "--help") {
         help();
         exit(0);
     }
 
     // First option is the LC file name or list of LC files
-    w->LCListFile_ = options[0];
-    if (options[0].substr(options[0].find_last_of(".") + 1) == "list") {
-        vmath::loadtxt<string>(w->LCListFile_, 1, w->fileList_);
+    w->inputFileName_ = options[0];
+    if (fileExtention(w->inputFileName_) == "list") {
+        vmath::loadtxt<std::string>(w->inputFileName_, 1, w->fileList_);
 
     } else {
         // For any other extension just assign the file as the only LC
-        w->fileList_ = {w->LCListFile_};
+        w->fileList_ = {w->inputFileName_};
     }
 
 
-    // Go though each option and assign the correct properties
-    vector<string> command;
+    // Iterate though each option and assign its properties
+    std::vector<std::string> command;
     for (size_t i = 1; i < options.size(); ++i) {
         // Deal with flags by loading pairs of options into commands
         if (options[i] == "-f") {
             if (i+1 < options.size()) {
                 command = {options[i], options[i+1]};
-                i++;  // skip the next option as it's already assigned above
+                i++;  // skip the next option once the previous is assigned
 
             } else {
-                cout << options[i] << " is not a valid flag" << endl;
+                std::cout << options[i] << " is not a valid flag" << std::endl;
             }
 
         } else if (options[i] == "-h" || options[i] == "--help"){
@@ -65,7 +82,7 @@ void applyOptions(vector<string> &options, shared_ptr<WorkspaceLC> w) {
 
         // Assign properties based on commands
         if (command.size() != 2) {
-            cout << command[0] << " is not a valid command." << endl;
+            std::cout << command[0] << " is not a valid command." << std::endl;
             continue;
 
         } else if (command[0] == "-f" ||
@@ -74,37 +91,35 @@ void applyOptions(vector<string> &options, shared_ptr<WorkspaceLC> w) {
             w->filterList_ = split(command[1], ',');
 
         } else {
-            cout << command[0] << " is not a valid command." << endl;
+            std::cout << command[0] << " is not a valid command." << std::endl;
         }
     }
 }
 
 
-/* Automatically fill in all unassigned properties with defaults */
-void fillUnassigned(shared_ptr<WorkspaceLC> w) {
+// Automatically fill in all unassigned properties with defaults
+void fillUnassigned(shared_ptr<Workspace> w) {
     // Do a sanity check for the LC files
     if (w->fileList_.size() == 0) {
-        cout << "Something went seriously wrong.";
-        cout << "Please consider report this bug on our project GitHub page";
-        cout << endl;
+        std::cout << "Something went seriously wrong.";
+        std::cout << "Please consider report this bug on our project GitHub page";
+        std::cout << std::endl;
         exit(0);
     }
 
 	// Load the light curves
 	for (auto lcfile : w->fileList_) {
 		if (fileExists(lcfile)) {
-			w->SNe_.push_back(lcfile);
+			w->sn_[baseName(lcfile)] = SN(lcfile);
 		}
 	}
 
-    // Make a filter list
-    if (w->filterList_.size() == 0) {
-        // TODO - Look for filters in LC files
-    }
+    // TODO - user defined filter list is not yet implemented
+    if (w->filterList_.size() == 0) {}
 }
 
 
-/* Run the fitting routine for the SN with a given ID */
+// Run the fitting routine for the SN with a given ID
 void fitSN(shared_ptr<WorkspaceLC> w, int ID) {
     w->SNID_ = ID;
     createDirectory(w->SNe_[w->SNID_].name_, "chains");
@@ -118,7 +133,7 @@ void fitSN(shared_ptr<WorkspaceLC> w, int ID) {
 
     // Loop though every available filter
     for (size_t i = 0; i < w->SNe_[w->SNID_].filterList_.size(); ++i) {
-        // Set up the truncated data vectors
+        // Set up the truncated data std::vectors
         w->FLTID_ = i;
         w->data_.x_ = w->SNe_[w->SNID_].tList_[i];
         w->data_.y_ = w->SNe_[w->SNID_].fluxList_[i];
@@ -153,14 +168,15 @@ void fitSN(shared_ptr<WorkspaceLC> w, int ID) {
 }
 
 
-/* Main program */
+// Main program
 int main(int argc, char *argv[]) {
-    vector<string> options;
+    std::vector<std::string> options;
     shared_ptr<WorkspaceLC> w(new WorkspaceLC());
+    shared_ptr<Workspace> w2(new Workspace);
 
     getArgv(argc, argv, options);
-    applyOptions(options, w);
-    fillUnassigned(w);
+    applyOptions(options, w2);
+    fillUnassigned(w2);
 
     // Create the chains and recon directories
     createDirectory("chains");

@@ -15,11 +15,11 @@ SN::SN() {}
 // Single file initialisation, either spectra or light curve
 SN::SN(std::string fileName) {
     // if fileName matches *.dat load as light curve
-    if (split(fileName,'.').back() == "dat") {
+    if (fileExtention(fileName) == "dat") {
         loadLC(fileName);
 
     // if fileName matches *.list load as list of spectra
-    } else if (split(fileName,'.').back() == "list") {
+} else if (fileExtention(fileName) == "list") {
 
     } else {
         std::cout << "Unrecognised data type for file: " << fileName << std::endl;
