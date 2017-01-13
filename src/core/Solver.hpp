@@ -24,4 +24,4 @@ public:
     Solver();
 };
 
-#endif
+#endif  // COCO_CORE_SOLVER_HPP_
