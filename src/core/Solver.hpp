@@ -6,12 +6,11 @@
 
 class Solver {
 public:
-    int noParams_;
+    short noParams_;
     std::vector<double> fitParams_;
-    std::vector<double> startingParams_;
+    std::vector<double> initialParams_;
     std::vector<double> lParams_;
     std::vector<double> uParams_;
-    std::vector<std::string> paramNames_;
 
     // Pure virtual functions that must be overwriten by solver implementations
     virtual void fit() = 0;

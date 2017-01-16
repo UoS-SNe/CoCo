@@ -4,6 +4,7 @@
 #include "../core/Solver.hpp"
 #include "MultiNest.h"
 
+
 class MNest : public Solver {
 public:
     // MultiNest specific temporary data containers

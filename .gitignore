@@ -42,3 +42,7 @@ recon
 data
 shared
 *.list
+
+# Test executables
+src/test.cpp
+test

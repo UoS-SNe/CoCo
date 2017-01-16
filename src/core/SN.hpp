@@ -6,6 +6,7 @@
 #include <string>
 
 
+
 // Data structure for light curve (one filter per object)
 struct LCData {
 	std::vector<double> completeMJD_;
@@ -47,7 +48,6 @@ struct SNEpoch {
 
     SpecData spec_;
 };
-
 
 
 
