@@ -13,6 +13,11 @@ public:
     std::vector<double> initialParams_;
     std::vector<double> fitParams_;
 
+    // Data to which the model is fitted
+    std::vector<double> x_;
+    std::vector<double> y_;
+    std::vector<double> yErr_;
+
     // Model fit statistics
     std::vector<double> bestFit_;
     std::vector<double> mean_;

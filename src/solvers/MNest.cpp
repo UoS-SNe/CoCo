@@ -37,7 +37,7 @@ void MNest::dumper(int &nSamples, int &nlive, int &nPar, double **physLive, doub
 
 
 void MNest::logLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
-    class Solver *solver = (class Solver*) context;
+    std::unique_ptr<Solver> solver(static_cast<Solver*>(context));
 
     // Apply the prior to the parameters
     for (size_t i = 0; i < npars; i++) {
@@ -53,19 +53,54 @@ void MNest::logLike(double *Cube, int &ndim, int &npars, double &lnew, void *con
     // log(Likelihood) function
     lnew = 0;
     double modelFlux;
-    // for (size_t i = 0; i < DATA.X_.size(); ++i) {
-    //     modelFlux = model(DATA.X_[i]);
-    //     if (modelFlux < 0.0) {
-    //         lnew = -std::numeric_limits<double>::max();
-    //         break;
-    //     }
-    //     lnew -= pow((DATA.Y_[i] - modelFlux) / DATA.sigma_[i], 2.0);
-    // }
+    for (size_t i = 0; i < solver->x_.size(); ++i) {
+        modelFlux = (*solver->model_)(solver->x_[i]);
+        if (modelFlux < 0.0) {
+            lnew = -std::numeric_limits<double>::max();
+            break;
+        }
+        lnew -= pow((solver->y_[i] - modelFlux) / solver->yErr_[i], 2.0);
+    }
     lnew /= 2.0;
 }
 
 
-void MNest::fit() {}
+void MNest::fit() {
+    int mmodal = 1;					// do mode separation?
+    int ceff = 0;					// run in constant efficiency mode?
+    double efr = 0.1;				// set the required efficiency
+    double tol = 0.05;				// tol, defines the stopping criteria
+    int ndims = noParams_;	        // dimensionality (no. of free parameters)
+    int nPar = ndims;				// total no. of parameters including free & derived parameters
+    int nClsPar = ndims;			// no. of parameters to do mode separation on
+    int nlive = 1000;				// number of live points
+    int updInt = 10000;				// after how many iterations feedback is required & the output files should be updated
+                                    // note: posterior files are updated & dumper routine is called after every updInt*10 iterations
+    double Ztol = -1e90;			// all the modes with logZ < Ztol are ignored
+    int maxModes = 10;				// expected max no. of modes (used only for memory allocation)
+    int pWrap[ndims];				// which parameters to have periodic boundary conditions?
+    for (size_t i = 0; i < ndims; ++i) {
+        pWrap[i] = 0;
+    }
+    int seed = -1;					// random no. generator seed, if < 0 then take the seed from system clock
+    int fb = 1;					    // need feedback on standard output?
+    int resume = 0;					// resume from a previous job?
+    int outfile = 1;				// write output files?
+    int initMPI = 0;				// initialize MPI routines?, relevant only if compiling with MPI
+                                    // set it to F if you want your main program to handle MPI initialization
+    double logZero = -1e90;			// points with loglike < logZero will be ignored by MultiNest
+    int maxiter = 0;				// max no. of iterations, a non-positive value means infinity. MultiNest will terminate if either it
+                                    // has done max no. of iterations or convergence criterion (defined through tol) has been satisfied
+    int IS = 0;					    // do Nested Importance Sampling?
+
+    rootPath = rootPath + "-";		            // root for output files
+    void *context = static_cast<void*>(this);	// not required by MultiNest, any additional information user wants to pass
+
+    // calling MultiNest
+    nested::run(IS, mmodal, ceff, nlive, tol, efr, ndims, nPar, nClsPar,
+                maxModes, updInt, Ztol, rootPath.c_str(), seed, pWrap, fb, resume,
+                outfile, initMPI, logZero, maxiter, MNest::logLike, MNest::dumper, context);
+}
 
 
 // MultiNest does not store fit results in memory so the results need to be
