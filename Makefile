@@ -19,10 +19,7 @@ src/core/SN.cpp
 SOLVERS = src/core/Solver.cpp src/solvers/priors.cpp src/solvers/MNest.cpp
 MODELS = src/core/Model.cpp src/models/Firth17.cpp
 
-# MPFIT = src/core/mpfit.cpp
-
-# LC = src/lc/WorkspaceLC.cpp src/lc/MultiNest.cpp src/lc/Model.cpp
-# LCEXEC = src/LCFit.cpp
+LCEXEC = src/LCFit.cpp
 
 # SPEC = src/spec/WorkspaceSpec.cpp src/spec/MultiNest.cpp
 # SPECEXEC = src/SpecFit.cpp
@@ -34,23 +31,16 @@ MODELS = src/core/Model.cpp src/models/Firth17.cpp
 # SIMEXEC = src/LCSim.cpp
 
 
-# LCFIT = ${CORE:.cpp=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${LC:.cpp=.o} \
-# ${LCEXEC:.cpp=.o}
+LCFIT = ${CORE:.cpp=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${LCEXEC:.cpp=.o}
 # SPECFIT = ${CORE:.cpp=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${SPEC:.cpp=.o} \
 # ${SPECEXEC:.cpp=.o}
 # SPECPHASE = ${CORE:.cpp=.o} ${SOLVERS:.cpp=.o} ${LC:.cpp=.o} ${MPFIT:.cpp=.o} ${PHASE:.cpp=.o} ${PHASEEXEC:.cpp=.o}
 # LCSIM = ${CORE:.cpp=.o} ${SOLVERS:.cpp=.o} ${LC:.cpp=.o} ${SIM:.cpp=.o} ${SIMEXEC:.cpp=.o}
 
-TESTEXEC = src/test.cpp
-TEST = ${CORE:.cpp=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${TESTEXEC:.cpp=.o}
+all: lcfit # specfit specphase lcsim
 
-all: test # lcfit specfit specphase lcsim
-
-test: $(TEST)
-	$(CXX) $(TEST) $(LDFLAGS) -o $@
-
-# lcfit: $(LCFIT)
-# 	$(CXX) $(LCFIT) $(LDFLAGS) -o $@
+lcfit: $(LCFIT)
+	$(CXX) $(LCFIT) $(LDFLAGS) -o $@
 
 # specfit: $(SPECFIT)
 # 	$(CXX) $(SPECFIT) $(LDFLAGS) -o $@
@@ -64,4 +54,4 @@ test: $(TEST)
 
 clean:
 	rm -f *.o src/*.o src/solvers/*.o src/models/*.o src/core/*.o
-	rm -f test lcfit specfit specphase lcsim
+	rm -f lcfit specfit specphase lcsim

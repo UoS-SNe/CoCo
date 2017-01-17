@@ -59,7 +59,7 @@ void MNest::logLike(double *Cube, int &ndim, int &npars, double &lnew, void *con
             lnew = -std::numeric_limits<double>::max();
             break;
         }
-        lnew -= pow((solver->y_[i] - modelFlux) / solver->yErr_[i], 2.0);
+        lnew -= pow((solver->y_[i] - modelFlux) / solver->sigma_[i], 2.0);
     }
     lnew /= 2.0;
 }

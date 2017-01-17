@@ -77,7 +77,7 @@ public:
     std::vector<std::string> filterList_;
 
     // Hash tables mapping filter names onto light curves and MJDs onto spectra
-    std::unordered_map<std::string,LCData> LC_;
+    std::unordered_map<std::string,LCData> lc_;
     std::unordered_map<double,SpecData> spec_;
     std::unordered_map<double,SNEpoch> epoch_;
 

@@ -13,7 +13,7 @@ Solver::Solver(std::shared_ptr<Model> model) : model_(model) {
     // due to insufficient number of degrees of freedom
     x_ = std::vector<double>(noParams_ + 2, 0);
     y_ = std::vector<double>(noParams_ + 2, 0);
-    yErr_ = std::vector<double>(noParams_ + 2, 0);
+    sigma_ = std::vector<double>(noParams_ + 2, 0);
 }
 
 

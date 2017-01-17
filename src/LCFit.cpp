@@ -1,20 +1,15 @@
-// TODO - Clean unnecessary includes
 #include <vector>
 #include <iostream>
-#include <iomanip>
 #include <string>
 #include <unordered_map>
 
-#include "vmath/loadtxt.hpp"
 #include "vmath/algebra.hpp"
+#include "vmath/loadtxt.hpp"
 
 #include "core/utils.hpp"
-#include "core/LC.hpp"
-#include "lc/WorkspaceLC.hpp"
-#include "lc/Model.hpp"
-#include "lc/MultiNest.hpp"
-
 #include "core/SN.hpp"
+#include "models/Firth17.hpp"
+#include "solvers/MNest.hpp"
 
 
 // Data structure for parameters that are passed between functions
@@ -31,7 +26,7 @@ struct Workspace {
 
 // Display a help message if needed
 void help() {
-    std::cout << "TO_BE_NAMED: \n";
+    std::cout << "CoCo - LCFit: \n";
     std::cout << "Originally writen by Natasha Karpenka, ";
     std::cout << "currently maintained by Szymon Prajs (S.Prajs@soton.ac.uk) ";
     std::cout << "and Rob Firth.\n";
@@ -119,72 +114,72 @@ void fillUnassigned(shared_ptr<Workspace> w) {
 }
 
 
-// Run the fitting routine for the SN with a given ID
-void fitSN(shared_ptr<WorkspaceLC> w, int ID) {
-    w->SNID_ = ID;
-    createDirectory(w->SNe_[w->SNID_].name_, "chains");
-    MultiNest solver(w);
+void fitLC(shared_ptr<Workspace> w) {
+    // Loop though each SN
+    for (auto sn : w->sn_) {
+        createDirectory(sn.second.name_, "chains");
 
-    // Open a text file for the recon file
-    ofstream reconLCFile;
-    ofstream reconStatFile;
-    reconLCFile.open("recon/" + w->SNe_[w->SNID_].name_ + ".dat");
-    reconStatFile.open("recon/" + w->SNe_[w->SNID_].name_ + ".stat");
+        // Open output text files for light curve reconstructions
+        ofstream reconLCFile;
+        ofstream reconStatFile;
+        reconLCFile.open("recon/" + sn.second.name_ + ".dat");
+        reconStatFile.open("recon/" + sn.second.name_ + ".stat");
 
-    // Loop though every available filter
-    for (size_t i = 0; i < w->SNe_[w->SNID_].filterList_.size(); ++i) {
-        // Set up the truncated data std::vectors
-        w->FLTID_ = i;
-        w->data_.x_ = w->SNe_[w->SNID_].tList_[i];
-        w->data_.y_ = w->SNe_[w->SNID_].fluxList_[i];
-        w->data_.sigma_ = w->SNe_[w->SNID_].fluxErrList_[i];
+        // Loop though each filter
+        for (auto lc : sn.second.lc_) {
+            // Initialise the model and solver
+            std::shared_ptr<Model> model(new Firth17);
+            MNest solver(model);
 
-        // Do the fitting (magic!)
-        solver.fit();
+            // Initialise data vectors
+            solver.x_ = lc.second.t_;
+            solver.y_ = lc.second.flux_;
+            solver.sigma_ = lc.second.fluxErr_;
 
-        // Reset the units to original
-        w->dataRecon_.x_ = add<double>(w->dataRecon_.x_, w->SNe_[w->SNID_].mjdMinList_[w->FLTID_]);
-        w->dataRecon_.y_ = mult<double>(w->dataRecon_.y_, w->SNe_[w->SNID_].normalization_[w->FLTID_]);
-        w->dataRecon_.sigma_ = mult<double>(w->dataRecon_.sigma_, w->SNe_[w->SNID_].normalization_[w->FLTID_]);
-        w->dataRecon_.bestFit_ = mult<double>(w->dataRecon_.bestFit_, w->SNe_[w->SNID_].normalization_[w->FLTID_]);
-        w->dataRecon_.median_ = mult<double>(w->dataRecon_.median_, w->SNe_[w->SNID_].normalization_[w->FLTID_]);
-        w->dataRecon_.medianSigma_ = mult<double>(w->dataRecon_.medianSigma_, w->SNe_[w->SNID_].normalization_[w->FLTID_]);
+            // Perform fitting
+            solver.analyse();
 
-        // Write the data to reconLCFile text file buffor
-        for (size_t j = 0; j < w->dataRecon_.x_.size(); ++j) {
-            reconLCFile << w->dataRecon_.x_[j] << " " << w->dataRecon_.y_[j] << " ";
-            reconLCFile << w->dataRecon_.sigma_[j] << " " << w->SNe_[w->SNID_].filterList_[i] << "\n";
+            // Reset lc units to original
+            solver.x_ = vmath::add<double>(solver.x_, lc.second.mjdMin_);
+            solver.y_ = vmath::mult<double>(solver.y_, lc.second.normalization_);
+            solver.sigma_ = vmath::mult<double>(solver.sigma_, lc.second.normalization_);
+            solver.bestFit_ = vmath::mult<double>(solver.bestFit_, lc.second.normalization_);
+            solver.median_ = vmath::mult<double>(solver.median_, lc.second.normalization_);
+            solver.medianSigma_ = vmath::mult<double>(solver.medianSigma_, lc.second.normalization_);
 
-            reconStatFile << w->dataRecon_.x_[j] << " " << w->dataRecon_.y_[j] << " ";
-            reconStatFile << w->dataRecon_.sigma_[j] << " " << w->dataRecon_.bestFit_[j] << " ";
-            reconStatFile << w->dataRecon_.median_[j] << " " << w->dataRecon_.medianSigma_[j] << " ";
-            reconStatFile << w->SNe_[w->SNID_].filterList_[i] << "\n";
+            // Write results to files
+            for (size_t j = 0; j < solver.x_.size(); ++j) {
+                reconLCFile << solver.x_[j] << " " << solver.y_[j] << " ";
+                reconLCFile << solver.sigma_[j] << " " << lc.second.filter_ << "\n";
 
+                reconStatFile << solver.x_[j] << " " << solver.y_[j] << " ";
+                reconStatFile << solver.sigma_[j] << " " << solver.bestFit_[j] << " ";
+                reconStatFile << solver.median_[j] << " " << solver.medianSigma_[j] << " ";
+                reconStatFile << lc.second.filter_ << "\n";
+            }
+
+            reconLCFile.close();
+            reconStatFile.close();
         }
     }
-
-    reconLCFile.close();
-    reconStatFile.close();
 }
 
 
 // Main program
 int main(int argc, char *argv[]) {
     std::vector<std::string> options;
-    shared_ptr<WorkspaceLC> w(new WorkspaceLC());
-    shared_ptr<Workspace> w2(new Workspace);
+    shared_ptr<Workspace> w(new Workspace);
 
     getArgv(argc, argv, options);
-    applyOptions(options, w2);
-    fillUnassigned(w2);
+    applyOptions(options, w);
+    fillUnassigned(w);
 
     // Create the chains and recon directories
     createDirectory("chains");
     createDirectory("recon");
 
-    for (size_t i = 0; i < w->SNe_.size(); ++i) {
-        fitSN(w, i);
-    }
+    // Perform light curve fitting
+    fitLC(w);
 
 	return 0;
 }

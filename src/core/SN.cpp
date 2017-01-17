@@ -50,15 +50,15 @@ void SN::loadLC(std::string fileName) {
 
         // Create data structure for eac
         for (auto &flt : filterList_) {
-            LC_[flt].name_ = name_;
-            LC_[flt].filter_ = flt;
+            lc_[flt].name_ = name_;
+            lc_[flt].filter_ = flt;
         }
 
         // Loop though all data points and assign to correct data vectors
         for (size_t i = 0; i < _rawFilter.size(); ++i) {
-            LC_[_rawFilter[i]].completeMJD_.push_back(_rawMJD[i]);
-            LC_[_rawFilter[i]].completeFlux_.push_back(_rawFlux[i]);
-            LC_[_rawFilter[i]].completeFluxErr_.push_back(_rawFluxErr[i]);
+            lc_[_rawFilter[i]].completeMJD_.push_back(_rawMJD[i]);
+            lc_[_rawFilter[i]].completeFlux_.push_back(_rawFlux[i]);
+            lc_[_rawFilter[i]].completeFluxErr_.push_back(_rawFluxErr[i]);
         }
 
         // Set the working full light curve as the working vrsion
@@ -72,7 +72,7 @@ void SN::loadLC(std::string fileName) {
 
 
 void SN::restoreCompleteLC() {
-    for (auto lc : LC_) {
+    for (auto lc : lc_) {
         lc.second.mjd_ = lc.second.completeMJD_;
         lc.second.flux_ = lc.second.completeFlux_;
         lc.second.fluxErr_ = lc.second.completeFluxErr_;
