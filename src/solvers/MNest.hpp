@@ -1,14 +1,16 @@
 #ifndef COCO_SOLVERS_MNEST_HPP_
 #define COCO_SOLVERS_MNEST_HPP_
 
+#include "MultiNest.h"
+
 #include "../core/Solver.hpp"
 #include "../core/Model.hpp"
-#include "MultiNest.h"
 
 
 class MNest : public Solver {
 public:
     // MultiNest specific temporary data containers
+    std::string rootPath;
 
     // Overrides for solver specific methods
     void fit();
