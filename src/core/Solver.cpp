@@ -4,7 +4,7 @@
 
 
 // Constructor
-Solver::Solver() {}
+Solver::Solver(std::shared_ptr<Model> model) : model_(model) {}
 
 
 void Solver::analyse() {

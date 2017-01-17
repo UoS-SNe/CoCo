@@ -5,7 +5,7 @@
 #include <iostream>
 
 
-Firth17::Firth17() {
+Firth17::Firth17() : Model() {
     noParams_ = 8;
     paramNames_ = {"A",
                    "B",
@@ -17,13 +17,13 @@ Firth17::Firth17() {
                    "Textra"};
 
     priorRange_ = {{1e-5, 1000.0}, // A
-                    {1e-5, 100.0},  // B
-                    {0.0, 100.0},   // t1
-                    {0.2, 100.0},   // Trise
-                    {0.0, 100.0},   // Tfall
-                    {0.0, 100.0},   // t0
-                    {0.0, 100.0},   // t2
-                    {0.2, 100.0}}; // Textra
+                   {1e-5, 100.0},  // B
+                   {0.0, 100.0},   // t1
+                   {0.2, 100.0},   // Trise
+                   {0.0, 100.0},   // Tfall
+                   {0.0, 100.0},   // t0
+                   {0.0, 100.0},   // t2
+                   {0.2, 100.0}};  // Textra
 
     priorType_ = {"log",  // A
                   "log",  // B

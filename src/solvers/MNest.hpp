@@ -2,6 +2,7 @@
 #define COCO_SOLVERS_MNEST_HPP_
 
 #include "../core/Solver.hpp"
+#include "../core/Model.hpp"
 #include "MultiNest.h"
 
 
@@ -12,6 +13,9 @@ public:
     // Overrides for solver specific methods
     void fit();
     void read();
+
+    // Constructor
+    MNest(std::shared_ptr<Model>);
 };
 
 

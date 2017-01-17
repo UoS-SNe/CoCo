@@ -63,5 +63,5 @@ test: $(TEST)
 
 
 clean:
-	rm -f *.o src/*.o src/lc/*.o src/phase/*.o src/spec/*.o src/core/*.o
+	rm -f *.o src/*.o src/solvers/*.o src/models/*.o src/core/*.o
 	rm -f test lcfit specfit specphase lcsim

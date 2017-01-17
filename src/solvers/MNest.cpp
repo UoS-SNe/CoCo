@@ -5,6 +5,8 @@
 #include "priors.hpp"
 
 
+MNest::MNest(std::shared_ptr<Model> model) : Solver(model) {}
+
 void MNest::fit() {
 
 }
