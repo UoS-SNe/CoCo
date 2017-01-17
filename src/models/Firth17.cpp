@@ -25,6 +25,15 @@ Firth17::Firth17() : Model() {
                    {0.0, 100.0},   // t2
                    {0.2, 100.0}};  // Textra
 
+    paramGuess_ = {1.0,   // A
+                   0.1,   // B
+                   10.0,  // t1
+                   5.0,   // Trise
+                   20.0,  // Tfall
+                   1.0,   // t0
+                   5.0,   // t2
+                   10.0}; // Textra
+
     priorType_ = {"log",  // A
                   "log",  // B
                   "flat", // t1

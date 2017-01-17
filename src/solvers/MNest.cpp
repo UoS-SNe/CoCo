@@ -13,11 +13,63 @@
 
 MNest::MNest(std::shared_ptr<Model> model) : Solver(model) {}
 
-void MNest::fit() {
 
+void MNest::dumper(int &nSamples, int &nlive, int &nPar, double **physLive, double **posterior, double **paramConstr, double &maxLogLike, double &logZ, double &logZerr, void *context) {
+    // the posterior distribution
+    // postdist will have nPar parameters in the first nPar columns & loglike value & the posterior probability in the last two columns
+    double postdist[nSamples][nPar + 1];
+    for (size_t i = 0; i < nPar + 1; ++i) {
+        for (size_t j = 0; j < nSamples; ++j) {
+            postdist[j][i] = posterior[0][i * nSamples + j];
+        }
+    }
+
+    // last set of live points
+    // pLivePts will have nPar parameters in the first nPar columns & loglike value in the last column
+    double pLivePts[nlive][nPar + 1];
+    for (size_t i = 0; i < nPar + 1; ++i) {
+        for (size_t j = 0; j < nlive; ++j) {
+            pLivePts[j][i] = physLive[0][i * nlive + j];
+        }
+    }
 }
 
 
+void MNest::LogLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
+    class Model *model = (class Model*) context;
+
+    // Apply the prior to the parameters
+    for (size_t i = 0; i < npars; i++) {
+        if (model->priorType_[i] == "flat") {
+            Cube[i] = flatPrior(Cube[i], model->priorRange_[i].first, model->priorRange_[i].second);
+        } else if (model->priorType_[i] == "log") {
+            Cube[i] = logPrior(Cube[i], model->priorRange_[i].first, model->priorRange_[i].second);
+        }
+    }
+    // Convert the C array of parameters to a C++ vector
+    model->params_.assign(Cube, Cube + ndim);
+
+    // log(Likelihood) function
+    lnew = 0;
+    double modelFlux;
+    // for (size_t i = 0; i < DATA.X_.size(); ++i) {
+    //     modelFlux = w->model_(DATA.X_[i]);
+    //     if (modelFlux < 0.0) {
+    //         lnew = -std::numeric_limits<double>::max();
+    //         break;
+    //     }
+    //     lnew -= pow((DATA.Y_[i] - modelFlux) / DATA.sigma_[i], 2.0);
+    // }
+    lnew /= 2.0;
+}
+
+
+void MNest::fit() {}
+
+
+// MultiNest does not store fit results in memory so the results need to be
+// read from a text file.
+// TODO - Finish once I decide what to do with xRange_
 void MNest::read() {
     // Load summary file containing best fit parameters
     std::string summaryPath = rootPath + "summary.txt";
@@ -35,33 +87,40 @@ void MNest::read() {
 
     // Find the light curve for the best fit parameters
     model_->params_ = fitParams_;
-    // TODO - Calculate the best fit model and store in Solver class
+    // xRecon_ = vmath::range<double>(min(x_data), max(x_data), 1);
+    // bestFit_ = model_(xRecon_);
+}
 
-    // Load and vmath::transpose post_equal_weights file used to Monte Carlo the light curve
-    // PEW <=> Post Equal Weights
-    string PewPath = rootPath + "post_equal_weights.dat";
-    std::vector< std::vector<double> > Pew = vmath::loadtxt<double>(PewPath, noParams_ + 1);
-    Pew = vmath::transpose<double>(Pew);
+
+// MultiNest produces a set of posterior weighted points which can be used to
+// trivially calculate the statistics of the model
+// TODO - Finish once I decide what to do with xRange_
+void MNest::stats() {
+    // Load and transpose post_equal_weights points vector
+    // pew <=> Post Equal Weights
+    string pewPath = rootPath + "post_equal_weights.dat";
+    std::vector< std::vector<double> > pew = vmath::loadtxt<double>(pewPath, noParams_ + 1);
+    pew = vmath::transpose<double>(pew);
 
     // Initialise the light curve reconstruction vectors
-    // w_->dataRecon_.y_ = vector<double>(w_->dataRecon_.x_.size(), 0);
-    // w_->dataRecon_.sigma_ = vector<double>(w_->dataRecon_.x_.size(), 0);
-    // w_->dataRecon_.median_ = vector<double>(w_->dataRecon_.x_.size(), 0);
-    // w_->dataRecon_.medianSigma_ = vector<double>(w_->dataRecon_.x_.size(), 0);
+    mean_ = std::vector<double>(1, 0);
+    meanSigma_ = std::vector<double>(1, 0);
+    median_ = std::vector<double>(1, 0);
+    medianSigma_ = std::vector<double>(1, 0);
 
     // For each PEW point calculate the model and append to the correct vector
-    // vector< vector<double> > ModelCube(Pew.size());
-    // for (size_t i = 0; i < Pew.size(); ++i) {
-    //     w_->model_.params_.assign(Pew[i].begin(), Pew[i].end()-1);
-    //     ModelCube[i] = w_->model_(w_->dataRecon_.x_);
-    // }
+    vector< vector<double> > modelCube(pew.size());
+    for (size_t i = 0; i < pew.size(); ++i) {
+        model_->params_.assign(pew[i].begin(), pew[i].end()-1);
+        // modelCube[i] = w_->model_(xRecon_);
+    }
 
     // For each simulated data point calculate the stats
-    // ModelCube = vmath::transpose<double>(ModelCube);
-    // for (size_t i = 0; i < ModelCube.size(); ++i) {
-    //     w_->dataRecon_.y_[i] = mean<double>(ModelCube[i]);
-    //     w_->dataRecon_.sigma_[i] = stdev<double>(ModelCube[i]);
-    //     w_->dataRecon_.median_[i] = median<double>(ModelCube[i]);
-    //     w_->dataRecon_.medianSigma_[i] = medianSigma<double>(ModelCube[i]);
-    // }
+    modelCube = vmath::transpose<double>(modelCube);
+    for (size_t i = 0; i < modelCube.size(); ++i) {
+        mean_[i] = vmath::mean<double>(modelCube[i]);
+        meanSigma_[i] = vmath::stdev<double>(modelCube[i]);
+        median_[i] = vmath::median<double>(modelCube[i]);
+        medianSigma_[i] = vmath::medianSigma<double>(modelCube[i]);
+    }
 }

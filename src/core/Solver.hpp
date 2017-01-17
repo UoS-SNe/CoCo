@@ -5,23 +5,30 @@
 #include <string>
 #include "../core/Model.hpp"
 
+
 class Solver {
 public:
-    // Working variables for parameter
+    // Model parameters variables
     short noParams_;
-    std::vector<double> fitParams_;
     std::vector<double> initialParams_;
-    std::vector<double> lParams_;
-    std::vector<double> uParams_;
+    std::vector<double> fitParams_;
+
+    // Model fit statistics
+    std::vector<double> bestFit_;
+    std::vector<double> mean_;
+    std::vector<double> meanSigma_;
+    std::vector<double> median_;
+    std::vector<double> medianSigma_;
 
     // Model class to be used in fitting
     std::shared_ptr<Model> model_;
 
-    // Pure virtual functions that must be overwriten by solver implementations
+    // Pure virtual functions that must be overriden by solver implementations
     virtual void fit() = 0;
     virtual void read() = 0;
 
     // Virtual functions with default behaviour
+    virtual void stats();
     virtual void analyse();
 
     // Constructor

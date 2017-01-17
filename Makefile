@@ -14,7 +14,7 @@ LDFLAGS = -lgsl -lnest3 -lgfortran -llapack -Wl,-no_compact_unwind
 	$(CC) $(CFLAGS) $< -o $@
 
 CORE = src/core/utils.cpp src/core/Filters.cpp src/core/Cosmology.cpp \
-src/core/SN.cpp src/core/LC.cpp
+src/core/SN.cpp
 
 SOLVERS = src/core/Solver.cpp src/solvers/priors.cpp src/solvers/MNest.cpp
 MODELS = src/core/Model.cpp src/models/Firth17.cpp

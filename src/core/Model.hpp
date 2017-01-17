@@ -12,6 +12,7 @@ public:
     std::vector<double> params_;
     std::vector<std::string> priorType_;
     std::vector<std::string> paramNames_;
+    std::vector<double> paramGuess_;
     std::vector< std::pair<double,double> > priorRange_;
 
     // Constructor
