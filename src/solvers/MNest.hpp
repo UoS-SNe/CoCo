@@ -13,8 +13,9 @@ public:
     std::string rootPath;
 
     // static functions used by MultiNest
-    static void dumper(int&, int&, int&, double**, double**, double**, double&, double&, double&, void*);
-    static void LogLike(double*,int&,int&,double&,void*);
+    static void dumper(int&,int&,int&,double**,double**,double**,double&,
+                       double&,double&,void*);
+    static void logLike(double*,int&,int&,double&,void*);
 
     // Overrides for solver specific methods
     void fit();

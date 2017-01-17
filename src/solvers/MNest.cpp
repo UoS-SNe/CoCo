@@ -2,6 +2,7 @@
 
 #include <iterator>
 #include <string>
+#include <limits>
 
 #include "multinest.h"
 #include "../vmath/convert.hpp"
@@ -35,25 +36,25 @@ void MNest::dumper(int &nSamples, int &nlive, int &nPar, double **physLive, doub
 }
 
 
-void MNest::LogLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
-    class Model *model = (class Model*) context;
+void MNest::logLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
+    class Solver *solver = (class Solver*) context;
 
     // Apply the prior to the parameters
     for (size_t i = 0; i < npars; i++) {
-        if (model->priorType_[i] == "flat") {
-            Cube[i] = flatPrior(Cube[i], model->priorRange_[i].first, model->priorRange_[i].second);
-        } else if (model->priorType_[i] == "log") {
-            Cube[i] = logPrior(Cube[i], model->priorRange_[i].first, model->priorRange_[i].second);
+        if (solver->model_->priorType_[i] == "flat") {
+            Cube[i] = flatPrior(Cube[i], solver->model_->priorRange_[i].first, solver->model_->priorRange_[i].second);
+        } else if (solver->model_->priorType_[i] == "log") {
+            Cube[i] = logPrior(Cube[i], solver->model_->priorRange_[i].first, solver->model_->priorRange_[i].second);
         }
     }
     // Convert the C array of parameters to a C++ vector
-    model->params_.assign(Cube, Cube + ndim);
+    solver->model_->params_.assign(Cube, Cube + ndim);
 
     // log(Likelihood) function
     lnew = 0;
     double modelFlux;
     // for (size_t i = 0; i < DATA.X_.size(); ++i) {
-    //     modelFlux = w->model_(DATA.X_[i]);
+    //     modelFlux = model(DATA.X_[i]);
     //     if (modelFlux < 0.0) {
     //         lnew = -std::numeric_limits<double>::max();
     //         break;
