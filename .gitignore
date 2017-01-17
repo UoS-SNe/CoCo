@@ -35,6 +35,7 @@ lcfit
 specfit
 specphase
 lcsim
+test
 
 # Data directories
 chains
@@ -42,7 +43,3 @@ recon
 data
 shared
 *.list
-
-# Test executables
-src/test.cpp
-test
