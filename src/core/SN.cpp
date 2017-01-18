@@ -48,7 +48,7 @@ void SN::loadLC(std::string fileName) {
         filterList_ = _rawFilter;
         removeDuplicates<std::string>(filterList_);
 
-        // Create data structure for eac
+        // Create data structure for each light curve. One per filter
         for (auto &flt : filterList_) {
             lc_[flt].name_ = name_;
             lc_[flt].filter_ = flt;

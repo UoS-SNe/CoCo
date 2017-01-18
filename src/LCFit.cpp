@@ -137,7 +137,7 @@ void fitLC(shared_ptr<Workspace> w) {
             solver.y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
             solver.sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
             solver.xRecon_ = vmath::range<double>(-15, lc.second.mjdMax_ - lc.second.mjdMin_ + 20, 1);
-            solver.chainPath_ = "chains/" + sn.second.name_ + "/" + lc.second.filter_; 
+            solver.chainPath_ = "chains/" + sn.second.name_ + "/" + lc.second.filter_;
 
             // Perform fitting
             solver.analyse();
@@ -146,6 +146,7 @@ void fitLC(shared_ptr<Workspace> w) {
             solver.xRecon_ = vmath::add<double>(solver.xRecon_, lc.second.mjdMin_);
             solver.bestFit_ = vmath::mult<double>(solver.mean_, lc.second.normalization_);
             solver.mean_ = vmath::mult<double>(solver.mean_, lc.second.normalization_);
+            solver.meanSigma_ = vmath::mult<double>(solver.meanSigma_, lc.second.normalization_);
             solver.median_ = vmath::mult<double>(solver.median_, lc.second.normalization_);
             solver.medianSigma_ = vmath::mult<double>(solver.medianSigma_, lc.second.normalization_);
 
