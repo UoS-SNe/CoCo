@@ -105,7 +105,6 @@ void MNest::fit() {
 
 // MultiNest does not store fit results in memory so the results need to be
 // read from a text file.
-// TODO - Finish once I decide what to do with xRange_
 void MNest::read() {
     // Load summary file containing best fit parameters
     std::string summaryPath = _rootPath + "summary.txt";
@@ -129,7 +128,6 @@ void MNest::read() {
 
 // MultiNest produces a set of posterior weighted points which can be used to
 // trivially calculate the statistics of the model
-// TODO - Finish once I decide what to do with xRange_
 void MNest::stats() {
     // Load and transpose post_equal_weights points vector
     // pew <=> Post Equal Weights

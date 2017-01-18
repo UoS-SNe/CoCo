@@ -20,9 +20,7 @@ SOLVERS = src/core/Solver.cpp src/solvers/priors.cpp src/solvers/MNest.cpp
 MODELS = src/core/Model.cpp src/models/Firth17.cpp
 
 LCEXEC = src/LCFit.cpp
-
-# SPEC = src/spec/WorkspaceSpec.cpp src/spec/MultiNest.cpp
-# SPECEXEC = src/SpecFit.cpp
+SPECEXEC = src/SpecFit.cpp
 
 # PHASE = src/phase/WorkspacePhase.cpp src/phase/func.cpp
 # PHASEEXEC = src/SpecPhase.cpp
@@ -32,18 +30,17 @@ LCEXEC = src/LCFit.cpp
 
 
 LCFIT = ${CORE:.cpp=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${LCEXEC:.cpp=.o}
-# SPECFIT = ${CORE:.cpp=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${SPEC:.cpp=.o} \
-# ${SPECEXEC:.cpp=.o}
+SPECFIT = ${CORE:.cpp=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${SPECEXEC:.cpp=.o}
 # SPECPHASE = ${CORE:.cpp=.o} ${SOLVERS:.cpp=.o} ${LC:.cpp=.o} ${MPFIT:.cpp=.o} ${PHASE:.cpp=.o} ${PHASEEXEC:.cpp=.o}
 # LCSIM = ${CORE:.cpp=.o} ${SOLVERS:.cpp=.o} ${LC:.cpp=.o} ${SIM:.cpp=.o} ${SIMEXEC:.cpp=.o}
 
-all: lcfit # specfit specphase lcsim
+all: lcfit specfit # specphase lcsim
 
 lcfit: $(LCFIT)
 	$(CXX) $(LCFIT) $(LDFLAGS) -o $@
 
-# specfit: $(SPECFIT)
-# 	$(CXX) $(SPECFIT) $(LDFLAGS) -o $@
+specfit: $(SPECFIT)
+	$(CXX) $(SPECFIT) $(LDFLAGS) -o $@
 
 # specphase: $(SPECPHASE)
 # 	$(CXX) $(SPECPHASE) $(LDFLAGS) -o $@
