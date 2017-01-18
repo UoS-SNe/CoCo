@@ -2,8 +2,10 @@
 
 #include <iostream>
 
-#include "../vmath/loadtxt.hpp"
+#include "../vmath/algebra.hpp"
 #include "../vmath/convert.hpp"
+#include "../vmath/loadtxt.hpp"
+#include "../vmath/stat.hpp"
 
 #include "utils.hpp"
 
@@ -26,9 +28,7 @@ SN::SN(std::string fileName) {
     }
 }
 
-SN::SN(std::string firstName, std::string secondName) {
-
-}
+SN::SN(std::string firstName, std::string secondName) {}
 
 
 // Load light curve from an input data file
@@ -61,7 +61,7 @@ void SN::loadLC(std::string fileName) {
             lc_[_rawFilter[i]].completeFluxErr_.push_back(_rawFluxErr[i]);
         }
 
-        // Set the working full light curve as the working vrsion
+        // Set the full light curve as the working version
         restoreCompleteLC();
     }
 
@@ -76,5 +76,11 @@ void SN::restoreCompleteLC() {
         lc.second.mjd_ = lc.second.completeMJD_;
         lc.second.flux_ = lc.second.completeFlux_;
         lc.second.fluxErr_ = lc.second.completeFluxErr_;
+
+        lc.second.mjdMin_ = vmath::min<double>(lc.second.mjd_);
+        lc.second.mjdMax_ = vmath::max<double>(lc.second.mjd_);
+        lc.second.normalization_ = vmath::max<double>(lc.second.flux_);
+
+        lc.second.t_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
     }
 }

@@ -19,6 +19,7 @@ public:
     std::vector<double> sigma_;
 
     // Model fit statistics
+    std::vector<double> xRecon_;
     std::vector<double> bestFit_;
     std::vector<double> mean_;
     std::vector<double> meanSigma_;

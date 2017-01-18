@@ -5,6 +5,7 @@
 
 #include "vmath/algebra.hpp"
 #include "vmath/loadtxt.hpp"
+#include "vmath/range.hpp"
 
 #include "core/utils.hpp"
 #include "core/SN.hpp"
@@ -131,10 +132,11 @@ void fitLC(shared_ptr<Workspace> w) {
             std::shared_ptr<Model> model(new Firth17);
             MNest solver(model);
 
-            // Initialise data vectors
-            solver.x_ = lc.second.t_;
-            solver.y_ = lc.second.flux_;
-            solver.sigma_ = lc.second.fluxErr_;
+            // Normalise and set data vectors
+            solver.x_ = vmath::sub<double>(lc.second.t_, lc.second.mjdMin_);
+            solver.y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+            solver.sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
+            solver.xRecon_ = vmath::range<double>(-15, lc.second.mjdMax_ - lc.second.mjdMin_ + 20, 1);
 
             // Perform fitting
             solver.analyse();

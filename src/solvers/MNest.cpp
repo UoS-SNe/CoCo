@@ -12,7 +12,9 @@
 #include "priors.hpp"
 
 
-MNest::MNest(std::shared_ptr<Model> model) : Solver(model) {}
+MNest::MNest(std::shared_ptr<Model> model) : Solver(model) {
+    rootPath = "chains/";
+}
 
 
 void MNest::dumper(int &nSamples, int &nlive, int &nPar, double **physLive, double **posterior, double **paramConstr, double &maxLogLike, double &logZ, double &logZerr, void *context) {
@@ -123,8 +125,7 @@ void MNest::read() {
 
     // Find the light curve for the best fit parameters
     model_->params_ = fitParams_;
-    // xRecon_ = vmath::range<double>(min(x_data), max(x_data), 1);
-    // bestFit_ = model_(xRecon_);
+    bestFit_ = (*model_)(xRecon_);
 }
 
 
@@ -148,7 +149,7 @@ void MNest::stats() {
     vector< vector<double> > modelCube(pew.size());
     for (size_t i = 0; i < pew.size(); ++i) {
         model_->params_.assign(pew[i].begin(), pew[i].end()-1);
-        // modelCube[i] = w_->model_(xRecon_);
+        modelCube[i] = (*model_)(xRecon_);
     }
 
     // For each simulated data point calculate the stats
