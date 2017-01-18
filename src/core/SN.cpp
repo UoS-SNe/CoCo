@@ -1,5 +1,7 @@
 #include "SN.hpp"
 
+#include <math.h>
+
 #include <iostream>
 
 #include "../vmath/algebra.hpp"
@@ -27,9 +29,47 @@ SN::SN(std::string fileName) {
 
 
 // Add a spectrum file and read the data
-void SN::addSpec(std::string fileName, double z) {
+void SN::addSpec(std::string fileName, double mjd) {
     if (utils::fileExists(fileName)) {
+        // Create a temporarty SpecData object
+        SpecData sd;
 
+        // Load data into a temporarty vector then assign to SpecData object
+        std::vector< std::vector<double> > temp = vmath::loadtxt<double>(fileName, 2);
+        sd.rawWav_ = temp[0];
+        sd.rawFlux_ = temp[1];
+        sd.wav_ = sd.rawWav_;
+        sd.flux_ = sd.rawFlux_;
+        sd.mjd_ = mjd;
+
+        // Add the data object to the spec_ unordered_map accessed by MJD
+        spec_[mjd] = sd;
+    }
+}
+
+
+// Create a slice though the light curves at a given MJD
+void SN::addEpoch(double mjd) {
+    // Check if any light curves are assigned
+    if (!lc_.empty()) {
+        // create a temporarty SNEpoch object
+        SNEpoch epoch;
+
+        size_t idxNearest;
+        for (auto &lc : lc_) {
+            epoch.mjd_ = mjd;
+            idxNearest = vmath::nearest(lc.second.mjd_, mjd);
+
+            // Check if the data points is within one day from the spectrum
+            if (!(fabs(lc.second.mjd_[idxNearest] - mjd) > 1)) {
+                epoch.flux_.push_back(lc.second.flux_[idxNearest]);
+                epoch.fluxErr_.push_back(lc.second.fluxErr_[idxNearest]);
+                epoch.filter_.push_back(lc.second.filter_);
+            }
+        }
+
+        // Add the light curve slice to epoch_ unordered_map accessed by MJD
+        epoch_[mjd] = epoch;
     }
 }
 

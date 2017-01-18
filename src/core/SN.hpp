@@ -28,6 +28,8 @@ struct LCData {
 
 // Data structure for specta
 struct SpecData {
+    double mjd_;
+
     std::vector<double> rawWav_;
     std::vector<double> rawFlux_;
 
@@ -41,12 +43,10 @@ struct SpecData {
 // Data structure for one epoch of data contains a slice though a light curve
 // and a spectrum if available
 struct SNEpoch {
-    double MJD_;
+    double mjd_;
     std::vector<double> flux_;
     std::vector<double> fluxErr_;
-    std::vector<double> filter_;
-
-    SpecData spec_;
+    std::vector<std::string> filter_;
 };
 
 
@@ -86,7 +86,8 @@ public:
     SN(std::string);
 
     // Data loading routines
-    void addSpec(std::string,double z=0);
+    void addSpec(std::string,double);
+    void addEpoch(double);
     void loadLC(std::string);
     void restoreCompleteLC();
 };
