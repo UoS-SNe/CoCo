@@ -39,7 +39,7 @@ void MNest::dumper(int &nSamples, int &nlive, int &nPar, double **physLive, doub
 
 
 void MNest::logLike(double *Cube, int &ndim, int &npars, double &lnew, void *context) {
-    std::unique_ptr<Solver> solver(static_cast<Solver*>(context));
+    Solver *solver = static_cast<Solver*>(context);
 
     // Apply the prior to the parameters
     for (size_t i = 0; i < npars; i++) {
