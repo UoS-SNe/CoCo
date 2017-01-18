@@ -1,5 +1,22 @@
 #include "func.hpp"
 
+#include <stdlib.h>
+
+#include <vector>
+#include <iostream>
+#include <string>
+#include <algorithm>
+
+#include "../core/utils.hpp"
+#include "../core/Filters.hpp"
+#include "../core/mpfit.h"
+#include "../lc/Model.hpp"
+#include "../vmath/loadtxt.hpp"
+#include "../vmath/convert.hpp"
+#include "../vmath/stat.hpp"
+#include "../vmath/algebra.hpp"
+#include "../vmath/range.hpp"
+
 using namespace std;
 
 
@@ -17,7 +34,7 @@ void readRecon(shared_ptr<WorkspacePhase> w) {
             ++it;
         }
     }
-    sort(w->spectra_.begin(), w->spectra_.end());
+    std::sort(w->spectra_.begin(), w->spectra_.end());
 
     w->SNName_.clear();
     w->MJD_.clear();
@@ -58,9 +75,9 @@ void syntheticFlux(shared_ptr<WorkspacePhase> w) {
         // Load spectra into temporary vectors
         w->specList_.push_back(w->spectra_[i]);
         w->synthMJD_.push_back(w->MJD_[i]);
-        loadtxt<string>("recon/" + w->spectra_[i], 2, tempList);
-        w->wav_ = castString<double>(tempList[0]);
-        w->flux_ = castString<double>(tempList[1]);
+        vmath::loadtxt<string>("recon/" + w->spectra_[i], 2, tempList);
+        w->wav_ = vmath::castString<double>(tempList[0]);
+        w->flux_ = vmath::castString<double>(tempList[1]);
 
         // Rescale filter responses and find synthetic flux
         w->filters_->rescale(w->wav_);
@@ -87,16 +104,16 @@ int resFunc(int m, int n, double *p, double *residual, double **dvec, void *vars
 void fitPhase(shared_ptr<WorkspacePhase> w) {
     // Set up fit parameters
     w->model_.params_ = {1.0, 0.1, 1.0, 1.0, 10.0, 10.0, 10.0, 10.0};
-    w->minMJD_ = min<double>(w->synthMJD_);
-    w->maxFlux_ = max<double>(w->synthFlux_);
+    w->minMJD_ = vmath::min<double>(w->synthMJD_);
+    w->maxFlux_ = vmath::max<double>(w->synthFlux_);
 
     // Do model fitting
     fit(w);
 
     // Create a temporary time vector normalised to minMJD
-    vector<double> tempT = sub<double>(w->synthMJD_, w->minMJD_);
-    sort(tempT.begin(), tempT.end());
-    tempT = range<double>(tempT.front() - 20, tempT.back() + 20, 1);
+    vector<double> tempT = vmath::sub<double>(w->synthMJD_, w->minMJD_);
+    std::sort(tempT.begin(), tempT.end());
+    tempT = vmath::range<double>(tempT.front() - 20, tempT.back() + 20, 1);
 
     // Find the peak of the synthetic light curve
     vector<double> tempLC = w->model_(tempT);
@@ -104,7 +121,7 @@ void fitPhase(shared_ptr<WorkspacePhase> w) {
     w->MJDPhaseZero_ = tempT[indexMax] + w->minMJD_;
 
     // Find the factor needed to normalise the spectrum to M = -17
-    double magMax = -2.5 * log10(tempLC[indexMax]) - w->filters_->filters_[w->FLTID_].zp_;
+    double magMax = -2.5 * log10(tempLC[indexMax]) - w->filters_->filter_[w->filter_].zp_;
     double fluxNormalisation = pow(10.0, 0.4 * (magMax - (-17)));
 
     // Apply the normalisation factor - can be made optional
@@ -130,9 +147,9 @@ void normaliseSpec(shared_ptr<WorkspacePhase> w, double normFactor) {
 
     for (auto spec : w->specList_) {
         // Read a spectrum file and apply the correction to flux
-        specData = loadtxt<string>("recon/" + spec, 2);
-        vector<double> flux = castString<double>(specData[1]);
-        flux = mult<double>(flux, normFactor);
+        specData = vmath::loadtxt<string>("recon/" + spec, 2);
+        vector<double> flux = vmath::castString<double>(specData[1]);
+        flux = vmath::mult<double>(flux, normFactor);
 
         // Overwrite the old spectrum
         specFile.open("recon/" + spec);

@@ -1,11 +1,12 @@
 #include <vector>
 #include <string>
+
 #include "core/Filters.hpp"
 #include "phase/WorkspacePhase.hpp"
 #include "phase/func.hpp"
+#include "core/utils.hpp"
 
 using namespace std;
-using namespace vmath;
 
 
 void help() {
@@ -45,7 +46,6 @@ int main (int argc, char* argv[]) {
 
     // Read in filters and find the ID of the filter used to determine the phase
     w->filters_ = shared_ptr<Filters>(new Filters(w->filterPath_));
-    w->FLTID_ = w->filters_->filterID_[w->filter_];
 
     readRecon(w);
     syntheticFlux(w);

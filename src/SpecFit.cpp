@@ -19,10 +19,10 @@ using namespace vmath;
 
 
 void help() {
-    cout << "SPECFIT: \n";
-    cout << "Originally writen by Natasha Karpenka, ";
-    cout << "currently maintained by Szymon Prajs (S.Prajs@soton.ac.uk) ";
-    cout << "and Rob Firth.\n";
+    cout << "CoCo - SpecFit: \n";
+    cout << "Originally developed by Natasha Karpenka, ";
+    cout << "and reimplemented by Szymon Prajs (S.Prajs@soton.ac.uk).\n";
+    cout << "Currently maintained by Szymon Prajs and Rob Firth.\n";
     cout << "\nUsage:\n";
     cout << "./specfit spectra_setup_file.list\n";
     cout << "or\n";
