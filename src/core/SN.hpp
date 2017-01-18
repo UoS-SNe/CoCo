@@ -84,9 +84,9 @@ public:
     // Constructors
     SN();
     SN(std::string);
-    SN(std::string,std::string);
 
     // Data loading routines
+    void addSpec(std::string,double z=0);
     void loadLC(std::string);
     void restoreCompleteLC();
 };

@@ -17,24 +17,27 @@ SN::SN() {}
 // Single file initialisation, either spectra or light curve
 SN::SN(std::string fileName) {
     // if fileName matches *.dat load as light curve
-    if (fileExtention(fileName) == "dat") {
+    if (utils::fileExtention(fileName) == "dat") {
         loadLC(fileName);
-
-    // if fileName matches *.list load as list of spectra
-    } else if (fileExtention(fileName) == "list") {
 
     } else {
         std::cout << "Unrecognised data type for file: " << fileName << std::endl;
     }
 }
 
-SN::SN(std::string firstName, std::string secondName) {}
+
+// Add a spectrum file and read the data
+void SN::addSpec(std::string fileName, double z) {
+    if (utils::fileExists(fileName)) {
+
+    }
+}
 
 
 // Load light curve from an input data file
 void SN::loadLC(std::string fileName) {
-    if (fileExists(fileName)) {
-        name_ = baseName(fileName);
+    if (utils::fileExists(fileName)) {
+        name_ = utils::baseName(fileName);
 
         // Load the light curve into a temporarty 2D vector and split into 1D
         std::vector< std::vector<string> > temp;
@@ -46,7 +49,7 @@ void SN::loadLC(std::string fileName) {
 
         // Make a list of unique filters
         filterList_ = _rawFilter;
-        removeDuplicates<std::string>(filterList_);
+        utils::removeDuplicates<std::string>(filterList_);
 
         // Create data structure for each light curve. One per filter
         for (auto &flt : filterList_) {

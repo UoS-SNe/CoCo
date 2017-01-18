@@ -46,7 +46,7 @@ void applyOptions(std::vector<std::string> &options, shared_ptr<Workspace> w) {
 
     // First option is the LC file name or list of LC files
     w->inputFileName_ = options[0];
-    if (fileExtention(w->inputFileName_) == "list") {
+    if (utils::fileExtention(w->inputFileName_) == "list") {
         vmath::loadtxt<std::string>(w->inputFileName_, 1, w->fileList_);
 
     } else {
@@ -73,7 +73,7 @@ void applyOptions(std::vector<std::string> &options, shared_ptr<Workspace> w) {
             continue;
 
         } else {
-            split(options[i], '=', command);
+            utils::split(options[i], '=', command);
         }
 
         // Assign properties based on commands
@@ -84,7 +84,7 @@ void applyOptions(std::vector<std::string> &options, shared_ptr<Workspace> w) {
         } else if (command[0] == "-f" ||
                    command[0] == "--filters" ||
                    command[0] == "--filter" ) {
-            w->filterList_ = split(command[1], ',');
+            w->filterList_ = utils::split(command[1], ',');
 
         } else {
             std::cout << command[0] << " is not a valid command." << std::endl;
@@ -105,8 +105,8 @@ void fillUnassigned(shared_ptr<Workspace> w) {
 
 	// Load the light curves
 	for (auto lcfile : w->fileList_) {
-		if (fileExists(lcfile)) {
-			w->sn_[baseName(lcfile)] = SN(lcfile);
+		if (utils::fileExists(lcfile)) {
+			w->sn_[utils::baseName(lcfile)] = SN(lcfile);
 		}
 	}
 
@@ -118,7 +118,7 @@ void fillUnassigned(shared_ptr<Workspace> w) {
 void fitLC(shared_ptr<Workspace> w) {
     // Loop though each SN
     for (auto sn : w->sn_) {
-        createDirectory(sn.second.name_, "chains");
+        utils::createDirectory(sn.second.name_, "chains");
 
         // Open output text files for light curve reconstructions
         ofstream reconLCFile;
@@ -173,13 +173,13 @@ int main(int argc, char *argv[]) {
     std::vector<std::string> options;
     shared_ptr<Workspace> w(new Workspace);
 
-    getArgv(argc, argv, options);
+    utils::getArgv(argc, argv, options);
     applyOptions(options, w);
     fillUnassigned(w);
 
     // Create the chains and recon directories
-    createDirectory("chains");
-    createDirectory("recon");
+    utils::createDirectory("chains");
+    utils::createDirectory("recon");
 
     // Perform light curve fitting
     fitLC(w);

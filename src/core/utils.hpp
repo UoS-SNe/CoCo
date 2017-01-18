@@ -1,50 +1,38 @@
-#ifndef COCO_UTILS_HPP_
-#define COCO_UTILS_HPP_
+#ifndef COCO_CORE_UTILS_HPP_
+#define COCO_CORE_UTILS_HPP_
 
 #include <vector>
-#include <memory>
 #include <string>
-#include <fstream>
-#include <iostream>
 #include <sstream>
-#include <stdio.h>
-#include <dirent.h>
-#include <iterator>
-#include <algorithm>
-#include <iomanip>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <limits.h>
 
-using namespace std;
 
+namespace utils {
 
 /* Split options into a vector of arguments */
-void getArgv(int, char**, vector<string>&);
+void getArgv(int, char**, std::vector<std::string>&);
 
-void split(const string&, char, vector<string>&);
-vector<string> split(const string&, char);
+void split(const std::string&, char, std::vector<std::string>&);
+std::vector<std::string> split(const std::string&, char);
 
-void dirlist(const string&, vector<string>&);
-vector<string> dirlist(const string&);
+void dirlist(const std::string&, std::vector<std::string>&);
+std::vector<std::string> dirlist(const std::string&);
 
-bool compareStrings(string, string);
-bool fileExists(const string&);
-string baseName(const string&);
-string fileExtention(const string&);
+bool compareStrings(std::string, std::string);
+bool fileExists(const std::string&);
+std::string baseName(const std::string&);
+std::string fileExtention(const std::string&);
 
-string getCWD();
-void createDirectory(string);
-void createDirectory(string,string);
+std::string getCWD();
+void createDirectory(std::string);
+void createDirectory(std::string,std::string);
 
 
 template<typename T>
-string joinStrings(const vector<T> &vec, char delim) {
-    ostringstream oss;
+std::string joinStrings(const std::vector<T> &vec, char delim) {
+    std::ostringstream oss;
 
     if (vec.size() > 1) {
-        copy(vec.begin(), vec.end() - 1, ostream_iterator<T>(oss, &delim));
+        copy(vec.begin(), vec.end() - 1, std::ostream_iterator<T>(oss, &delim));
         oss << vec.back();
 
     } else {
@@ -56,9 +44,11 @@ string joinStrings(const vector<T> &vec, char delim) {
 
 
 template <typename T>
-void removeDuplicates(vector<T> &vec) {
+void removeDuplicates(std::vector<T> &vec) {
     std::sort(vec.begin(), vec.end());
     vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
 }
 
-#endif
+}  // namespace utils
+
+#endif  // COCO_CORE_UTILS_HPP_

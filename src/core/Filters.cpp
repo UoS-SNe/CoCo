@@ -29,7 +29,7 @@ void Filters::readFolder() {
 
 void Filters::loadFilter(std::string fileName) {
     FilterData filter;
-    filter.name_ = split(fileName, '.')[0];
+    filter.name_ = utils::split(fileName, '.')[0];
 
     std::vector< std::vector<double> > data;
     std::string path = folderPath_+ "/" + fileName;

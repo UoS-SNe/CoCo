@@ -1,7 +1,21 @@
 #include "utils.hpp"
 
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <dirent.h>
 
-void getArgv(int argc, char **argv, vector<string> &options) {
+#include <algorithm>
+#include <iomanip>
+#include <iostream>
+#include <iterator>
+#include <fstream>
+#include <limits>
+#include <memory>
+
+
+void utils::getArgv(int argc, char **argv, std::vector<std::string> &options) {
     options.clear();
 
     for (size_t i = 1; i < argc; ++i) {
@@ -10,91 +24,91 @@ void getArgv(int argc, char **argv, vector<string> &options) {
 }
 
 
-void split(const string &s, char delim, vector<string> &elems) {
+void utils::split(const std::string &s, char delim, std::vector<std::string> &elems) {
     elems.clear();
-    stringstream ss(s);
-    string item;
+    std::stringstream ss(s);
+    std::string item;
     while(getline(ss, item, delim)) {
         elems.push_back(item);
     }
 }
 
 
-vector<string> split(const string &s, char delim) {
-    vector<string> elems;
-    split(s, delim, elems);
+std::vector<std::string> utils::split(const std::string &s, char delim) {
+    std::vector<std::string> elems;
+    utils::split(s, delim, elems);
     return elems;
 }
 
 
-void dirlist(const string &path, vector<string> &files) {
+void utils::dirlist(const std::string &path, std::vector<std::string> &files) {
     files.clear();
-    string temp;
-    string ignore(".");
+    std::string temp;
+    std::string ignore(".");
     DIR *dir;
     struct dirent *file;
 
     dir = opendir(path.c_str());
     if (dir != NULL) {
         while ((file = readdir(dir)) != NULL) {
-            temp = string(file->d_name);
+            temp = std::string(file->d_name);
 
             if (temp.at(0) != ignore.at(0)) {
                 files.push_back(temp);
             }
         }
-        closedir (dir);
+        closedir(dir);
     } else {
-        cout << "ERROR: Cannot open directory " << path << endl;
+        std::cout << "ERROR: Cannot open directory " << path << std::endl;
     }
 }
 
 
-vector<string> dirlist(const string &path) {
-    vector<string> files;
-    dirlist(path, files);
+std::vector<std::string> utils::dirlist(const std::string &path) {
+    std::vector<std::string> files;
+    utils::dirlist(path, files);
     return files;
 }
 
 
-bool compareStrings(string i, string j) {
+bool utils::compareStrings(std::string i, std::string j) {
     return (i==j);
 }
 
 
-bool fileExists(const string &name) {
+bool utils::fileExists(const std::string &name) {
   struct stat buffer;
   return (stat(name.c_str(), &buffer) == 0);
 }
 
 
-string baseName(const string &path) {
-    string filename = path.substr(path.find_last_of("/\\") + 1);
+std::string utils::baseName(const std::string &path) {
+    std::string filename = path.substr(path.find_last_of("/\\") + 1);
     return filename.substr(0, filename.find_last_of('.'));
 }
 
-string fileExtention(const string& path) {
+std::string utils::fileExtention(const std::string& path) {
     return path.substr(path.find_last_of(".") + 1);
 }
 
 
 
-string getCWD() {
+std::string utils::getCWD() {
     char charCurDir[PATH_MAX];
     getcwd(charCurDir, PATH_MAX);
 
-    return string(charCurDir);
+    return std::string(charCurDir);
 }
 
 
-void createDirectory(string name, string dir) {
-    string resultsDir = dir + "/" + name;
+void utils::createDirectory(std::string name, std::string dir) {
+    std::string resultsDir = dir + "/" + name;
     struct stat s;
     if (stat(resultsDir.c_str(), &s) != 0) {
         mkdir(resultsDir.c_str(), 0755);
     }
 }
 
-void createDirectory(string name) {
-    createDirectory(name, getCWD());
+void utils::createDirectory(std::string name) {
+    utils::createDirectory(name, getCWD());
 }
