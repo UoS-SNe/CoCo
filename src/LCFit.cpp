@@ -160,10 +160,10 @@ void fitLC(shared_ptr<Workspace> w) {
                 reconStatFile << solver.median_[j] << " " << solver.medianSigma_[j] << " ";
                 reconStatFile << lc.second.filter_ << "\n";
             }
-
-            reconLCFile.close();
-            reconStatFile.close();
         }
+
+        reconLCFile.close();
+        reconStatFile.close();
     }
 }
 
