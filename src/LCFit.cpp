@@ -133,29 +133,29 @@ void fitLC(shared_ptr<Workspace> w) {
             MNest solver(model);
 
             // Normalise and set data vectors
-            solver.x_ = vmath::sub<double>(lc.second.t_, lc.second.mjdMin_);
+            solver.x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
             solver.y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
             solver.sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
             solver.xRecon_ = vmath::range<double>(-15, lc.second.mjdMax_ - lc.second.mjdMin_ + 20, 1);
+            solver.chainPath_ = "chains/" + sn.second.name_ + "/" + lc.second.filter_; 
 
             // Perform fitting
             solver.analyse();
 
             // Reset lc units to original
-            solver.x_ = vmath::add<double>(solver.x_, lc.second.mjdMin_);
-            solver.y_ = vmath::mult<double>(solver.y_, lc.second.normalization_);
-            solver.sigma_ = vmath::mult<double>(solver.sigma_, lc.second.normalization_);
-            solver.bestFit_ = vmath::mult<double>(solver.bestFit_, lc.second.normalization_);
+            solver.xRecon_ = vmath::add<double>(solver.xRecon_, lc.second.mjdMin_);
+            solver.bestFit_ = vmath::mult<double>(solver.mean_, lc.second.normalization_);
+            solver.mean_ = vmath::mult<double>(solver.mean_, lc.second.normalization_);
             solver.median_ = vmath::mult<double>(solver.median_, lc.second.normalization_);
             solver.medianSigma_ = vmath::mult<double>(solver.medianSigma_, lc.second.normalization_);
 
             // Write results to files
-            for (size_t j = 0; j < solver.x_.size(); ++j) {
-                reconLCFile << solver.x_[j] << " " << solver.y_[j] << " ";
-                reconLCFile << solver.sigma_[j] << " " << lc.second.filter_ << "\n";
+            for (size_t j = 0; j < solver.xRecon_.size(); ++j) {
+                reconLCFile << solver.xRecon_[j] << " " << solver.mean_[j] << " ";
+                reconLCFile << solver.meanSigma_[j] << " " << lc.second.filter_ << "\n";
 
-                reconStatFile << solver.x_[j] << " " << solver.y_[j] << " ";
-                reconStatFile << solver.sigma_[j] << " " << solver.bestFit_[j] << " ";
+                reconStatFile << solver.xRecon_[j] << " " << solver.mean_[j] << " ";
+                reconStatFile << solver.meanSigma_[j] << " " << solver.bestFit_[j] << " ";
                 reconStatFile << solver.median_[j] << " " << solver.medianSigma_[j] << " ";
                 reconStatFile << lc.second.filter_ << "\n";
             }

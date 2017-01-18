@@ -12,9 +12,7 @@
 #include "priors.hpp"
 
 
-MNest::MNest(std::shared_ptr<Model> model) : Solver(model) {
-    rootPath = "chains/";
-}
+MNest::MNest(std::shared_ptr<Model> model) : Solver(model) {}
 
 
 void MNest::dumper(int &nSamples, int &nlive, int &nPar, double **physLive, double **posterior, double **paramConstr, double &maxLogLike, double &logZ, double &logZerr, void *context) {
@@ -95,12 +93,12 @@ void MNest::fit() {
                                     // has done max no. of iterations or convergence criterion (defined through tol) has been satisfied
     int IS = 0;					    // do Nested Importance Sampling?
 
-    rootPath = rootPath + "-";		            // root for output files
+    _rootPath = chainPath_ + "-";		            // root for output files
     void *context = static_cast<void*>(this);	// not required by MultiNest, any additional information user wants to pass
 
     // calling MultiNest
     nested::run(IS, mmodal, ceff, nlive, tol, efr, ndims, nPar, nClsPar,
-                maxModes, updInt, Ztol, rootPath.c_str(), seed, pWrap, fb, resume,
+                maxModes, updInt, Ztol, _rootPath.c_str(), seed, pWrap, fb, resume,
                 outfile, initMPI, logZero, maxiter, MNest::logLike, MNest::dumper, context);
 }
 
@@ -110,7 +108,7 @@ void MNest::fit() {
 // TODO - Finish once I decide what to do with xRange_
 void MNest::read() {
     // Load summary file containing best fit parameters
-    std::string summaryPath = rootPath + "summary.txt";
+    std::string summaryPath = _rootPath + "summary.txt";
     std::vector< std::vector<double> > summary = vmath::loadtxt<double>(summaryPath, noParams_ * 4 + 2);
 
     // Find the highest logLike e.g. Best fit
@@ -135,15 +133,15 @@ void MNest::read() {
 void MNest::stats() {
     // Load and transpose post_equal_weights points vector
     // pew <=> Post Equal Weights
-    string pewPath = rootPath + "post_equal_weights.dat";
+    string pewPath = _rootPath + "post_equal_weights.dat";
     std::vector< std::vector<double> > pew = vmath::loadtxt<double>(pewPath, noParams_ + 1);
     pew = vmath::transpose<double>(pew);
 
     // Initialise the light curve reconstruction vectors
-    mean_ = std::vector<double>(1, 0);
-    meanSigma_ = std::vector<double>(1, 0);
-    median_ = std::vector<double>(1, 0);
-    medianSigma_ = std::vector<double>(1, 0);
+    mean_ = std::vector<double>(xRecon_.size(), 0);
+    meanSigma_ = std::vector<double>(xRecon_.size(), 0);
+    median_ = std::vector<double>(xRecon_.size(), 0);
+    medianSigma_ = std::vector<double>(xRecon_.size(), 0);
 
     // For each PEW point calculate the model and append to the correct vector
     vector< vector<double> > modelCube(pew.size());

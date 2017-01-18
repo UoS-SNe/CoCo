@@ -21,7 +21,7 @@ SN::SN(std::string fileName) {
         loadLC(fileName);
 
     // if fileName matches *.list load as list of spectra
-} else if (fileExtention(fileName) == "list") {
+    } else if (fileExtention(fileName) == "list") {
 
     } else {
         std::cout << "Unrecognised data type for file: " << fileName << std::endl;
@@ -72,7 +72,7 @@ void SN::loadLC(std::string fileName) {
 
 
 void SN::restoreCompleteLC() {
-    for (auto lc : lc_) {
+    for (auto &lc : lc_) {
         lc.second.mjd_ = lc.second.completeMJD_;
         lc.second.flux_ = lc.second.completeFlux_;
         lc.second.fluxErr_ = lc.second.completeFluxErr_;

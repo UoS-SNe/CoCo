@@ -12,6 +12,7 @@ public:
     short noParams_;
     std::vector<double> initialParams_;
     std::vector<double> fitParams_;
+    std::string chainPath_;
 
     // Data to which the model is fitted
     std::vector<double> x_;
