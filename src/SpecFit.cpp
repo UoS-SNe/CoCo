@@ -120,16 +120,41 @@ void applyOptions(std::vector<std::string> &options, std::shared_ptr<Workspace> 
 void fillUnassigned(std::shared_ptr<Workspace> w) {
     // Do a sanity check for the LC files
     if (w->specFileList_.size() == 0) {
-        std::cout << "Something went seriously wrong.";
+        std::cout << "Something went seriously wrong. ";
         std::cout << "Please consider report this bug on our project GitHub page";
         std::cout << std::endl;
         exit(0);
     }
 
-	// Load data
-    // TODO - Load specta and reconstructed LC's to a SN class object
+	// Load each spectrum into the correct SN object
+    for (size_t i = 0; i < w->specFileList_.size(); ++i) {
+        // Load the light curve if not yet loaded
+        if (w->sn_.find(w->snNameList_[i]) == w->sn_.end()) {
+            if (!utils::fileExists("recon/" + w->snNameList_[i] + ".dat")) {
+                std::cout << "No reconstructed light curve was found for: ";
+                std::cout << w->snNameList_[i] << "\nExiting!" << std::endl;
+                exit(0);
+            }
+
+            w->sn_[w->snNameList_[i]] = SN("recon/" + w->snNameList_[i] + ".dat");
+            w->sn_[w->snNameList_[i]].z_ = w->zList_[i];
+        }
+
+        // Load each stectrum into the correct SN object
+        if (!utils::fileExists(w->specFileList_[i]) {
+            std::cout << "Ignoring spectrum - path not found: ";
+            std::cout << w->specFileList_[i] << std::endl;
+            exit(0);
+        } else {
+            w->sn_[w->snNameList_[i]].addSpec(w->specFileList_[i], w->mjdList_[i]);
+        }
+    }
 }
 
+
+void mangleSpectra() {
+
+}
 
 
 int main(int argc, char *argv[]) {
@@ -145,7 +170,7 @@ int main(int argc, char *argv[]) {
     w->filterPath_ = "data/filters";
     w->filters_ = std::shared_ptr<Filters>(new Filters(w->filterPath_));
 
-    // TODO - Perform the fitting
+    mangleSpectra();
 
     return 0;
 }
