@@ -17,22 +17,18 @@ CORE = src/core/utils.cpp src/core/Filters.cpp src/core/Cosmology.cpp \
 src/core/SN.cpp
 
 SOLVERS = src/core/Solver.cpp src/solvers/priors.cpp src/solvers/MNest.cpp
-MODELS = src/core/Model.cpp src/models/Firth17.cpp
+MODELS = src/core/Model.cpp src/models/Firth17.cpp src/models/SpecMangle.cpp
 
 LCEXEC = src/LCFit.cpp
 SPECEXEC = src/SpecFit.cpp
-
-# PHASE = src/phase/WorkspacePhase.cpp src/phase/func.cpp
 # PHASEEXEC = src/SpecPhase.cpp
-#
-# SIM =
 # SIMEXEC = src/LCSim.cpp
 
 
 LCFIT = ${CORE:.cpp=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${LCEXEC:.cpp=.o}
 SPECFIT = ${CORE:.cpp=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${SPECEXEC:.cpp=.o}
-# SPECPHASE = ${CORE:.cpp=.o} ${SOLVERS:.cpp=.o} ${LC:.cpp=.o} ${MPFIT:.cpp=.o} ${PHASE:.cpp=.o} ${PHASEEXEC:.cpp=.o}
-# LCSIM = ${CORE:.cpp=.o} ${SOLVERS:.cpp=.o} ${LC:.cpp=.o} ${SIM:.cpp=.o} ${SIMEXEC:.cpp=.o}
+# SPECPHASE = ${CORE:.cpp=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${PHASEEXEC:.cpp=.o}
+# LCSIM = ${CORE:.cpp=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${SIMEXEC:.cpp=.o}
 
 all: lcfit specfit # specphase lcsim
 

@@ -15,6 +15,8 @@
 #include "core/Cosmology.hpp"
 #include "core/Filters.hpp"
 #include "core/SN.hpp"
+#include "solvers/MNest.hpp"
+#include "models/SpecMangle.hpp"
 
 
 // Data structure for parameters that are passed between functions
@@ -152,8 +154,27 @@ void fillUnassigned(std::shared_ptr<Workspace> w) {
 }
 
 
-void mangleSpectra() {
+void mangleSpectra(std::shared_ptr<Workspace> w) {
+    // Loop though each SN
+    for (auto sn : w->sn_) {
+        // Loop though each spectrum
+        for (auto spec : sn.second.spec_) {
+            // Initialise the model and solver
+            std::shared_ptr<Model> model(new SpecMangle);
+            MNest solver(model);
 
+            // Set data vectors to be fitted by the model
+            // TODO - set correct data
+            // solver.x_ =
+            // solver.y_ =
+            // solver.sigma_ =
+            // solver.xRecon_ =
+            // solver.chainPath_ =
+
+            // Perform fitting
+            solver.analyse();
+        }
+    }
 }
 
 
@@ -170,7 +191,7 @@ int main(int argc, char *argv[]) {
     w->filterPath_ = "data/filters";
     w->filters_ = std::shared_ptr<Filters>(new Filters(w->filterPath_));
 
-    mangleSpectra();
+    mangleSpectra(w);
 
     return 0;
 }
