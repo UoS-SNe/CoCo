@@ -141,7 +141,7 @@ void fillUnassigned(std::shared_ptr<Workspace> w) {
         }
 
         // Load each stectrum into the correct SN object
-        if (!utils::fileExists(w->specFileList_[i]) {
+        if (!utils::fileExists(w->specFileList_[i])) {
             std::cout << "Ignoring spectrum - path not found: ";
             std::cout << w->specFileList_[i] << std::endl;
             exit(0);
