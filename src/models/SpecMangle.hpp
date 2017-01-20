@@ -14,6 +14,7 @@ public:
 
     // Override for the mathematical definition of the model
     double function(double);
+    std::vector<double> residual();
 };
 
 

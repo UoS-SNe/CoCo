@@ -53,3 +53,8 @@ double Firth17::function(double t) {
 
     return flux;
 }
+
+
+std::vector<double> Firth17::residual() {
+    return std::vector<double>(0);
+}

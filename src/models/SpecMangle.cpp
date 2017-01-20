@@ -67,3 +67,8 @@ double SpecMangle::function(double x) {
     gsl_interp_accel_free(acc);
     return 0; // returnSpline;
 }
+
+
+std::vector<double> SpecMangle::residual() {
+    return std::vector<double>(0);
+}
