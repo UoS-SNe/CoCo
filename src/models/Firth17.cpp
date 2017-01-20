@@ -3,6 +3,7 @@
 #include <math.h>
 
 #include <iostream>
+#include <limits>
 
 
 Firth17::Firth17() : Model() {
@@ -56,5 +57,17 @@ double Firth17::function(double t) {
 
 
 std::vector<double> Firth17::residual() {
-    return std::vector<double>(0);
+    std::vector<double> res(x_.size(), 0);
+
+    double flux;
+    for (size_t i = 0; i < x_.size(); ++i) {
+        flux = function(x_[i]);
+        if (flux < 0) {
+            res[i] = std::numeric_limits<double>::max();
+        } else {
+            res[i] = (y_[i] - flux) / sigma_[i];
+        }
+    }
+
+    return res;
 }

@@ -53,18 +53,20 @@ void SN::addEpoch(double mjd) {
     // Check if any light curves are assigned
     if (!lc_.empty()) {
         // create a temporarty SNEpoch object
-        SNEpoch epoch;
+        std::vector<Obs> epoch;
 
         size_t idxNearest;
         for (auto &lc : lc_) {
-            epoch.mjd_ = mjd;
             idxNearest = vmath::nearest(lc.second.mjd_, mjd);
 
             // Check if the data points is within one day from the spectrum
             if (!(fabs(lc.second.mjd_[idxNearest] - mjd) > 1)) {
-                epoch.flux_.push_back(lc.second.flux_[idxNearest]);
-                epoch.fluxErr_.push_back(lc.second.fluxErr_[idxNearest]);
-                epoch.filter_.push_back(lc.second.filter_);
+                Obs obs;
+                obs.mjd_ = mjd;
+                obs.flux_ = lc.second.flux_[idxNearest];
+                obs.fluxErr_ = lc.second.fluxErr_[idxNearest];
+                obs.filter_ = lc.second.filter_;
+                epoch.push_back(obs);
             }
         }
 

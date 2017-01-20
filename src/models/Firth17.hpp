@@ -7,7 +7,10 @@
 
 class Firth17 : public Model {
 public:
-    // Variables and methods specific to the model
+    // Data specific to the model
+    std::vector<double> x_;
+    std::vector<double> y_;
+    std::vector<double> sigma_;
 
     // Constructor
     Firth17();

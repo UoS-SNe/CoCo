@@ -128,14 +128,15 @@ void fitLC(shared_ptr<Workspace> w) {
 
         // Loop though each filter
         for (auto lc : sn.second.lc_) {
-            // Initialise the model and solver
-            std::shared_ptr<Model> model(new Firth17);
-            MNest solver(model);
+            // Initialise the model
+            std::shared_ptr<Firth17> firth17(new Firth17);
+            firth17->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+            firth17->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+            firth17->sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
+            std::shared_ptr<Model> model = dynamic_pointer_cast<Model>(firth17);
 
-            // Normalise and set data vectors
-            solver.x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
-            solver.y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
-            solver.sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
+            // Initialise solver
+            MNest solver(model);
             solver.xRecon_ = vmath::range<double>(-15, lc.second.mjdMax_ - lc.second.mjdMin_ + 20, 1);
             solver.chainPath_ = "chains/" + sn.second.name_ + "/" + lc.second.filter_;
 

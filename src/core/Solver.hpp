@@ -14,11 +14,6 @@ public:
     std::vector<double> fitParams_;
     std::string chainPath_;
 
-    // Data to which the model is fitted
-    std::vector<double> x_;
-    std::vector<double> y_;
-    std::vector<double> sigma_;
-
     // Model fit statistics
     std::vector<double> xRecon_;
     std::vector<double> bestFit_;

@@ -7,13 +7,6 @@
 Solver::Solver(std::shared_ptr<Model> model) : model_(model) {
     noParams_ = model_->noParams_;
     initialParams_ = model_->paramGuess_;
-
-    // If no data is provided we replace the data with vectors of zeros
-    // These are chosen to be number_of_parameters + 2 to prevent solver crashes
-    // due to insufficient number of degrees of freedom
-    x_ = std::vector<double>(noParams_ + 2, 0);
-    y_ = std::vector<double>(noParams_ + 2, 0);
-    sigma_ = std::vector<double>(noParams_ + 2, 0);
 }
 
 

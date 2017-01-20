@@ -50,6 +50,13 @@ struct SNEpoch {
 };
 
 
+struct Obs {
+    double mjd_;
+    double flux_;
+    double fluxErr_;
+    std::string filter_;
+};
+
 
 // Supernova(SN) class prividing the main data object in the code.
 // The class can be initialised multiple ways depending on the usage:
@@ -79,7 +86,7 @@ public:
     // Hash tables mapping filter names onto light curves and MJDs onto spectra
     std::unordered_map<std::string,LCData> lc_;
     std::unordered_map<double,SpecData> spec_;
-    std::unordered_map<double,SNEpoch> epoch_;
+    std::unordered_map<double,std::vector<Obs>> epoch_;
 
     // Constructors
     SN();

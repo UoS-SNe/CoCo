@@ -52,14 +52,14 @@ void MNest::logLike(double *Cube, int &ndim, int &npars, double &lnew, void *con
 
     // log(Likelihood) function
     lnew = 0;
-    double modelFlux;
-    for (size_t i = 0; i < solver->x_.size(); ++i) {
-        modelFlux = (*solver->model_)(solver->x_[i]);
-        if (modelFlux < 0.0) {
+    std::vector<double> res = solver->model_->residual();
+    for (size_t i = 0; i < res.size(); ++i) {
+        if (res[i] == std::numeric_limits<double>::max()) {
             lnew = -std::numeric_limits<double>::max();
             break;
+        } else {
+            lnew -= pow(res[i], 2.0);
         }
-        lnew -= pow((solver->y_[i] - modelFlux) / solver->sigma_[i], 2.0);
     }
     lnew /= 2.0;
 }
