@@ -158,16 +158,27 @@ void mangleSpectra(std::shared_ptr<Workspace> w) {
     // Loop though each SN
     for (auto sn : w->sn_) {
         // Loop though each spectrum
-        for (auto spec : sn.second.spec_) {
-            // Initialise the model and solver
-            std::shared_ptr<Model> model(new SpecMangle);
-            MNest solver(model);
+        for (auto &spec : sn.second.spec_) {
+            // Initialise the model
+            std::shared_ptr<SpecMangle> specMangle(new SpecMangle);
+            specMangle->lcData_ = sn.second.epoch_[spec.second.mjd_];
+            specMangle->specData_ = spec.second;
 
-            // Set data vectors to be fitted by the model
-            // TODO - set correct data
-            // solver.x_ =
-            // solver.y_ =
-            // solver.sigma_ =
+            // Assign filter central wavelengths to each lc data point
+            for (auto &obs : specMangle->lcData_) {
+                obs.wav_ = w->filters_->filter_[obs.filter_].centralWavelength_;
+            }
+
+            // Sort light curve slice by filter central wavelengths
+            std::sort(specMangle->lcData_.begin(), specMangle->lcData_.end(),
+                      [](const Obs &a, const Obs &b) -> bool {
+                         return a.wav_ < b.wav_;
+                      });
+
+            // Initialise the solver
+            std::shared_ptr<Model> model = dynamic_pointer_cast<Model>(specMangle);
+            MNest solver(model);
+            // TODO - set value
             // solver.xRecon_ =
             // solver.chainPath_ =
 

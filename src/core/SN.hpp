@@ -54,6 +54,7 @@ struct Obs {
     double mjd_;
     double flux_;
     double fluxErr_;
+    double wav_;
     std::string filter_;
 };
 

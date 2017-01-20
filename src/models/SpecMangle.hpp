@@ -3,11 +3,14 @@
 
 #include <vector>
 #include "../core/Model.hpp"
+#include "../core/SN.hpp"
 
 
 class SpecMangle : public Model {
 public:
     // Variables and methods specific to the model
+    std::vector<Obs> lcData_;
+    SpecData specData_;
 
     // Constructor
     SpecMangle();
