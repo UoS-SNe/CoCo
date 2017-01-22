@@ -12,7 +12,9 @@
 #include "priors.hpp"
 
 
-MNest::MNest(std::shared_ptr<Model> model) : Solver(model) {}
+MNest::MNest(std::shared_ptr<Model> model) : Solver(model) {
+    livePoints_ = 100;
+}
 
 
 void MNest::dumper(int &nSamples, int &nlive, int &nPar, double **physLive, double **posterior, double **paramConstr, double &maxLogLike, double &logZ, double &logZerr, void *context) {
@@ -73,7 +75,7 @@ void MNest::fit() {
     int ndims = noParams_;	        // dimensionality (no. of free parameters)
     int nPar = ndims;				// total no. of parameters including free & derived parameters
     int nClsPar = ndims;			// no. of parameters to do mode separation on
-    int nlive = 1000;				// number of live points
+    int nlive = noParams_ * livePoints_;	// number of live points
     int updInt = 10000;				// after how many iterations feedback is required & the output files should be updated
                                     // note: posterior files are updated & dumper routine is called after every updInt*10 iterations
     double Ztol = -1e90;			// all the modes with logZ < Ztol are ignored

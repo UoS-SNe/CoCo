@@ -11,6 +11,7 @@ class MNest : public Solver {
 public:
     // MultiNest specific temporary data containers
     std::string _rootPath;
+    int livePoints_;
 
     // static functions used by MultiNest
     static void dumper(int&,int&,int&,double**,double**,double**,double&,

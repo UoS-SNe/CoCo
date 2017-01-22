@@ -10,6 +10,7 @@
 #include "vmath/loadtxt.hpp"
 #include "vmath/convert.hpp"
 #include "vmath/algebra.hpp"
+#include "vmath/stat.hpp"
 
 #include "core/utils.hpp"
 #include "core/Cosmology.hpp"
@@ -187,19 +188,22 @@ void mangleSpectra(std::shared_ptr<Workspace> w) {
 
             // Initialise the solver
             std::shared_ptr<Model> model = dynamic_pointer_cast<Model>(specMangle);
-            MNest solver(model);
-            solver.xRecon_ = spec.second.wav_;
-            solver.chainPath_ = "chains/" + sn.second.name_ + "/" + to_string(spec.second.mjd_);
+            std::shared_ptr<MNest> mnest(new MNest(model));
+            mnest->livePoints_ = 10;
+
+            std::shared_ptr<Solver> solver = dynamic_pointer_cast<Solver>(mnest);
+            solver->xRecon_ = spec.second.wav_;
+            solver->chainPath_ = "chains/" + sn.second.name_ + "/" + to_string(spec.second.mjd_);
 
             // Perform fitting
-            solver.analyse();
+            solver->analyse();
 
             // Reset spectrum units to original
-            solver.bestFit_ = vmath::mult<double>(solver.bestFit_, spec.second.fluxNorm_);
-            solver.mean_ = vmath::mult<double>(solver.mean_, spec.second.fluxNorm_);
-            solver.meanSigma_ = vmath::mult<double>(solver.meanSigma_, spec.second.fluxNorm_);
-            solver.median_ = vmath::mult<double>(solver.median_, spec.second.fluxNorm_);
-            solver.medianSigma_ = vmath::mult<double>(solver.medianSigma_, spec.second.fluxNorm_);
+            solver->bestFit_ = vmath::mult<double>(solver->bestFit_, spec.second.fluxNorm_);
+            solver->mean_ = vmath::mult<double>(solver->mean_, spec.second.fluxNorm_);
+            solver->meanSigma_ = vmath::mult<double>(solver->meanSigma_, spec.second.fluxNorm_);
+            solver->median_ = vmath::mult<double>(solver->median_, spec.second.fluxNorm_);
+            solver->medianSigma_ = vmath::mult<double>(solver->medianSigma_, spec.second.fluxNorm_);
 
             // File handels for spectrum mangling results
             ofstream reconSpecFile;
@@ -210,13 +214,13 @@ void mangleSpectra(std::shared_ptr<Workspace> w) {
                                to_string(spec.second.mjd_) + ".stat");
 
             // Write reconstructed spectra to a file
-            for (size_t i = 0; i < solver.xRecon_.size(); ++i) {
-                reconSpecFile << solver.xRecon_[i] << " " << solver.mean_[i];
-                reconSpecFile << " " << solver.meanSigma_[i] << " " << "\n";
+            for (size_t i = 0; i < solver->xRecon_.size(); ++i) {
+                reconSpecFile << solver->xRecon_[i] << " " << solver->mean_[i];
+                reconSpecFile << " " << solver->meanSigma_[i] << " " << "\n";
 
-                reconStatFile << solver.xRecon_[i] << " " << solver.mean_[i] << " ";
-                reconStatFile << solver.meanSigma_[i] << " " << solver.bestFit_[i] << " ";
-                reconStatFile << solver.median_[i] << " " << solver.medianSigma_[i] << "\n";
+                reconStatFile << solver->xRecon_[i] << " " << solver->mean_[i] << " ";
+                reconStatFile << solver->meanSigma_[i] << " " << solver->bestFit_[i] << " ";
+                reconStatFile << solver->median_[i] << " " << solver->medianSigma_[i] << "\n";
             }
 
             reconSpecFile.close();
