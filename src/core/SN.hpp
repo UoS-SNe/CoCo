@@ -39,17 +39,6 @@ struct SpecData {
 };
 
 
-
-// Data structure for one epoch of data contains a slice though a light curve
-// and a spectrum if available
-struct SNEpoch {
-    double mjd_;
-    std::vector<double> flux_;
-    std::vector<double> fluxErr_;
-    std::vector<std::string> filter_;
-};
-
-
 struct Obs {
     double mjd_;
     double flux_;

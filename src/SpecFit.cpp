@@ -84,7 +84,6 @@ void applyOptions(std::vector<std::string> &options, std::shared_ptr<Workspace> 
         exit(0);
     }
 
-
     // Go though each option and assign the correct properties
     std::vector<std::string> command;
     for (size_t i = skipOptions; i < options.size(); ++i) {
@@ -164,6 +163,10 @@ void mangleSpectra(std::shared_ptr<Workspace> w) {
             specMangle->lcData_ = sn.second.epoch_[spec.second.mjd_];
             specMangle->specData_ = spec.second;
 
+            // Rescale filters to the data wavelength and assign to model
+            w->filters_->rescale(spec.second.wav_);
+            specMangle->filters_ = w->filters_;
+
             // Assign filter central wavelengths to each lc data point
             for (auto &obs : specMangle->lcData_) {
                 obs.wav_ = w->filters_->filter_[obs.filter_].centralWavelength_;
@@ -178,12 +181,32 @@ void mangleSpectra(std::shared_ptr<Workspace> w) {
             // Initialise the solver
             std::shared_ptr<Model> model = dynamic_pointer_cast<Model>(specMangle);
             MNest solver(model);
-            // TODO - set value
-            // solver.xRecon_ =
-            // solver.chainPath_ =
+            solver.xRecon_ = spec.second.wav_;
+            solver.chainPath_ = "chains/" + sn.second.name_ + "/" + to_string(spec.second.mjd_);
 
             // Perform fitting
             solver.analyse();
+
+            // File handels for spectrum mangling results
+            ofstream reconSpecFile;
+            ofstream reconStatFile;
+            reconSpecFile.open("recon/" + sn.second.name_ + "_" +
+                               to_string(spec.second.mjd_) + ".spec");
+            reconStatFile.open("recon/" + sn.second.name_ + "_" +
+                               to_string(spec.second.mjd_) + ".stat");
+
+            // Write reconstructed spectra to a file
+            for (size_t i = 0; i < solver.xRecon_.size(); ++i) {
+                reconSpecFile << solver.xRecon_[i] << " " << solver.mean_[i];
+                reconSpecFile << " " << solver.meanSigma_[i] << " " << "\n";
+
+                reconStatFile << solver.xRecon_[i] << " " << solver.mean_[i] << " ";
+                reconStatFile << solver.meanSigma_[i] << " " << solver.bestFit_[i] << " ";
+                reconStatFile << solver.median_[i] << " " << solver.medianSigma_[i] << "\n";
+            }
+
+            reconSpecFile.close();
+            reconStatFile.close();
         }
     }
 }

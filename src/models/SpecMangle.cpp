@@ -27,11 +27,11 @@ SpecMangle::SpecMangle() : Model() {
 
 //
 double SpecMangle::function(double x) {
-    return x;
+    return 0;
 }
 
 
-std::vector<double> SpecMangle::residual() {
+std::vector<double> SpecMangle::function(std::vector<double>& wav) {
     int npars = params_.size();
 
     // spline control points
@@ -45,14 +45,17 @@ std::vector<double> SpecMangle::residual() {
     }
 
     // Set first control point
-    splineX[0] = vmath::min<double>(specData_.wav_) - 100;
+    splineX[0] = vmath::min<double>(wav) - 100;
     splineY[0] = splineX[0] * ((splineY[1] - splineY[2]) / (splineX[1] - splineX[2]));
-    splineY[0] += ((splineX[1] * splineY[2] - splineY[1] * splineX[2]) / (splineX[1]-splineX[2]));
+    splineY[0] += ((splineX[1] * splineY[2] - splineY[1] * splineX[2]) /
+                   (splineX[1]-splineX[2]));
 
     // Set last control point
-    splineX[npars+1] =  vmath::max<double>(specData_.wav_) + 100;
-    splineY[npars+1] = splineX[npars+1] * ((splineY[npars-1] - splineY[npars]) / (splineX[npars-1] - splineX[npars]));
-    splineY[npars+1] += ((splineX[npars-1] * splineY[npars] - splineY[npars-1] * splineX[npars]) / (splineX[npars-1] - splineX[npars]));
+    splineX[npars+1] =  vmath::max<double>(wav) + 100;
+    splineY[npars+1] = splineX[npars+1] * ((splineY[npars-1] - splineY[npars]) /
+                       (splineX[npars-1] - splineX[npars]));
+    splineY[npars+1] += ((splineX[npars-1] * splineY[npars] - splineY[npars-1] *
+                         splineX[npars]) / (splineX[npars-1] - splineX[npars]));
 
     //initialise gsl spline
     gsl_interp_accel *acc = gsl_interp_accel_alloc();
@@ -60,13 +63,25 @@ std::vector<double> SpecMangle::residual() {
     gsl_spline_init (spline, splineX.data(), splineY.data(), npars+2);
 
     // mangle the spectra
-    std::vector<double> modelSpline(specData_.wav_.size(), 0);
-    for (size_t i = 0; i < specData_.wav_.size(); ++i) {
-        modelSpline[i] = gsl_spline_eval(spline, specData_.wav_[i], acc);
+    std::vector<double> modelSpline(wav.size(), 0);
+    for (size_t i = 0; i < wav.size(); ++i) {
+        modelSpline[i] = gsl_spline_eval(spline, wav[i], acc);
     }
 
     gsl_spline_free(spline);
     gsl_interp_accel_free(acc);
 
-    return vmath::sub<double>(specData_.flux_, modelSpline);
+    return vmath::mult<double>(specData_.flux_, modelSpline);
+}
+
+
+std::vector<double> SpecMangle::residual() {
+    std::vector<double> mangledSpec = function(specData_.wav_);
+    std::vector<double> res(lcData_.size(), 0);
+
+    for (size_t i = 0; i < lcData_.size(); ++i) {
+        res[i] = (lcData_[i].flux_ - filters_->flux(mangledSpec, lcData_[i].filter_)) / lcData_[i].fluxErr_ ;
+    }
+
+    return res;
 }

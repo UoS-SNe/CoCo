@@ -21,6 +21,7 @@ public:
     // Mathematical expression describing the model as a function of the x-axis
     // Must be overriden by child model classes
     virtual double function(double) = 0;
+    virtual std::vector<double> function(std::vector<double>&) = 0;
     virtual std::vector<double> residual() = 0;
 
     // Functors providing model evaluations

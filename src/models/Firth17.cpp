@@ -56,6 +56,16 @@ double Firth17::function(double t) {
 }
 
 
+std::vector<double> Firth17::function(std::vector<double>& t) {
+    std::vector<double> res(t.size(), 0);
+    for (size_t i = 0; i < t.size(); ++i) {
+        res[i] = function(t[i]);
+    }
+
+    return res;
+}
+
+
 std::vector<double> Firth17::residual() {
     std::vector<double> res(x_.size(), 0);
 
