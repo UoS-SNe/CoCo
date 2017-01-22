@@ -145,7 +145,7 @@ void fitLC(shared_ptr<Workspace> w) {
 
             // Reset lc units to original
             solver.xRecon_ = vmath::add<double>(solver.xRecon_, lc.second.mjdMin_);
-            solver.bestFit_ = vmath::mult<double>(solver.mean_, lc.second.normalization_);
+            solver.bestFit_ = vmath::mult<double>(solver.bestFit_, lc.second.normalization_);
             solver.mean_ = vmath::mult<double>(solver.mean_, lc.second.normalization_);
             solver.meanSigma_ = vmath::mult<double>(solver.meanSigma_, lc.second.normalization_);
             solver.median_ = vmath::mult<double>(solver.median_, lc.second.normalization_);

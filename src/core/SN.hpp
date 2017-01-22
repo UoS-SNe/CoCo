@@ -35,7 +35,7 @@ struct SpecData {
 
     std::vector<double> wav_;
     std::vector<double> flux_;
-    std::vector<double> fluxCorrected_;
+    double fluxNorm_;
 };
 
 

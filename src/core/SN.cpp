@@ -42,6 +42,9 @@ void SN::addSpec(std::string fileName, double mjd) {
         sd.flux_ = sd.rawFlux_;
         sd.mjd_ = mjd;
 
+        // Find a normalazing factor for a spectrum
+        sd.fluxNorm_ = vmath::mean<double>(sd.flux_);
+
         // Add the data object to the spec_ unordered_map accessed by MJD
         spec_[mjd] = sd;
     }
