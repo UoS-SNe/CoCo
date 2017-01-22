@@ -164,9 +164,14 @@ void mangleSpectra(std::shared_ptr<Workspace> w) {
             specMangle->lcData_ = sn.second.epoch_[spec.second.mjd_];
             specMangle->specData_ = spec.second;
 
-            // Normalise the spectrum before fitting
+            // Normalise the spectrum and LC before fitting
+            double lcNorm = specMangle->lcData_[0].flux_;
             specMangle->specData_.flux_ =
                 vmath::div<double>(specMangle->specData_.flux_, spec.second.fluxNorm_);
+            for (auto &obs : specMangle->lcData_) {
+                obs.flux_ /= lcNorm;
+                obs.fluxErr_ /= lcNorm;
+            }
 
             // Rescale filters to the data wavelength and assign to model
             w->filters_->rescale(spec.second.wav_);
@@ -199,11 +204,11 @@ void mangleSpectra(std::shared_ptr<Workspace> w) {
             solver->analyse();
 
             // Reset spectrum units to original
-            solver->bestFit_ = vmath::mult<double>(solver->bestFit_, spec.second.fluxNorm_);
-            solver->mean_ = vmath::mult<double>(solver->mean_, spec.second.fluxNorm_);
-            solver->meanSigma_ = vmath::mult<double>(solver->meanSigma_, spec.second.fluxNorm_);
-            solver->median_ = vmath::mult<double>(solver->median_, spec.second.fluxNorm_);
-            solver->medianSigma_ = vmath::mult<double>(solver->medianSigma_, spec.second.fluxNorm_);
+            solver->bestFit_ = vmath::mult<double>(solver->bestFit_, lcNorm);
+            solver->mean_ = vmath::mult<double>(solver->mean_, lcNorm);
+            solver->meanSigma_ = vmath::mult<double>(solver->meanSigma_, lcNorm);
+            solver->median_ = vmath::mult<double>(solver->median_, lcNorm);
+            solver->medianSigma_ = vmath::mult<double>(solver->medianSigma_, lcNorm);
 
             // File handels for spectrum mangling results
             ofstream reconSpecFile;
