@@ -31,6 +31,16 @@ double SpecMangle::function(double x) {
 }
 
 
+void SpecMangle::setPriors() {
+    noParams_ = lcData_.size();
+
+    priorRange_ = std::vector< std::pair<double,double> >(noParams_,
+        std::make_pair<double,double>(1e-4, 1e4));
+    paramGuess_ = std::vector<double>(noParams_, 1.0);
+    priorType_ = std::vector<std::string>(noParams_, "flat");
+}
+
+
 std::vector<double> SpecMangle::function(std::vector<double>& wav) {
     int npars = params_.size();
 

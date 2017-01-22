@@ -47,6 +47,9 @@ void SN::addSpec(std::string fileName, double mjd) {
 
         // Add the data object to the spec_ unordered_map accessed by MJD
         spec_[mjd] = sd;
+
+        // Create a LC epoch corresponding to the spectrum_file
+        addEpoch(mjd);
     }
 }
 

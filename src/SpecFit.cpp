@@ -182,6 +182,9 @@ void mangleSpectra(std::shared_ptr<Workspace> w) {
                          return a.wav_ < b.wav_;
                       });
 
+            // Set priors and number of paramters
+            specMangle->setPriors();
+
             // Initialise the solver
             std::shared_ptr<Model> model = dynamic_pointer_cast<Model>(specMangle);
             MNest solver(model);

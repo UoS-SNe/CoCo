@@ -21,6 +21,8 @@ public:
     double function(double);
     std::vector<double> function(std::vector<double>&);
     std::vector<double> residual();
+
+    void setPriors();
 };
 
 
