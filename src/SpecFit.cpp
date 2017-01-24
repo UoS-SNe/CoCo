@@ -78,7 +78,7 @@ void applyOptions(std::vector<std::string> &options, std::shared_ptr<Workspace> 
         w->snNameList_ = {options[1]};
         w->mjdList_ = {atof(options[2].c_str())};
         w->zList_ = {atof(options[3].c_str())};
-        skipOptions = 3;
+        skipOptions = 4;
 
     } else {
         std::cout << "You need to provide either a *.list or 4 parameters" << std::endl;
