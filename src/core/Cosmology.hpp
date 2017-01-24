@@ -1,13 +1,8 @@
 #ifndef COCO_CORE_COSMOLOGY_HPP_
 #define COCO_CORE_COSMOLOGY_HPP_
 
-#include <math.h>
 #include <vector>
-#include <memory>
-#include <iostream>
-#include "../vmath/integrate.hpp"
 
-using namespace std;
 
 const double SI_C = 299792458;
 const double CGS_C = 29979245800;
@@ -41,8 +36,8 @@ public:
     double findComDis(double);
     double findLumDis(double);
     double findComVol(double);
-    vector<double> findDZ(double);
-    vector<double> findDV(vector<double>&);
+    std::vector<double> findDZ(double);
+    std::vector<double> findDV(std::vector<double>&);
 };
 
 #endif

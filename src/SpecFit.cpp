@@ -1,40 +1,61 @@
 #include <stdio.h>
+
 #include <math.h>
 #include <string>
 #include <iostream>
 #include <algorithm>
 #include <iterator>
 #include <vector>
-#include "core/utils.hpp"
-#include "core/LC.hpp"
-#include "core/Cosmology.hpp"
+
 #include "vmath/loadtxt.hpp"
 #include "vmath/convert.hpp"
 #include "vmath/algebra.hpp"
-#include "spec/WorkspaceSpec.hpp"
-#include "spec/MultiNest.hpp"
+#include "vmath/stat.hpp"
 
-using namespace std;
-using namespace vmath;
+#include "core/utils.hpp"
+#include "core/Cosmology.hpp"
+#include "core/Filters.hpp"
+#include "core/SN.hpp"
+#include "solvers/MNest.hpp"
+#include "models/SpecMangle.hpp"
+
+
+// Data structure for parameters that are passed between functions
+struct Workspace {
+    // User inputs
+    std::string inputFileName_;
+    std::vector<std::string> specFileList_;
+    std::vector<std::string> snNameList_;
+    std::vector<double> mjdList_;
+    std::vector<double> zList_;
+
+    // Hash table of SN light curves
+    std::unordered_map<std::string, SN> sn_;
+
+    // Other helper classes
+    std::string filterPath_;
+    std::shared_ptr<Cosmology> cosmology_;
+    std::shared_ptr<Filters> filters_;
+};
 
 
 void help() {
-    cout << "SPECFIT: \n";
-    cout << "Originally writen by Natasha Karpenka, ";
-    cout << "currently maintained by Szymon Prajs (S.Prajs@soton.ac.uk) ";
-    cout << "and Rob Firth.\n";
-    cout << "\nUsage:\n";
-    cout << "./specfit spectra_setup_file.list\n";
-    cout << "or\n";
-    cout << "./specfit spectrum_file.* SN_name MJD rsedshift\n\n";
-    cout << " spectra_setup_file.list must have the following columns:\n";
-    cout << "Spectrum_file_path SN_name MJD redshift\n";
-    cout << endl;
+    std::cout << "CoCo - SpecFit: \n";
+    std::cout << "Originally developed by Natasha Karpenka, ";
+    std::cout << "and reimplemented by Szymon Prajs (S.Prajs@soton.ac.uk).\n";
+    std::cout << "Currently maintained by Szymon Prajs and Rob Firth.\n";
+    std::cout << "\nUsage:\n";
+    std::cout << "./specfit spectra_setup_file.list\n";
+    std::cout << "or\n";
+    std::cout << "./specfit spectrum_file.* SN_name MJD rsedshift\n\n";
+    std::cout << " spectra_setup_file.list must have the following columns:\n";
+    std::cout << "Spectrum_file_path SN_name MJD redshift\n";
+    std::cout << std::endl;
 }
 
 
 /* Assign input options to workspace parameters */
-void applyOptions(vector<string> &options, shared_ptr<WorkspaceSpec> w) {
+void applyOptions(std::vector<std::string> &options, std::shared_ptr<Workspace> w) {
     if (options.size() < 1 || options[0] == "-h" || options[0] == "--help") {
         help();
         exit(0);
@@ -42,30 +63,30 @@ void applyOptions(vector<string> &options, shared_ptr<WorkspaceSpec> w) {
 
     // First option is the LC file name or list of LC files
     double skipOptions;
-    w->SpecListFile_ = options[0];
+    w->inputFileName_ = options[0];
     if (options[0].substr(options[0].find_last_of(".") + 1) == "list") {
-        loadtxt<string>(w->SpecListFile_, 4, w->infoList_);
-        w->specList_ = w->infoList_[0];
-        w->snNameList_ = w->infoList_[1];
-        w->mjdList_ = castString<double>(w->infoList_[2]);
-        w->zList_ = castString<double>(w->infoList_[3]);
+        std::vector< std::vector<std::string> > infoList =
+            vmath::loadtxt<std::string>(w->inputFileName_, 4);
+        w->specFileList_ = infoList[0];
+        w->snNameList_ = infoList[1];
+        w->mjdList_ = vmath::castString<double>(infoList[2]);
+        w->zList_ = vmath::castString<double>(infoList[3]);
         skipOptions = 1;
 
     } else if (options.size() >= 4) {
-        w->specList_ = {options[0]};
+        w->specFileList_ = {options[0]};
         w->snNameList_ = {options[1]};
         w->mjdList_ = {atof(options[2].c_str())};
         w->zList_ = {atof(options[3].c_str())};
-        skipOptions = 3;
+        skipOptions = 4;
 
     } else {
-        cout << "You need to provide either a *.list or 4 paramters" << endl;
+        std::cout << "You need to provide either a *.list or 4 parameters" << std::endl;
         exit(0);
     }
 
-
     // Go though each option and assign the correct properties
-    vector<string> command;
+    std::vector<std::string> command;
     for (size_t i = skipOptions; i < options.size(); ++i) {
         // Deal with flags by loading pairs of options into commands
         if (options[i] == "-f") {
@@ -74,7 +95,7 @@ void applyOptions(vector<string> &options, shared_ptr<WorkspaceSpec> w) {
                 i++;  // skip the next option as it's already assigned above
 
             } else {
-                cout << options[i] << " is not a valid flag" << endl;
+                std::cout << options[i] << " is not a valid flag" << std::endl;
             }
 
         } else if (options[i] == "-h" || options[i] == "--help"){
@@ -82,103 +103,152 @@ void applyOptions(vector<string> &options, shared_ptr<WorkspaceSpec> w) {
             continue;
 
         } else {
-            split(options[i], '=', command);
+            utils::split(options[i], '=', command);
         }
 
         // Assign properties based on commands
         if (command.size() != 2) {
-            cout << command[0] << " is not a valid command." << endl;
+            std::cout << command[0] << " is not a valid command." << std::endl;
             continue;
 
-        } else if (command[0] == "-f" ||
-                   command[0] == "--filters" ||
-                   command[0] == "--filter" ) {
-            w->filterList_ = split(command[1], ',');
-
         } else {
-            cout << command[0] << " is not a valid command." << endl;
+            std::cout << command[0] << " is not a valid command." << std::endl;
         }
     }
 }
 
 
 /* Automatically fill in all unassigned properties with defaults */
-void fillUnassigned(shared_ptr<WorkspaceSpec> w) {
+void fillUnassigned(std::shared_ptr<Workspace> w) {
     // Do a sanity check for the LC files
-    if (w->specList_.size() == 0) {
-        cout << "Something went seriously wrong.";
-        cout << "Please consider report this bug on our project GitHub page";
-        cout << endl;
+    if (w->specFileList_.size() == 0) {
+        std::cout << "Something went seriously wrong. ";
+        std::cout << "Please consider report this bug on our project GitHub page";
+        std::cout << std::endl;
         exit(0);
     }
 
-	// Load all data
-    w->SNe_.resize(w->specList_.size());
-    vector< vector<double> > specFile;
-    double sedMean;
-    for (size_t i = 0; i < w->specList_.size(); ++i) {
-        if (fileExists(w->specList_[i]) ||
-        fileExists("recon/" + w->snNameList_[i] + ".dat")) {
-            // Load propertries
-			w->SNe_[i].specFile_ = w->specList_[i];
-            w->SNe_[i].lcFile_ = "recon/" + w->snNameList_[i] + ".dat";
-            w->SNe_[i].SNName_ = w->snNameList_[i];
-            w->SNe_[i].mjd_ = w->mjdList_[i];
-            w->SNe_[i].z_ = w->zList_[i];
-            w->cosmology_->set(w->SNe_[i].z_);
-            w->SNe_[i].lumDisCorrection_ = (w->cosmology_->lumDis_ / 1e-5);
+	// Load each spectrum into the correct SN object
+    for (size_t i = 0; i < w->specFileList_.size(); ++i) {
+        // Load the light curve if not yet loaded
+        if (w->sn_.find(w->snNameList_[i]) == w->sn_.end()) {
+            if (!utils::fileExists("recon/" + w->snNameList_[i] + ".dat")) {
+                std::cout << "No reconstructed light curve was found for: ";
+                std::cout << w->snNameList_[i] << "\nExiting!" << std::endl;
+                exit(0);
+            }
 
-            // Load spectrum
-            specFile = loadtxt<double>(w->SNe_[i].specFile_, 2);
-            w->SNe_[i].wav_ = specFile[0];
-            w->SNe_[i].flux_ = specFile[1];
-
-            // TODO - Check if this makes the spectrum math the photometry
-            sedMean = accumulate(w->SNe_[i].flux_.begin(), w->SNe_[i].flux_.end(), 0.0) / w->SNe_[i].flux_.size();
-            w->SNe_[i].flux_ = div<double>(w->SNe_[i].flux_, sedMean);
-
-            // Load light curve
-            w->SNe_[i].lc_ = LC(w->SNe_[i].lcFile_, false);
-
-        } else {
-            w->SNe_.pop_back();
+            w->sn_[w->snNameList_[i]] = SN("recon/" + w->snNameList_[i] + ".dat");
+            w->sn_[w->snNameList_[i]].z_ = w->zList_[i];
         }
-	}
 
-    // Make a filter list
-    if (w->filterList_.size() == 0) {
-        // TODO - Look for filters in LC files
+        // Load each stectrum into the correct SN object
+        if (!utils::fileExists(w->specFileList_[i])) {
+            std::cout << "Ignoring spectrum - path not found: ";
+            std::cout << w->specFileList_[i] << std::endl;
+            exit(0);
+        } else {
+            w->sn_[w->snNameList_[i]].addSpec(w->specFileList_[i], w->mjdList_[i]);
+        }
     }
 }
 
 
-void fitSpec(shared_ptr<WorkspaceSpec> w, int ID) {
-    w->SNID_ = ID;
-    w->filters_->rescale(w->SNe_[w->SNID_].wav_);
-    MultiNest solver(w);
-    solver.fit();
+void mangleSpectra(std::shared_ptr<Workspace> w) {
+    // Loop though each SN
+    for (auto sn : w->sn_) {
+        // Loop though each spectrum
+        for (auto &spec : sn.second.spec_) {
+            // Initialise the model
+            std::shared_ptr<SpecMangle> specMangle(new SpecMangle);
+            specMangle->lcData_ = sn.second.epoch_[spec.second.mjd_];
+            specMangle->specData_ = spec.second;
+
+            // Normalise the spectrum and LC before fitting
+            double lcNorm = specMangle->lcData_[0].flux_;
+            specMangle->specData_.flux_ =
+                vmath::div<double>(specMangle->specData_.flux_, spec.second.fluxNorm_);
+            for (auto &obs : specMangle->lcData_) {
+                obs.flux_ /= lcNorm;
+                obs.fluxErr_ /= lcNorm;
+            }
+
+            // Rescale filters to the data wavelength and assign to model
+            w->filters_->rescale(spec.second.wav_);
+            specMangle->filters_ = w->filters_;
+
+            // Assign filter central wavelengths to each lc data point
+            for (auto &obs : specMangle->lcData_) {
+                obs.wav_ = w->filters_->filter_[obs.filter_].centralWavelength_;
+            }
+
+            // Sort light curve slice by filter central wavelengths
+            std::sort(specMangle->lcData_.begin(), specMangle->lcData_.end(),
+                      [](const Obs &a, const Obs &b) -> bool {
+                         return a.wav_ < b.wav_;
+                      });
+
+            // Set priors and number of paramters
+            specMangle->setPriors();
+
+            // Initialise the solver
+            std::shared_ptr<Model> model = dynamic_pointer_cast<Model>(specMangle);
+            std::shared_ptr<MNest> mnest(new MNest(model));
+            mnest->livePoints_ = 10;
+
+            std::shared_ptr<Solver> solver = dynamic_pointer_cast<Solver>(mnest);
+            solver->xRecon_ = spec.second.wav_;
+            solver->chainPath_ = "chains/" + sn.second.name_ + "/" + to_string(spec.second.mjd_);
+
+            // Perform fitting
+            solver->analyse();
+
+            // Reset spectrum units to original
+            solver->bestFit_ = vmath::mult<double>(solver->bestFit_, lcNorm);
+            solver->mean_ = vmath::mult<double>(solver->mean_, lcNorm);
+            solver->meanSigma_ = vmath::mult<double>(solver->meanSigma_, lcNorm);
+            solver->median_ = vmath::mult<double>(solver->median_, lcNorm);
+            solver->medianSigma_ = vmath::mult<double>(solver->medianSigma_, lcNorm);
+
+            // File handels for spectrum mangling results
+            ofstream reconSpecFile;
+            ofstream reconStatFile;
+            reconSpecFile.open("recon/" + sn.second.name_ + "_" +
+                               to_string(spec.second.mjd_) + ".spec");
+            reconStatFile.open("recon/" + sn.second.name_ + "_" +
+                               to_string(spec.second.mjd_) + ".stat");
+
+            // Write reconstructed spectra to a file
+            for (size_t i = 0; i < solver->xRecon_.size(); ++i) {
+                reconSpecFile << solver->xRecon_[i] << " " << solver->mean_[i];
+                reconSpecFile << " " << solver->meanSigma_[i] << " " << "\n";
+
+                reconStatFile << solver->xRecon_[i] << " " << solver->mean_[i] << " ";
+                reconStatFile << solver->meanSigma_[i] << " " << solver->bestFit_[i] << " ";
+                reconStatFile << solver->median_[i] << " " << solver->medianSigma_[i] << "\n";
+            }
+
+            reconSpecFile.close();
+            reconStatFile.close();
+        }
+    }
 }
 
 
 int main(int argc, char *argv[]) {
-    vector<string> options;
-    shared_ptr<WorkspaceSpec> w(new WorkspaceSpec());
-    w->cosmology_ = shared_ptr<Cosmology>(new Cosmology());
+    std::vector<std::string> options;
+    std::shared_ptr<Workspace> w(new Workspace());
+    w->cosmology_ = std::shared_ptr<Cosmology>(new Cosmology());
 
-    getArgv(argc, argv, options);
+    utils::getArgv(argc, argv, options);
     applyOptions(options, w);
     fillUnassigned(w);
 
     // Load the filter responses
-    w->filters_ = shared_ptr<Filters>(new Filters(w->filterPath_));
+    w->filterPath_ = "data/filters";
+    w->filters_ = std::shared_ptr<Filters>(new Filters(w->filterPath_));
 
-    // Make light curve slices matching the spectrum
-    w->lcSlice();
-
-    // Do all sorts of magic
-    for (size_t i = 0; i < w->SNe_.size(); ++i) {
-        fitSpec(w, i);
-    }
+    mangleSpectra(w);
 
     return 0;
 }
