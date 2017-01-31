@@ -13,7 +13,6 @@
 #include "vmath/stat.hpp"
 
 #include "core/utils.hpp"
-#include "core/Cosmology.hpp"
 #include "core/Filters.hpp"
 #include "core/SN.hpp"
 #include "solvers/MNest.hpp"
@@ -34,7 +33,6 @@ struct Workspace {
 
     // Other helper classes
     std::string filterPath_;
-    std::shared_ptr<Cosmology> cosmology_;
     std::shared_ptr<Filters> filters_;
 };
 
@@ -238,7 +236,6 @@ void mangleSpectra(std::shared_ptr<Workspace> w) {
 int main(int argc, char *argv[]) {
     std::vector<std::string> options;
     std::shared_ptr<Workspace> w(new Workspace());
-    w->cosmology_ = std::shared_ptr<Cosmology>(new Cosmology());
 
     utils::getArgv(argc, argv, options);
     applyOptions(options, w);
