@@ -12,7 +12,6 @@
 #include "utils.hpp"
 
 
-
 // Initialises empty data structure
 SN::SN() {}
 
@@ -118,6 +117,44 @@ void SN::loadLC(std::string fileName) {
 
     else {
         std::cout << fileName << " file does not exist" << std::endl;
+    }
+}
+
+
+// Make a synthetic light curve from
+void SN::synthesiseLC(const std::vector<std::string> &filterList,
+                      std::shared_ptr<Filters> filters) {
+    // Clear light curve data
+    lc_.clear();
+    epoch_.clear();
+
+    // Create new light curves
+    for (auto &flt : filterList_) {
+        lc_[flt].name_ = name_;
+        lc_[flt].filter_ = flt;
+        lc_[flt].mjd_ = vector<double>(0);
+        lc_[flt].flux_ = vector<double>(0);
+        lc_[flt].fluxErr_ = vector<double>(spec_.size(), 0);
+    }
+
+    // Loop though each spectrum
+    for (auto &spec : spec_) {
+        filters->rescale(spec.second.wav_);
+
+        // loop though each filter and append the LC
+        std::vector<Obs> epoch;
+        for (auto &flt : filterList) {
+            lc_[flt].mjd_.push_back(spec.second.mjd_);
+            lc_[flt].flux_.push_back(filters->flux(spec.second.flux_, flt));
+
+            Obs obs;
+            obs.mjd_ = spec.second.mjd_;
+            obs.flux_ = lc_[flt].flux_.back();
+            obs.fluxErr_ = lc_[flt].fluxErr_.back();
+            obs.filter_ = flt;
+            epoch.push_back(obs);
+        }
+        epoch_[spec.second.mjd_] = epoch;
     }
 }
 

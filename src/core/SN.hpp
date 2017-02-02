@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <string>
 
+#include "Filters.hpp"
 
 
 // Data structure for light curve (one filter per object)
@@ -85,6 +86,7 @@ public:
     // Data loading routines
     void addSpec(std::string,double);
     void addEpoch(double);
+    void synthesiseLC(const std::vector<std::string>&,std::shared_ptr<Filters>);
     void loadLC(std::string);
     void restoreCompleteLC();
 };

@@ -13,7 +13,7 @@
 struct Workspace {
     // Code inputs
     std::string zeroFilter_;
-    std::string inputListFile_;
+    std::string inputLCList_;
 
     // Filter info
     std::string filterPath_;
@@ -44,12 +44,12 @@ void applyOptions(std::vector<std::string> &options, std::shared_ptr<Workspace> 
         exit(0);
 
     } else if (options.size() == 2)  {
-        w->inputListFile_ = options[0];
+        w->inputLCList_ = options[0];
         w->zeroFilter_ = options[1];
 
-        if (utils::fileExists(w->inputListFile_)) {
+        if (utils::fileExists(w->inputLCList_)) {
             std::vector< std::vector<std::string> > temp;
-            vmath::loadtxt<std::string>(w->inputListFile_, 2, temp);
+            vmath::loadtxt<std::string>(w->inputLCList_, 2, temp);
             w->lcList_ = temp[0];
             vmath::castString<double>(temp[1], w->z_);
         }
@@ -77,13 +77,32 @@ void fillUnassigned(std::shared_ptr<Workspace> w) {
 
 	// Load the light curves
 	for (size_t i = 0; i < w->lcList_.size(); ++i) {
-		if (utils::fileExists(w->lcList_[i])) {
+		if (utils::fileExists("recon/" + w->lcList_[i] + ".dat")) {
             SN sn;
             sn.name_ = utils::baseName(w->lcList_[i]);
             sn.z_ = w->z_[i];
 			w->sn_[sn.name_] = sn;
 		}
 	}
+}
+
+
+// Scan recon folder for mangled spectra and assign to the correct SN
+void scanRecon(shared_ptr<Workspace> w) {
+    std::vector<std::string> files;
+    utils::dirlist("recon", files);
+
+    std::string snname;
+    double mjd;
+    for (auto &file : files) {
+        if (utils::fileExtention(file) == "spec") {
+            snname = utils::split(utils::baseName(file), '_').front();
+            mjd = atof(utils::split(utils::baseName(file), '_').back().c_str());
+            if (w->sn_.find(snname) != w->sn_.end()) {
+                w->sn_[snname].addSpec(file, mjd);
+            }
+        }
+    }
 }
 
 
@@ -97,6 +116,9 @@ int main (int argc, char* argv[]) {
     // Read in filters and find the ID of the filter used to determine the phase
     w->filterPath_ = "data/filters";
     w->filters_ = std::shared_ptr<Filters>(new Filters(w->filterPath_));
+
+    // run SpecPhase pipeline
+    scanRecon(w);
 
     return 0;
 }
