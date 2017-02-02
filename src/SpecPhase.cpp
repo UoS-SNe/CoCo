@@ -1,54 +1,102 @@
+#include <iostream>
 #include <vector>
 #include <string>
 
+#include "vmath/convert.hpp"
+#include "vmath/loadtxt.hpp"
+
 #include "core/Filters.hpp"
-#include "phase/WorkspacePhase.hpp"
-#include "phase/func.hpp"
+#include "core/SN.hpp"
 #include "core/utils.hpp"
 
-using namespace std;
+
+struct Workspace {
+    // Code inputs
+    std::string zeroFilter_;
+    std::string inputListFile_;
+
+    // Filter info
+    std::string filterPath_;
+    std::shared_ptr<Filters> filters_;
+
+    // SN data
+    std::vector<std::string> lcList_;
+    std::vector<double> z_;
+    std::unordered_map<std::string, SN> sn_;
+};
 
 
 void help() {
-    cout << "CoCo - SpecPhase: \n";
-    cout << "Originally writen by Natasha Karpenka, ";
-    cout << "currently maintained by Szymon Prajs (S.Prajs@soton.ac.uk) ";
-    cout << "and Rob Firth.\n";
-    cout << "\nUsage:\n";
-    cout << "specphase filter_name\n";
-    cout << endl;
+    std::cout << "CoCo - SpecPhase: \n";
+    std::cout << "Originally writen by Natasha Karpenka, ";
+    std::cout << "currently maintained by Szymon Prajs (S.Prajs@soton.ac.uk) ";
+    std::cout << "and Rob Firth.\n";
+    std::cout << "\nUsage:\n";
+    std::cout << "specphase filter_name\n";
+    std::cout << std::endl;
 }
 
 
-/* Assign input options to workspace parameters */
-void applyOptions(vector<string> &options, shared_ptr<WorkspacePhase> w) {
+// Assign input options to workspace parameters
+void applyOptions(std::vector<std::string> &options, std::shared_ptr<Workspace> w) {
     if (options.size() < 1 || options[0] == "-h" || options[0] == "--help") {
         help();
         exit(0);
 
-    } else if (options.size() == 1)  {
-        // For any other extension just assign the file as the only LC
-        w->filter_ = options[0];
+    } else if (options.size() == 2)  {
+        w->inputListFile_ = options[0];
+        w->zeroFilter_ = options[1];
+
+        if (utils::fileExists(w->inputListFile_)) {
+            std::vector< std::vector<std::string> > temp;
+            vmath::loadtxt<std::string>(w->inputListFile_, 2, temp);
+            w->lcList_ = temp[0];
+            vmath::castString<double>(temp[1], w->z_);
+        }
+
+    } else if (options.size() == 3) {
+            w->lcList_ = {options[1]};
+            w->z_ = {atof(options[2].c_str())};
 
     } else {
-        cout << "Options are not currently implemented\n";
-        cout << "Program will continue executing" << endl;
+        std::cout << "Options are not currently implemented\n";
+        std::cout << "Program will continue executing" << std::endl;
     }
 }
 
 
-int main (int argc, char* argv[]) {
-    vector<string> options;
-    shared_ptr<WorkspacePhase> w(new WorkspacePhase());
+// Automatically fill in all unassigned properties with defaults
+void fillUnassigned(std::shared_ptr<Workspace> w) {
+    // Do a sanity check for the LC files
+    if (w->lcList_.size() == 0) {
+        std::cout << "Something went seriously wrong.";
+        std::cout << "Please consider report this bug on our project GitHub page";
+        std::cout << std::endl;
+        exit(0);
+    }
 
-    getArgv(argc, argv, options);
+	// Load the light curves
+	for (size_t i = 0; i < w->lcList_.size(); ++i) {
+		if (utils::fileExists(w->lcList_[i])) {
+            SN sn;
+            sn.name_ = utils::baseName(w->lcList_[i]);
+            sn.z_ = w->z_[i];
+			w->sn_[sn.name_] = sn;
+		}
+	}
+}
+
+
+int main (int argc, char* argv[]) {
+    std::vector<std::string> options;
+    std::shared_ptr<Workspace> w(new Workspace());
+
+    utils::getArgv(argc, argv, options);
     applyOptions(options, w);
 
     // Read in filters and find the ID of the filter used to determine the phase
-    w->filters_ = shared_ptr<Filters>(new Filters(w->filterPath_));
-
-    readRecon(w);
-    syntheticFlux(w);
+    w->filterPath_ = "data/filters";
+    w->filters_ = std::shared_ptr<Filters>(new Filters(w->filterPath_));
 
     return 0;
 }
