@@ -151,6 +151,8 @@ void fitPhase(std::shared_ptr<Workspace> w) {
         }
 
         phaseFile.close();
+
+        sn.second.saveSpec(mjdZeroPhase);
     }
 }
 

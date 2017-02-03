@@ -54,6 +54,33 @@ void SN::addSpec(std::string fileName, double mjd) {
 }
 
 
+void SN::saveSpec(double mjdZeroPhase, double scale) {
+    utils::createDirectory("spectra");
+
+    int phase;
+    std::string sPhase;
+    for (auto &spec : spec_) {
+        ofstream specFile;
+        phase = round(spec.second.mjd_ - mjdZeroPhase);
+        if (phase < 0) {
+            sPhase = "m" + std::to_string(abs(phase));
+        } else if (phase > 0) {
+            sPhase = "p" + std::to_string(phase);
+        } else {
+            sPhase = "max";
+        }
+        specFile.open("spectra/" + name_ + "." + sPhase + ".dat");
+
+        for (size_t i = 0; i < spec.second.flux_.size(); ++i) {
+            specFile << spec.second.wav_[i] << " ";
+            specFile << spec.second.flux_[i] * scale << "\n";
+        }
+
+        specFile.close();
+    }
+}
+
+
 // Create a slice though the light curves at a given MJD
 void SN::addEpoch(double mjd) {
     // Check if any light curves are assigned

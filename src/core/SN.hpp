@@ -32,7 +32,7 @@ struct LCData {
 struct SpecData {
     double mjd_;
     std::string file_;
-    
+
     std::vector<double> rawWav_;
     std::vector<double> rawFlux_;
 
@@ -87,6 +87,7 @@ public:
 
     // Data loading routines
     void addSpec(std::string,double);
+    void saveSpec(double, double scale=1);
     void addEpoch(double);
     void synthesiseLC(const std::vector<std::string>&,std::shared_ptr<Filters>);
     void redshift(double,std::shared_ptr<Cosmology>);
