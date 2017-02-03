@@ -1,58 +1,71 @@
 #include <vector>
 #include <iostream>
-#include <iomanip>
 #include <string>
-#include "core/utils.hpp"
-#include "core/LC.hpp"
-#include "vmath/loadtxt.hpp"
+#include <unordered_map>
+
 #include "vmath/algebra.hpp"
-#include "lc/WorkspaceLC.hpp"
-#include "lc/Model.hpp"
-#include "lc/MultiNest.hpp"
+#include "vmath/loadtxt.hpp"
+#include "vmath/range.hpp"
 
-using namespace std;
+#include "core/utils.hpp"
+#include "core/SN.hpp"
+#include "models/Firth17.hpp"
+#include "solvers/MNest.hpp"
 
 
+// Data structure for parameters that are passed between functions
+struct Workspace {
+    // User inputs
+    std::string inputFileName_;
+    std::vector<std::string> fileList_;
+    std::vector<std::string> filterList_;
+
+    // Hash table of SN light curves
+    std::unordered_map<std::string, SN> sn_;
+};
+
+
+// Display a help message if needed
 void help() {
-    cout << "TO_BE_NAMED: \n";
-    cout << "Originally writen by Natasha Karpenka, ";
-    cout << "currently maintained by Szymon Prajs (S.Prajs@soton.ac.uk) ";
-    cout << "and Rob Firth.\n";
-    cout << "\nUsage:\n";
-    cout << "lcfit lightcurve_file.*   or  lightcurve_files_list.list";
-    cout << endl;
+    std::cout << "CoCo - LCFit: \n";
+    std::cout << "Originally writen by Natasha Karpenka, ";
+    std::cout << "currently maintained by Szymon Prajs (S.Prajs@soton.ac.uk) ";
+    std::cout << "and Rob Firth.\n";
+    std::cout << "\nUsage:\n";
+    std::cout << "lcfit lightcurve_file.*   or  lightcurve_files_list.list";
+    std::cout << std::endl;
 }
 
 
-/* Assign input options to workspace parameters */
-void applyOptions(vector<string> &options, shared_ptr<WorkspaceLC> w) {
+// Assign input options to workspace parameters
+void applyOptions(std::vector<std::string> &options, shared_ptr<Workspace> w) {
     if (options.size() < 1 || options[0] == "-h" || options[0] == "--help") {
         help();
         exit(0);
     }
 
     // First option is the LC file name or list of LC files
-    w->LCListFile_ = options[0];
-    if (options[0].substr(options[0].find_last_of(".") + 1) == "list") {
-        vmath::loadtxt<string>(w->LCListFile_, 1, w->fileList_);
+    w->inputFileName_ = options[0];
+    if (utils::fileExtention(w->inputFileName_) == "list") {
+        vmath::loadtxt<std::string>(w->inputFileName_, 1, w->fileList_);
 
     } else {
         // For any other extension just assign the file as the only LC
-        w->fileList_ = {w->LCListFile_};
+        w->fileList_ = {w->inputFileName_};
     }
 
 
-    // Go though each option and assign the correct properties
-    vector<string> command;
+    // Iterate though each option and assign its properties
+    std::vector<std::string> command;
     for (size_t i = 1; i < options.size(); ++i) {
         // Deal with flags by loading pairs of options into commands
         if (options[i] == "-f") {
             if (i+1 < options.size()) {
                 command = {options[i], options[i+1]};
-                i++;  // skip the next option as it's already assigned above
+                i++;  // skip the next option once the previous is assigned
 
             } else {
-                cout << options[i] << " is not a valid flag" << endl;
+                std::cout << options[i] << " is not a valid flag" << std::endl;
             }
 
         } else if (options[i] == "-h" || options[i] == "--help"){
@@ -60,115 +73,117 @@ void applyOptions(vector<string> &options, shared_ptr<WorkspaceLC> w) {
             continue;
 
         } else {
-            split(options[i], '=', command);
+            utils::split(options[i], '=', command);
         }
 
         // Assign properties based on commands
         if (command.size() != 2) {
-            cout << command[0] << " is not a valid command." << endl;
+            std::cout << command[0] << " is not a valid command." << std::endl;
             continue;
 
         } else if (command[0] == "-f" ||
                    command[0] == "--filters" ||
                    command[0] == "--filter" ) {
-            w->filterList_ = split(command[1], ',');
+            w->filterList_ = utils::split(command[1], ',');
 
         } else {
-            cout << command[0] << " is not a valid command." << endl;
+            std::cout << command[0] << " is not a valid command." << std::endl;
         }
     }
 }
 
 
-/* Automatically fill in all unassigned properties with defaults */
-void fillUnassigned(shared_ptr<WorkspaceLC> w) {
+// Automatically fill in all unassigned properties with defaults
+void fillUnassigned(shared_ptr<Workspace> w) {
     // Do a sanity check for the LC files
     if (w->fileList_.size() == 0) {
-        cout << "Something went seriously wrong.";
-        cout << "Please consider report this bug on our project GitHub page";
-        cout << endl;
+        std::cout << "Something went seriously wrong.";
+        std::cout << "Please consider report this bug on our project GitHub page";
+        std::cout << std::endl;
         exit(0);
     }
 
 	// Load the light curves
 	for (auto lcfile : w->fileList_) {
-		if (fileExists(lcfile)) {
-			w->SNe_.push_back(lcfile);
+		if (utils::fileExists(lcfile)) {
+			w->sn_[utils::baseName(lcfile)] = SN(lcfile);
 		}
 	}
 
-    // Make a filter list
-    if (w->filterList_.size() == 0) {
-        // TODO - Look for filters in LC files
-    }
+    // TODO - user defined filter list is not yet implemented
+    if (w->filterList_.size() == 0) {}
 }
 
 
-/* Run the fitting routine for the SN with a given ID */
-void fitSN(shared_ptr<WorkspaceLC> w, int ID) {
-    w->SNID_ = ID;
-    createDirectory(w->SNe_[w->SNID_].name_, "chains");
-    MultiNest solver(w);
+void fitLC(shared_ptr<Workspace> w) {
+    // Loop though each SN
+    for (auto sn : w->sn_) {
+        utils::createDirectory(sn.second.name_, "chains");
 
-    // Open a text file for the recon file
-    ofstream reconLCFile;
-    ofstream reconStatFile;
-    reconLCFile.open("recon/" + w->SNe_[w->SNID_].name_ + ".dat");
-    reconStatFile.open("recon/" + w->SNe_[w->SNID_].name_ + ".stat");
+        // Open output text files for light curve reconstructions
+        ofstream reconLCFile;
+        ofstream reconStatFile;
+        reconLCFile.open("recon/" + sn.second.name_ + ".dat");
+        reconStatFile.open("recon/" + sn.second.name_ + ".stat");
 
-    // Loop though every available filter
-    for (size_t i = 0; i < w->SNe_[w->SNID_].filterList_.size(); ++i) {
-        // Set up the truncated data vectors
-        w->FLTID_ = i;
-        w->data_.x_ = w->SNe_[w->SNID_].tList_[i];
-        w->data_.y_ = w->SNe_[w->SNID_].fluxList_[i];
-        w->data_.sigma_ = w->SNe_[w->SNID_].fluxErrList_[i];
+        // Loop though each filter
+        for (auto lc : sn.second.lc_) {
+            // Initialise the model
+            std::shared_ptr<Firth17> firth17(new Firth17);
+            firth17->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+            firth17->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+            firth17->sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
+            std::shared_ptr<Model> model = dynamic_pointer_cast<Model>(firth17);
 
-        // Do the fitting (magic!)
-        solver.fit();
+            // Initialise solver
+            MNest solver(model);
+            solver.xRecon_ = vmath::range<double>(-15, lc.second.mjdMax_ - lc.second.mjdMin_ + 20, 1);
+            solver.chainPath_ = "chains/" + sn.second.name_ + "/" + lc.second.filter_;
 
-        // Reset the units to original
-        w->dataRecon_.x_ = add<double>(w->dataRecon_.x_, w->SNe_[w->SNID_].mjdMinList_[w->FLTID_]);
-        w->dataRecon_.y_ = mult<double>(w->dataRecon_.y_, w->SNe_[w->SNID_].normalization_[w->FLTID_]);
-        w->dataRecon_.sigma_ = mult<double>(w->dataRecon_.sigma_, w->SNe_[w->SNID_].normalization_[w->FLTID_]);
-        w->dataRecon_.bestFit_ = mult<double>(w->dataRecon_.bestFit_, w->SNe_[w->SNID_].normalization_[w->FLTID_]);
-        w->dataRecon_.median_ = mult<double>(w->dataRecon_.median_, w->SNe_[w->SNID_].normalization_[w->FLTID_]);
-        w->dataRecon_.medianSigma_ = mult<double>(w->dataRecon_.medianSigma_, w->SNe_[w->SNID_].normalization_[w->FLTID_]);
+            // Perform fitting
+            solver.analyse();
 
-        // Write the data to reconLCFile text file buffor
-        for (size_t j = 0; j < w->dataRecon_.x_.size(); ++j) {
-            reconLCFile << w->dataRecon_.x_[j] << " " << w->dataRecon_.y_[j] << " ";
-            reconLCFile << w->dataRecon_.sigma_[j] << " " << w->SNe_[w->SNID_].filterList_[i] << "\n";
+            // Reset lc units to original
+            solver.xRecon_ = vmath::add<double>(solver.xRecon_, lc.second.mjdMin_);
+            solver.bestFit_ = vmath::mult<double>(solver.bestFit_, lc.second.normalization_);
+            solver.mean_ = vmath::mult<double>(solver.mean_, lc.second.normalization_);
+            solver.meanSigma_ = vmath::mult<double>(solver.meanSigma_, lc.second.normalization_);
+            solver.median_ = vmath::mult<double>(solver.median_, lc.second.normalization_);
+            solver.medianSigma_ = vmath::mult<double>(solver.medianSigma_, lc.second.normalization_);
 
-            reconStatFile << w->dataRecon_.x_[j] << " " << w->dataRecon_.y_[j] << " ";
-            reconStatFile << w->dataRecon_.sigma_[j] << " " << w->dataRecon_.bestFit_[j] << " ";
-            reconStatFile << w->dataRecon_.median_[j] << " " << w->dataRecon_.medianSigma_[j] << " ";
-            reconStatFile << w->SNe_[w->SNID_].filterList_[i] << "\n";
+            // Write results to files
+            for (size_t j = 0; j < solver.xRecon_.size(); ++j) {
+                reconLCFile << solver.xRecon_[j] << " " << solver.mean_[j] << " ";
+                reconLCFile << solver.meanSigma_[j] << " " << lc.second.filter_ << "\n";
 
+                reconStatFile << solver.xRecon_[j] << " " << solver.mean_[j] << " ";
+                reconStatFile << solver.meanSigma_[j] << " " << solver.bestFit_[j] << " ";
+                reconStatFile << solver.median_[j] << " " << solver.medianSigma_[j] << " ";
+                reconStatFile << lc.second.filter_ << "\n";
+            }
         }
-    }
 
-    reconLCFile.close();
-    reconStatFile.close();
+        reconLCFile.close();
+        reconStatFile.close();
+    }
 }
 
 
-/* Main program */
+// Main program
 int main(int argc, char *argv[]) {
-    vector<string> options;
-    shared_ptr<WorkspaceLC> w(new WorkspaceLC());
+    std::vector<std::string> options;
+    shared_ptr<Workspace> w(new Workspace);
 
-    getArgv(argc, argv, options);
+    utils::getArgv(argc, argv, options);
     applyOptions(options, w);
     fillUnassigned(w);
 
     // Create the chains and recon directories
-    createDirectory("chains");
-    createDirectory("recon");
+    utils::createDirectory("chains");
+    utils::createDirectory("recon");
 
-    for (size_t i = 0; i < w->SNe_.size(); ++i) {
-        fitSN(w, i);
-    }
+    // Perform light curve fitting
+    fitLC(w);
 
 	return 0;
 }

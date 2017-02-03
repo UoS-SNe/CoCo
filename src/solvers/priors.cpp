@@ -1,8 +1,16 @@
 #include "priors.hpp"
 
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <iostream>
+
+
 double skillingScalePrior(double r) {
 	return (1.0 - r) / r;
 }
+
 
 double logPrior(double r, double x1, double x2) {
 	double lx1, lx2;
@@ -10,6 +18,7 @@ double logPrior(double r, double x1, double x2) {
 	lx2 = log( x2 );
 	return exp(lx1 + r * (lx2 - lx1));
 }
+
 
 double modJeffPrior(double r, double K0, double Kmax) {
 	return K0 * pow(1.0 + Kmax / K0, r) - K0;
