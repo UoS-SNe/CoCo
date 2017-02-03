@@ -14,7 +14,7 @@ using namespace std;
 void help() {
     cout << "CoCo - LCSim: \n";
     cout << "Originally developed by Natasha Karpenka, ";
-    cout << "and implemented by Szymon Prajs (S.Prajs@soton.ac.uk).\n";
+    cout << "and reimplemented by Szymon Prajs (S.Prajs@soton.ac.uk).\n";
     cout << "Currently maintained by Szymon Prajs and Rob Firth.\n";
     cout << "\nUsage:\n";
     cout << "lcsim *.list\n";

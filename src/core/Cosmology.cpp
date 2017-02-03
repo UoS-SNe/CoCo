@@ -1,7 +1,12 @@
 #include "Cosmology.hpp"
 
-using namespace std;
-using namespace vmath;
+#include <math.h>
+
+#include <memory>
+#include <iostream>
+
+#include "../vmath/integrate.hpp"
+
 
 
 Cosmology::Cosmology(double z) {
@@ -35,14 +40,14 @@ double Cosmology::E(double z1) {
 
 
 double Cosmology::findComDis(double z) {
-    vector<double> steps(10000);
+    std::vector<double> steps(10000);
 
     for (int i = 0; i <= 10000; ++i) {
         steps[i] = E(z * i / 10000.0);
     }
 
     double DH = SI_C/H0_;
-    double DM = trapz<double>(steps,0.0001*z);
+    double DM = vmath::trapz<double>(steps,0.0001*z);
     return DH*DM/1000;
 }
 
@@ -57,9 +62,9 @@ double Cosmology::findComVol(double z) {
 }
 
 
-vector<double> Cosmology::findDZ(double step) {
+std::vector<double> Cosmology::findDZ(double step) {
     int dzSize = int(z_/step);
-    vector<double> res(dzSize);
+    std::vector<double> res(dzSize);
 
     for (int i = 0; i < dzSize; ++i) {
         res[i] = (i + 1) * step;
@@ -69,9 +74,9 @@ vector<double> Cosmology::findDZ(double step) {
 }
 
 
-vector<double> Cosmology::findDV(vector<double> &dz) {
+std::vector<double> Cosmology::findDV(std::vector<double> &dz) {
     int dzSize = dz.size();
-    vector<double> res(dzSize);
+    std::vector<double> res(dzSize);
 
     res[0] = findComVol(dz[1]);
     for (int i = 1; i < dzSize; ++i) {
