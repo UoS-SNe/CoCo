@@ -1,12 +1,12 @@
-# CoCo - v0.4.1
+# CoCo - v0.4.2
 Core Collapse Supernovae templates
 
 Code still in VERY active development - Full release will be available shortly.
 
-Originally developed by Natasha Karpenka,
+Originally designed by Natasha Karpenka.
 
-and reimplemented by Szymon Prajs (S.Prajs@soton.ac.uk)
+Developed and implemented by Szymon Prajs (S.Prajs@soton.ac.uk).
 
 Currently maintained by Szymon Prajs and Rob Firth
 
-## Only LCFit and SpecFit are currently implemented due to large backend changes!
+## LCFit, SpecFit and SpecPhase are currently implemented.
