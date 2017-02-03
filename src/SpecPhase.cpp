@@ -2,14 +2,18 @@
 #include <vector>
 #include <string>
 
+#include "vmath/algebra.hpp"
 #include "vmath/convert.hpp"
 #include "vmath/loadtxt.hpp"
+#include "vmath/range.hpp"
+#include "vmath/stat.hpp"
 
 #include "core/Cosmology.hpp"
 #include "core/Filters.hpp"
 #include "core/SN.hpp"
 #include "core/utils.hpp"
-
+#include "models/Firth17.hpp"
+#include "solvers/MPFitter.hpp"
 
 struct Workspace {
     // Code inputs
@@ -102,9 +106,7 @@ void scanRecon(std::shared_ptr<Workspace> w) {
         if (utils::fileExtention(file) == "spec") {
             snname = utils::split(utils::baseName(file), '_').front();
             mjd = atof(utils::split(utils::baseName(file), '_').back().c_str());
-            if (w->sn_.find(snname) != w->sn_.end()) {
-                w->sn_[snname].addSpec(file, mjd);
-            }
+            w->sn_[snname].addSpec("recon/" + file, mjd);
         }
     }
 }
@@ -118,12 +120,48 @@ void makeSyntheticLC(std::shared_ptr<Workspace> w) {
 }
 
 
+void fitPhase(std::shared_ptr<Workspace> w) {
+    for (auto &sn : w->sn_) {
+        ofstream phaseFile;
+        phaseFile.open("recon/" + sn.second.name_ + ".phase");
+
+        auto lc = sn.second.lc_[w->zeroFilter_];
+
+        // Initialise the model
+        std::shared_ptr<Firth17> firth17(new Firth17);
+        firth17->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
+        firth17->y_ = vmath::div<double>(lc.flux_, lc.normalization_);
+        firth17->sigma_ = std::vector<double>(lc.flux_.size(), 1);
+        std::shared_ptr<Model> model = dynamic_pointer_cast<Model>(firth17);
+
+        // Initialise solver
+        MPFitter solver(model);
+        solver.xRecon_ = vmath::range<double>(-15, lc.mjdMax_ - lc.mjdMin_ + 20, 1);
+
+        // Perform fitting
+        solver.analyse();
+
+        size_t indexMax = std::distance(solver.bestFit_.begin(),
+                                        max_element(solver.bestFit_.begin(),
+                                                    solver.bestFit_.end()));
+        double mjdZeroPhase = solver.xRecon_[indexMax] + lc.mjdMin_;
+
+        for (auto &spec : sn.second.spec_) {
+            phaseFile << spec.second.file_ << " " << spec.second.mjd_ - mjdZeroPhase << "\n";
+        }
+
+        phaseFile.close();
+    }
+}
+
+
 int main (int argc, char* argv[]) {
     std::vector<std::string> options;
     std::shared_ptr<Workspace> w(new Workspace());
 
     utils::getArgv(argc, argv, options);
     applyOptions(options, w);
+    fillUnassigned(w);
 
     // Read in filters and find the ID of the filter used to determine the phase
     w->filterPath_ = "data/filters";
@@ -133,6 +171,7 @@ int main (int argc, char* argv[]) {
     // run SpecPhase pipeline
     scanRecon(w);
     makeSyntheticLC(w);
+    fitPhase(w);
 
     return 0;
 }

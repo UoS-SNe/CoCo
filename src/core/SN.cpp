@@ -35,6 +35,7 @@ void SN::addSpec(std::string fileName, double mjd) {
 
         // Load data into a temporarty vector then assign to SpecData object
         std::vector< std::vector<double> > temp = vmath::loadtxt<double>(fileName, 2);
+        sd.file_ = fileName;
         sd.rawWav_ = temp[0];
         sd.rawFlux_ = temp[1];
         sd.wav_ = sd.rawWav_;
@@ -151,7 +152,7 @@ void SN::synthesiseLC(const std::vector<std::string> &filterList,
             Obs obs;
             obs.mjd_ = spec.second.mjd_;
             obs.flux_ = lc_[flt].flux_.back();
-            obs.fluxErr_ = lc_[flt].fluxErr_.back();
+            obs.fluxErr_ = 0;
             obs.filter_ = flt;
             epoch.push_back(obs);
         }

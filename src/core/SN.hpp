@@ -31,7 +31,8 @@ struct LCData {
 // Data structure for specta
 struct SpecData {
     double mjd_;
-
+    std::string file_;
+    
     std::vector<double> rawWav_;
     std::vector<double> rawFlux_;
 

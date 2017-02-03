@@ -5,7 +5,7 @@
 
 MPFitter::MPFitter(std::shared_ptr<Model> model) : Solver(model) {
     // Fit parameters
-    par = model->params_;
+    par = model->paramGuess_;
     parErr = std::vector<double>(par.size());
 
     // Memset MPFitter variable
@@ -35,9 +35,12 @@ void MPFitter::fit() {
 }
 
 
-void MPFitter::read() {}
+void MPFitter::read() {
+    model_->params_ = par;
+}
 
 
+#include <iostream>
 void MPFitter::stats() {
     mean_ = std::vector<double>(xRecon_.size(), 0);
     meanSigma_ = std::vector<double>(xRecon_.size(), 0);
