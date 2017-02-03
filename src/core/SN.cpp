@@ -12,7 +12,6 @@
 #include "utils.hpp"
 
 
-
 // Initialises empty data structure
 SN::SN() {}
 
@@ -36,6 +35,7 @@ void SN::addSpec(std::string fileName, double mjd) {
 
         // Load data into a temporarty vector then assign to SpecData object
         std::vector< std::vector<double> > temp = vmath::loadtxt<double>(fileName, 2);
+        sd.file_ = fileName;
         sd.rawWav_ = temp[0];
         sd.rawFlux_ = temp[1];
         sd.wav_ = sd.rawWav_;
@@ -50,6 +50,33 @@ void SN::addSpec(std::string fileName, double mjd) {
 
         // Create a LC epoch corresponding to the spectrum_file
         addEpoch(mjd);
+    }
+}
+
+
+void SN::saveSpec(double mjdZeroPhase, double scale) {
+    utils::createDirectory("spectra");
+
+    int phase;
+    std::string sPhase;
+    for (auto &spec : spec_) {
+        ofstream specFile;
+        phase = round(spec.second.mjd_ - mjdZeroPhase);
+        if (phase < 0) {
+            sPhase = "m" + std::to_string(abs(phase));
+        } else if (phase > 0) {
+            sPhase = "p" + std::to_string(phase);
+        } else {
+            sPhase = "max";
+        }
+        specFile.open("spectra/" + name_ + "." + sPhase + ".dat");
+
+        for (size_t i = 0; i < spec.second.flux_.size(); ++i) {
+            specFile << spec.second.wav_[i] << " ";
+            specFile << spec.second.flux_[i] * scale << "\n";
+        }
+
+        specFile.close();
     }
 }
 
@@ -114,6 +141,7 @@ void SN::loadLC(std::string fileName) {
 
         // Set the full light curve as the working version
         restoreCompleteLC();
+        setLCStats();
     }
 
     else {
@@ -122,12 +150,78 @@ void SN::loadLC(std::string fileName) {
 }
 
 
+// Make a synthetic light curve from
+void SN::synthesiseLC(const std::vector<std::string> &filterList,
+                      std::shared_ptr<Filters> filters) {
+    // Clear light curve data
+    lc_.clear();
+    epoch_.clear();
+
+    // Create new light curves
+    for (auto &flt : filterList_) {
+        lc_[flt].name_ = name_;
+        lc_[flt].filter_ = flt;
+        lc_[flt].mjd_ = vector<double>(0);
+        lc_[flt].flux_ = vector<double>(0);
+        lc_[flt].fluxErr_ = vector<double>(spec_.size(), 0);
+    }
+
+    // Loop though each spectrum
+    for (auto &spec : spec_) {
+        filters->rescale(spec.second.wav_);
+
+        // loop though each filter and append the LC
+        std::vector<Obs> epoch;
+        for (auto &flt : filterList) {
+            lc_[flt].mjd_.push_back(spec.second.mjd_);
+            lc_[flt].flux_.push_back(filters->flux(spec.second.flux_, flt));
+
+            Obs obs;
+            obs.mjd_ = spec.second.mjd_;
+            obs.flux_ = lc_[flt].flux_.back();
+            obs.fluxErr_ = 0;
+            obs.filter_ = flt;
+            epoch.push_back(obs);
+        }
+        epoch_[spec.second.mjd_] = epoch;
+    }
+
+    setLCStats();
+}
+
+
+// Move all spectra to a new chosen redshift
+void SN::redshift(double zNew, std::shared_ptr<Cosmology> cosmology) {
+    // Find the wavelength shift between the old and new redshift
+    double shift = (1 + zNew) / (1 + z_);
+
+    // Find the flux shift between the old and new redshift
+    cosmology->set(z_);
+    double scale = cosmology->lumDis_;
+    cosmology->set(zNew);
+    scale /= cosmology->lumDis_;
+
+    for (auto &spec : spec_) {
+        vmath::div(spec.second.wav_, shift);
+        vmath::mult(spec.second.flux_, scale);
+        spec.second.fluxNorm_ *= scale;
+    }
+
+    z_ = zNew;
+}
+
+
 void SN::restoreCompleteLC() {
     for (auto &lc : lc_) {
         lc.second.mjd_ = lc.second.completeMJD_;
         lc.second.flux_ = lc.second.completeFlux_;
         lc.second.fluxErr_ = lc.second.completeFluxErr_;
+    }
+}
 
+
+void SN::setLCStats() {
+    for (auto &lc : lc_) {
         lc.second.mjdMin_ = vmath::min<double>(lc.second.mjd_);
         lc.second.mjdMax_ = vmath::max<double>(lc.second.mjd_);
         lc.second.normalization_ = vmath::max<double>(lc.second.flux_);
