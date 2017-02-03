@@ -5,6 +5,7 @@
 #include "vmath/convert.hpp"
 #include "vmath/loadtxt.hpp"
 
+#include "core/Cosmology.hpp"
 #include "core/Filters.hpp"
 #include "core/SN.hpp"
 #include "core/utils.hpp"
@@ -18,6 +19,9 @@ struct Workspace {
     // Filter info
     std::string filterPath_;
     std::shared_ptr<Filters> filters_;
+
+    // Cosmology
+    std::shared_ptr<Cosmology> cosmology_;
 
     // SN data
     std::vector<std::string> lcList_;
@@ -88,7 +92,7 @@ void fillUnassigned(std::shared_ptr<Workspace> w) {
 
 
 // Scan recon folder for mangled spectra and assign to the correct SN
-void scanRecon(shared_ptr<Workspace> w) {
+void scanRecon(std::shared_ptr<Workspace> w) {
     std::vector<std::string> files;
     utils::dirlist("recon", files);
 
@@ -106,6 +110,14 @@ void scanRecon(shared_ptr<Workspace> w) {
 }
 
 
+void makeSyntheticLC(std::shared_ptr<Workspace> w) {
+    for (auto &sn : w->sn_) {
+        sn.second.redshift(0, w->cosmology_);
+        sn.second.synthesiseLC({w->zeroFilter_}, w->filters_);
+    }
+}
+
+
 int main (int argc, char* argv[]) {
     std::vector<std::string> options;
     std::shared_ptr<Workspace> w(new Workspace());
@@ -116,9 +128,11 @@ int main (int argc, char* argv[]) {
     // Read in filters and find the ID of the filter used to determine the phase
     w->filterPath_ = "data/filters";
     w->filters_ = std::shared_ptr<Filters>(new Filters(w->filterPath_));
+    w->cosmology_ = std::shared_ptr<Cosmology>(new Cosmology(0));
 
     // run SpecPhase pipeline
     scanRecon(w);
+    makeSyntheticLC(w);
 
     return 0;
 }

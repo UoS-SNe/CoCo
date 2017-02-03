@@ -113,6 +113,7 @@ void SN::loadLC(std::string fileName) {
 
         // Set the full light curve as the working version
         restoreCompleteLC();
+        setLCStats();
     }
 
     else {
@@ -156,6 +157,29 @@ void SN::synthesiseLC(const std::vector<std::string> &filterList,
         }
         epoch_[spec.second.mjd_] = epoch;
     }
+
+    setLCStats();
+}
+
+
+// Move all spectra to a new chosen redshift
+void SN::redshift(double zNew, std::shared_ptr<Cosmology> cosmology) {
+    // Find the wavelength shift between the old and new redshift
+    double shift = (1 + zNew) / (1 + z_);
+
+    // Find the flux shift between the old and new redshift
+    cosmology->set(z_);
+    double scale = cosmology->lumDis_;
+    cosmology->set(zNew);
+    scale /= cosmology->lumDis_;
+
+    for (auto &spec : spec_) {
+        vmath::div(spec.second.wav_, shift);
+        vmath::mult(spec.second.flux_, scale);
+        spec.second.fluxNorm_ *= scale;
+    }
+
+    z_ = zNew;
 }
 
 
@@ -164,7 +188,12 @@ void SN::restoreCompleteLC() {
         lc.second.mjd_ = lc.second.completeMJD_;
         lc.second.flux_ = lc.second.completeFlux_;
         lc.second.fluxErr_ = lc.second.completeFluxErr_;
+    }
+}
 
+
+void SN::setLCStats() {
+    for (auto &lc : lc_) {
         lc.second.mjdMin_ = vmath::min<double>(lc.second.mjd_);
         lc.second.mjdMax_ = vmath::max<double>(lc.second.mjd_);
         lc.second.normalization_ = vmath::max<double>(lc.second.flux_);

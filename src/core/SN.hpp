@@ -6,6 +6,7 @@
 #include <string>
 
 #include "Filters.hpp"
+#include "Cosmology.hpp"
 
 
 // Data structure for light curve (one filter per object)
@@ -87,7 +88,9 @@ public:
     void addSpec(std::string,double);
     void addEpoch(double);
     void synthesiseLC(const std::vector<std::string>&,std::shared_ptr<Filters>);
+    void redshift(double,std::shared_ptr<Cosmology>);
     void loadLC(std::string);
+    void setLCStats();
     void restoreCompleteLC();
 };
 
