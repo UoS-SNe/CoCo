@@ -16,21 +16,23 @@ LDFLAGS = -lgsl -lnest3 -lgfortran -llapack -Wl,-no_compact_unwind
 CORE = src/core/utils.cpp src/core/Filters.cpp src/core/Cosmology.cpp \
 src/core/SN.cpp
 
-SOLVERS = src/core/Solver.cpp src/solvers/priors.cpp src/solvers/MNest.cpp
+MPFIT = src/solvers/mpfit.c
+SOLVERS = src/core/Solver.cpp src/solvers/priors.cpp src/solvers/MNest.cpp \
+src/solvers/MPFitter.cpp
 MODELS = src/core/Model.cpp src/models/Firth17.cpp src/models/SpecMangle.cpp
 
 LCEXEC = src/LCFit.cpp
 SPECEXEC = src/SpecFit.cpp
-# PHASEEXEC = src/SpecPhase.cpp
+PHASEEXEC = src/SpecPhase.cpp
 # SIMEXEC = src/LCSim.cpp
 
 
-LCFIT = ${CORE:.cpp=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${LCEXEC:.cpp=.o}
-SPECFIT = ${CORE:.cpp=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${SPECEXEC:.cpp=.o}
-# SPECPHASE = ${CORE:.cpp=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${PHASEEXEC:.cpp=.o}
+LCFIT = ${CORE:.cpp=.o} ${MPFIT:.c=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${LCEXEC:.cpp=.o}
+SPECFIT = ${CORE:.cpp=.o} ${MPFIT:.c=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${SPECEXEC:.cpp=.o}
+SPECPHASE = ${CORE:.cpp=.o} ${MPFIT:.c=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${PHASEEXEC:.cpp=.o}
 # LCSIM = ${CORE:.cpp=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${SIMEXEC:.cpp=.o}
 
-all: lcfit specfit # specphase lcsim
+all: lcfit specfit specphase # lcsim
 
 lcfit: $(LCFIT)
 	$(CXX) $(LCFIT) $(LDFLAGS) -o $@
@@ -38,8 +40,8 @@ lcfit: $(LCFIT)
 specfit: $(SPECFIT)
 	$(CXX) $(SPECFIT) $(LDFLAGS) -o $@
 
-# specphase: $(SPECPHASE)
-# 	$(CXX) $(SPECPHASE) $(LDFLAGS) -o $@
+specphase: $(SPECPHASE)
+	$(CXX) $(SPECPHASE) $(LDFLAGS) -o $@
 
 # lcsim: $(LCSIM)
 # 	$(CXX) $(LCSIM) $(LDFLAGS) -o $@

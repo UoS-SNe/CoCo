@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <string>
 
+#include "Filters.hpp"
+#include "Cosmology.hpp"
 
 
 // Data structure for light curve (one filter per object)
@@ -29,6 +31,7 @@ struct LCData {
 // Data structure for specta
 struct SpecData {
     double mjd_;
+    std::string file_;
 
     std::vector<double> rawWav_;
     std::vector<double> rawFlux_;
@@ -84,8 +87,12 @@ public:
 
     // Data loading routines
     void addSpec(std::string,double);
+    void saveSpec(double, double scale=1);
     void addEpoch(double);
+    void synthesiseLC(const std::vector<std::string>&,std::shared_ptr<Filters>);
+    void redshift(double,std::shared_ptr<Cosmology>);
     void loadLC(std::string);
+    void setLCStats();
     void restoreCompleteLC();
 };
 
