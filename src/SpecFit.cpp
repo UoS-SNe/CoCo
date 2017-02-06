@@ -163,9 +163,9 @@ void mangleSpectra(std::shared_ptr<Workspace> w) {
             specMangle->specData_ = spec.second;
 
             // Normalise the spectrum and LC before fitting
-            double lcNorm = specMangle->lcData_[0].flux_;
             specMangle->specData_.flux_ =
                 vmath::div<double>(specMangle->specData_.flux_, spec.second.fluxNorm_);
+            double lcNorm = specMangle->lcData_[0].flux_;
             for (auto &obs : specMangle->lcData_) {
                 obs.flux_ /= lcNorm;
                 obs.fluxErr_ /= lcNorm;
