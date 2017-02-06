@@ -178,6 +178,18 @@ void mangleSpectra(std::shared_ptr<Workspace> w) {
             // Assign filter central wavelengths to each lc data point
             for (auto &obs : specMangle->lcData_) {
                 obs.wav_ = w->filters_->filter_[obs.filter_].centralWavelength_;
+                obs.minWav_ = w->filters_->filter_[obs.filter_].min_;
+                obs.maxWav_ = w->filters_->filter_[obs.filter_].max_;
+            }
+
+            // Remove LC points that do not overlap with spectra
+            double specMin = vmath::min(spec.second.wav_);
+            double specMax = vmath::max(spec.second.wav_);
+            for (int i = specMangle->lcData_.size() - 1; i >= 0; --i) {
+                if (specMangle->lcData_[i].minWav_ < specMin ||
+                    specMangle->lcData_[i].maxWav_ > specMax) {
+                    specMangle->lcData_.erase(specMangle->lcData_.begin()+i);
+                }
             }
 
             // Sort light curve slice by filter central wavelengths

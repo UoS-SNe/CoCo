@@ -9,6 +9,7 @@
 #include "../vmath/interp.hpp"
 #include "../vmath/range.hpp"
 #include "../vmath/algebra.hpp"
+#include "../vmath/stat.hpp"
 
 #include "utils.hpp"
 
@@ -27,30 +28,48 @@ void Filters::readFolder() {
 }
 
 
+// Load filters responses and calculate key properties
 void Filters::loadFilter(std::string fileName) {
     FilterData filter;
     filter.name_ = utils::split(fileName, '.')[0];
 
+    // Load a filter text file to a vector
     std::vector< std::vector<double> > data;
     std::string path = folderPath_+ "/" + fileName;
     vmath::loadtxt<double>(path, 2, data);
 
-    double janskyConst = 3631 * 1e-23 * 299792458 * 1e10;
+    // Truncate filters at the 3% level
+    double truncLimit = 0.03 * vmath::max(data[1]);
+    for (int i = data[0].size() - 1; i >= 0; --i) {
+        if (data[1][i] < truncLimit) {
+            data[0].erase(data[0].begin() + i);
+            data[1].erase(data[1].begin() + i);
+
+        }
+    }
+    data[0].insert(data[0].begin(), vmath::min(data[0]) - (data[0][1] - data[0][0]));
+    data[1].insert(data[1].begin(), 0);
+    data[0].push_back(vmath::max(data[0]) + (data[0][1] - data[0][0]));
+    data[1].push_back(0);
+
+    // Calculate the zero point of a filter
+    constexpr double janskyConst = 3631 * 1e-23 * 299792458 * 1e10;
     std::vector<double> waveSq = vmath::mult<double>(data[0], data[0]);
     std::vector<double> jansky = vmath::div<double>(janskyConst, waveSq);
     jansky = vmath::mult<double>(jansky, data[1]);
     double fluxZp = vmath::trapz<double>(jansky, data[0][1] - data[0][0]);
 
+    // Assign properties to the a FilerData object
     filter.inputWavelength_ = data[0];
     filter.inputBandpass_ = data[1];
     filter.wavelength_ = filter.inputWavelength_;
     filter.bandpass_ = filter.inputBandpass_;
     filter.restWavelength_ = filter.inputWavelength_;
-
     filter.area_ = vmath::trapz<double>(data[1], data[0][1] - data[0][0]);
     filter.zp_ = -2.5 * log10(fluxZp / filter.area_);
     filter.centralWavelength_ = vmath::trapz<double>(vmath::mult<double>(data[1], data[0]), data[0][1] - data[0][0]) / filter.area_;
 
+    // Find the wavelength span of the filter
     filter.min_ = -1;
     filter.max_ = -1;
     for (int i = 1; i < (filter.bandpass_.size() - 1); i++) {
