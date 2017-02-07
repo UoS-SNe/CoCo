@@ -43,7 +43,6 @@ void SpecMangle::setPriors() {
 
 std::vector<double> SpecMangle::function(std::vector<double>& wav) {
     int npars = params_.size();
-    params_ = {2,6,4};
 
     // spline control points
     std::vector<double> splineX(npars+2);
@@ -82,17 +81,7 @@ std::vector<double> SpecMangle::function(std::vector<double>& wav) {
     gsl_spline_free(spline);
     gsl_interp_accel_free(acc);
 
-    std::cout << std::endl;
-    for (int i = 0; i < splineX.size();  ++i) {
-        std::cout << "(" + to_string(splineX[i]) + "," + to_string(splineY[i]) + ") ";
-    }
-    std::cout << std::endl;
 
-    for (size_t i = 0; i < wav.size(); ++i) {
-        std::cout << wav[i] << " " << modelSpline[i] << std::endl;
-    }
-
-    exit(0);
     return vmath::mult<double>(specData_.flux_, modelSpline);
 }
 
@@ -102,8 +91,7 @@ std::vector<double> SpecMangle::residual() {
     std::vector<double> res(lcData_.size(), 0);
 
     for (size_t i = 0; i < lcData_.size(); ++i) {
-        res[i] = (lcData_[i].flux_ - filters_->flux(mangledSpec, lcData_[i].filter_)); // / lcData_[i].fluxErr_ ;
-        // std::cout << lcData_[i].filter_ << " -- " << filters_->flux(mangledSpec, lcData_[i].filter_) << " => " << lcData_[i].flux_ << " " << lcData_[i].fluxErr_ << std::endl;
+        res[i] = (lcData_[i].flux_ - filters_->flux(mangledSpec, lcData_[i].filter_)) / lcData_[i].fluxErr_;
     }
 
     return res;
