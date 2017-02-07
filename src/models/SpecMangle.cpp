@@ -35,7 +35,7 @@ void SpecMangle::setPriors() {
     noParams_ = lcData_.size();
 
     priorRange_ = std::vector< std::pair<double,double> >(noParams_,
-        std::make_pair<double,double>(1e-4, 1e4));
+        std::make_pair<double,double>(1e-3, 1e3));
     paramGuess_ = std::vector<double>(noParams_, 1.0);
     priorType_ = std::vector<std::string>(noParams_, "flat");
 }
@@ -81,6 +81,7 @@ std::vector<double> SpecMangle::function(std::vector<double>& wav) {
     gsl_spline_free(spline);
     gsl_interp_accel_free(acc);
 
+
     return vmath::mult<double>(specData_.flux_, modelSpline);
 }
 
@@ -90,7 +91,7 @@ std::vector<double> SpecMangle::residual() {
     std::vector<double> res(lcData_.size(), 0);
 
     for (size_t i = 0; i < lcData_.size(); ++i) {
-        res[i] = (lcData_[i].flux_ - filters_->flux(mangledSpec, lcData_[i].filter_)) / lcData_[i].fluxErr_ ;
+        res[i] = (lcData_[i].flux_ - filters_->flux(mangledSpec, lcData_[i].filter_)) / lcData_[i].fluxErr_;
     }
 
     return res;
