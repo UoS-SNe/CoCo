@@ -46,8 +46,11 @@ struct Obs {
     double mjd_;
     double flux_;
     double fluxErr_;
-    double wav_;
+
     std::string filter_;
+    double wav_;
+    double minWav_;
+    double maxWav_;
 };
 
 
