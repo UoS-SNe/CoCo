@@ -229,6 +229,8 @@ void mangleSpectra(std::shared_ptr<Workspace> w) {
                                to_string(spec.second.mjd_) + ".stat");
 
             // Write reconstructed spectra to a file
+            reconSpecFile << "# " << spec.second.file_ << "\n";
+            reconStatFile << "# " << spec.second.file_ << "\n";
             for (size_t i = 0; i < solver->xRecon_.size(); ++i) {
                 reconSpecFile << solver->xRecon_[i] << " " << solver->mean_[i];
                 reconSpecFile << " " << solver->meanSigma_[i] << " " << "\n";
