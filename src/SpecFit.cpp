@@ -163,19 +163,6 @@ void mangleSpectra(std::shared_ptr<Workspace> w) {
             specMangle->lcData_ = sn.second.epoch_[spec.second.mjd_];
             specMangle->specData_ = spec.second;
 
-            // Normalise the spectrum and LC before fitting
-            specMangle->specData_.flux_ =
-                vmath::div<double>(specMangle->specData_.flux_, spec.second.fluxNorm_);
-            double lcNorm = specMangle->lcData_[0].flux_;
-            for (auto &obs : specMangle->lcData_) {
-                obs.flux_ /= lcNorm;
-                obs.fluxErr_ /= lcNorm;
-            }
-
-            // Rescale filters to the data wavelength and assign to model
-            w->filters_->rescale(spec.second.wav_);
-            specMangle->filters_ = w->filters_;
-
             // Assign filter central wavelengths to each lc data point
             for (auto &obs : specMangle->lcData_) {
                 obs.wav_ = w->filters_->filter_[obs.filter_].centralWavelength_;
@@ -193,11 +180,26 @@ void mangleSpectra(std::shared_ptr<Workspace> w) {
                 }
             }
 
+            // Rescale filters to the data wavelength and assign to model
+            w->filters_->rescale(spec.second.wav_);
+            specMangle->filters_ = w->filters_;
+
             // Sort light curve slice by filter central wavelengths
             std::sort(specMangle->lcData_.begin(), specMangle->lcData_.end(),
                       [](const Obs &a, const Obs &b) -> bool {
                          return a.wav_ < b.wav_;
                       });
+
+            // Normalise LC
+            double lcNorm = specMangle->lcData_[0].flux_;
+            for (auto &obs : specMangle->lcData_) {
+                obs.flux_ /= lcNorm;
+                obs.fluxErr_ /= lcNorm;
+            }
+
+            // Normalise the spectrum
+            double specNorm = w->filters_->flux(specMangle->specData_.flux_, specMangle->lcData_[0].filter_);
+            specMangle->specData_.flux_ = vmath::div<double>(specMangle->specData_.flux_, specNorm);
 
             // Set priors and number of paramters
             specMangle->setPriors();
