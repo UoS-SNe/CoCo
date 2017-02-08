@@ -157,6 +157,7 @@ void mangleSpectra(std::shared_ptr<Workspace> w) {
     for (auto sn : w->sn_) {
         // Loop though each spectrum
         for (auto &spec : sn.second.spec_) {
+            std::cout << "# " << spec.second.file_ << "\n";
             // Initialise the model
             std::shared_ptr<SpecMangle> specMangle(new SpecMangle);
             specMangle->lcData_ = sn.second.epoch_[spec.second.mjd_];
