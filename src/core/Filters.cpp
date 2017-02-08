@@ -87,7 +87,7 @@ void Filters::loadFilter(std::string fileName) {
 
 
 void Filters::rescale(const std::vector<double> &wavelength) {
-    for (auto flt : filter_) {
+    for (auto &flt : filter_) {
         flt.second.wavelength_ = wavelength;
         flt.second.bandpass_ = vmath::interp<double>(wavelength, flt.second.inputWavelength_, flt.second.inputBandpass_);
     }
@@ -96,7 +96,7 @@ void Filters::rescale(const std::vector<double> &wavelength) {
 
 void Filters::rescale(double start, double end, double step) {
     std::vector<double> wavelength = vmath::range<double>(start, end, step);
-    for (auto flt : filter_) {
+    for (auto &flt : filter_) {
         flt.second.wavelength_ = wavelength;
         flt.second.bandpass_ = vmath::interp<double>(wavelength, flt.second.inputWavelength_, flt.second.inputBandpass_);
     }
@@ -122,7 +122,7 @@ double Filters::flux(const std::vector<double>& SED, const std::string& filterNa
 
     } else {
         std::vector<double> filteredSED = vmath::mult<double>(SED, filter_[filterName].bandpass_);
-        double integFlux = vmath::trapz<double>(filteredSED, filter_[filterName].wavelength_[1] - filter_[filterName].wavelength_[0]);
+        double integFlux = vmath::trapz<double>(filteredSED, filter_[filterName].wavelength_);
         return integFlux / filter_[filterName].area_;
     }
 }
