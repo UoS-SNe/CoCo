@@ -1,56 +1,75 @@
 #include "Filters.hpp"
 
+#include <math.h>
 
-bool FilterData::operator<(const FilterData &rhs) const {
-    return (centralWavelength_ < rhs.centralWavelength_);
-}
+#include <iostream>
+
+#include "../vmath/loadtxt.hpp"
+#include "../vmath/integrate.hpp"
+#include "../vmath/interp.hpp"
+#include "../vmath/range.hpp"
+#include "../vmath/algebra.hpp"
+#include "../vmath/stat.hpp"
+
+#include "utils.hpp"
 
 
-Filters::Filters(string path) : folderPath_(path) {
+Filters::Filters(std::string path) : folderPath_(path) {
     readFolder();
 }
 
 
 void Filters::readFolder() {
-    vector<string> list = loadtxt<string>(folderPath_ + "/list.txt", 1)[0];
+    std::vector<std::string> list = vmath::loadtxt<std::string>(folderPath_ + "/list.txt", 1)[0];
 
-    vector<string> temp;
     for (size_t i = 0; i < list.size(); ++i) {
         loadFilter(list[i]);
-    }
-    sort(filters_.begin(), filters_.end());
-
-    for (size_t i = 0; i < list.size(); ++i) {
-        filterID_[filters_[i].name_] = i;
-        filterName_[i] = filters_[i].name_;
     }
 }
 
 
-void Filters::loadFilter(string fileName) {
+// Load filters responses and calculate key properties
+void Filters::loadFilter(std::string fileName) {
     FilterData filter;
-    filter.name_ = split(fileName, '.')[0];
+    filter.name_ = utils::split(fileName, '.')[0];
 
-    vector< vector<double> > data;
-    string path = folderPath_+ "/" + fileName;
-    loadtxt<double>(path, 2, data);
+    // Load a filter text file to a vector
+    std::vector< std::vector<double> > data;
+    std::string path = folderPath_+ "/" + fileName;
+    vmath::loadtxt<double>(path, 2, data);
 
-    double janskyConst = 3631 * 1e-23 * 299792458 * 1e10;
-    vector<double> waveSq = mult<double>(data[0], data[0]);
-    vector<double> jansky = div<double>(janskyConst, waveSq);
-    jansky = mult<double>(jansky, data[1]);
-    double fluxZp = trapz<double>(jansky, data[0][1] - data[0][0]);
+    // Truncate filters at the 3% level
+    double truncLimit = 0.03 * vmath::max(data[1]);
+    for (int i = data[0].size() - 1; i >= 0; --i) {
+        if (data[1][i] < truncLimit) {
+            data[0].erase(data[0].begin() + i);
+            data[1].erase(data[1].begin() + i);
 
+        }
+    }
+    data[0].insert(data[0].begin(), vmath::min(data[0]) - (data[0][1] - data[0][0]));
+    data[1].insert(data[1].begin(), 0);
+    data[0].push_back(vmath::max(data[0]) + (data[0][1] - data[0][0]));
+    data[1].push_back(0);
+
+    // Calculate the zero point of a filter
+    constexpr double janskyConst = 3631 * 1e-23 * 299792458 * 1e10;
+    std::vector<double> waveSq = vmath::mult<double>(data[0], data[0]);
+    std::vector<double> jansky = vmath::div<double>(janskyConst, waveSq);
+    jansky = vmath::mult<double>(jansky, data[1]);
+    double fluxZp = vmath::trapz<double>(jansky, data[0][1] - data[0][0]);
+
+    // Assign properties to the a FilerData object
     filter.inputWavelength_ = data[0];
     filter.inputBandpass_ = data[1];
     filter.wavelength_ = filter.inputWavelength_;
     filter.bandpass_ = filter.inputBandpass_;
     filter.restWavelength_ = filter.inputWavelength_;
-
-    filter.area_ = trapz<double>(data[1], data[0][1] - data[0][0]);
+    filter.area_ = vmath::trapz<double>(data[1], data[0][1] - data[0][0]);
     filter.zp_ = -2.5 * log10(fluxZp / filter.area_);
-    filter.centralWavelength_ = trapz<double>(mult<double>(data[1], data[0]), data[0][1] - data[0][0]) / filter.area_;
+    filter.centralWavelength_ = vmath::trapz<double>(vmath::mult<double>(data[1], data[0]), data[0][1] - data[0][0]) / filter.area_;
 
+    // Find the wavelength span of the filter
     filter.min_ = -1;
     filter.max_ = -1;
     for (int i = 1; i < (filter.bandpass_.size() - 1); i++) {
@@ -63,48 +82,47 @@ void Filters::loadFilter(string fileName) {
         if (filter.min_ != -1 && filter.max_ != -1) break;
     }
 
-    filters_.push_back(filter);
+    filter_.insert(std::make_pair(filter.name_, filter));
 }
 
 
-void Filters::rescale(const vector<double> &wavelength) {
-    for (int i = 0; i < filters_.size(); ++i) {
-        filters_[i].wavelength_ = wavelength;
-        filters_[i].bandpass_ = interp<double>(wavelength,filters_[i].inputWavelength_,filters_[i].inputBandpass_);
+void Filters::rescale(const std::vector<double> &wavelength) {
+    for (auto &flt : filter_) {
+        flt.second.wavelength_ = wavelength;
+        flt.second.bandpass_ = vmath::interp<double>(wavelength, flt.second.inputWavelength_, flt.second.inputBandpass_);
     }
 }
 
 
 void Filters::rescale(double start, double end, double step) {
-    vector<double> wavelength = range<double>(start, end, step);
-    for (int i = 0; i < filters_.size(); ++i) {
-        filters_[i].wavelength_ = wavelength;
-        filters_[i].bandpass_ = interp<double>(wavelength,filters_[i].inputWavelength_,filters_[i].inputBandpass_);
+    std::vector<double> wavelength = vmath::range<double>(start, end, step);
+    for (auto &flt : filter_) {
+        flt.second.wavelength_ = wavelength;
+        flt.second.bandpass_ = vmath::interp<double>(wavelength, flt.second.inputWavelength_, flt.second.inputBandpass_);
     }
 }
 
 void Filters::rescale(double step) {
     double start, end;
-    for (int i = 0; i < filters_.size(); ++i) {
-        start = filters_[i].inputWavelength_.front();
+    for (auto flt : filter_) {
+        start = flt.second.inputWavelength_.front();
         start -= fmod(start, step);
-        end = filters_[i].inputWavelength_.back();
+        end = flt.second.inputWavelength_.back();
         end -= fmod(end, step);
         end += step;
 
-        filters_[i].wavelength_ = range<double>(start, end, step);
-        filters_[i].bandpass_ = interp<double>(filters_[i].wavelength_,filters_[i].inputWavelength_,filters_[i].inputBandpass_);
+        flt.second.wavelength_ = vmath::range<double>(start, end, step);
+        flt.second.bandpass_ = vmath::interp<double>(flt.second.wavelength_, flt.second.inputWavelength_, flt.second.inputBandpass_);
     }
 }
 
-double Filters::flux(const vector<double>& SED, const string& filterName) {
-    if (filterID_.find(filterName) == filterID_.end()) {
+double Filters::flux(const std::vector<double>& SED, const std::string& filterName) {
+    if (filter_.find(filterName) == filter_.end()) {
         return 0;
 
     } else {
-        int ID = filterID_.at(filterName);
-        vector<double> filteredSED = mult<double>(SED, filters_[ID].bandpass_);
-        double integFlux = trapz<double>(filteredSED, filters_[ID].wavelength_[1] - filters_[ID].wavelength_[0]);
-        return integFlux / filters_[ID].area_;
+        std::vector<double> filteredSED = vmath::mult<double>(SED, filter_[filterName].bandpass_);
+        double integFlux = vmath::trapz<double>(filteredSED, filter_[filterName].wavelength_);
+        return integFlux / filter_[filterName].area_;
     }
 }

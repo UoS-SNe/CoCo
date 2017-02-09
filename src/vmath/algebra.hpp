@@ -6,10 +6,10 @@
 
 using namespace std;
 
-namespace vmath {  // NAMESPACE vmath
+namespace vmath {
 
 template <typename T>
-void add(const vector<T> &vec, T scalar, vector<T> &res) {
+void add(const std::vector<T> &vec, T scalar, std::vector<T> &res) {
     res.resize(vec.size());
 
     for (int i = 0; i < vec.size(); ++i) {
@@ -19,15 +19,15 @@ void add(const vector<T> &vec, T scalar, vector<T> &res) {
 
 
 template <typename T>
-vector<T> add(vector<T> &vec, T scalar) {
-    vector<T> res;
+std::vector<T> add(std::vector<T> &vec, T scalar) {
+    std::vector<T> res;
     add<T>(vec, scalar, res);
     return res;
 }
 
 
 template <typename T>
-void add(const vector<T> &vec1, const vector<T> &vec2, vector<T> &res) {
+void add(const std::vector<T> &vec1, const std::vector<T> &vec2, std::vector<T> &res) {
     if (vec1.size() <= vec2.size()) {
         res.resize(vec1.size());
     } else {
@@ -41,15 +41,15 @@ void add(const vector<T> &vec1, const vector<T> &vec2, vector<T> &res) {
 
 
 template <typename T>
-vector<T> add(const vector<T> &vec1, const vector<T> &vec2) {
-    vector<T> res;
+std::vector<T> add(const std::vector<T> &vec1, const std::vector<T> &vec2) {
+    std::vector<T> res;
     add<T>(vec1, vec2, res);
     return res;
 }
 
 
 template <typename T>
-void sub(const vector<T> &vec, T scalar, vector<T> &res) {
+void sub(const std::vector<T> &vec, T scalar, std::vector<T> &res) {
     res.resize(vec.size());
 
     for (int i = 0; i < vec.size(); ++i) {
@@ -59,15 +59,15 @@ void sub(const vector<T> &vec, T scalar, vector<T> &res) {
 
 
 template <typename T>
-vector<T> sub(vector<T> &vec, T scalar) {
-    vector<T> res;
+std::vector<T> sub(std::vector<T> &vec, T scalar) {
+    std::vector<T> res;
     sub<T>(vec, scalar, res);
     return res;
 }
 
 
 template <typename T>
-void sub(const vector<T> &vec1, const vector<T> &vec2, vector<T> &res) {
+void sub(const std::vector<T> &vec1, const std::vector<T> &vec2, std::vector<T> &res) {
     if (vec1.size() <= vec2.size()) {
         res.resize(vec1.size());
     } else {
@@ -81,15 +81,15 @@ void sub(const vector<T> &vec1, const vector<T> &vec2, vector<T> &res) {
 
 
 template <typename T>
-vector<T> sub(const vector<T> &vec1, const vector<T> &vec2) {
-    vector<T> res;
+std::vector<T> sub(const std::vector<T> &vec1, const std::vector<T> &vec2) {
+    std::vector<T> res;
     sub<T>(vec1, vec2, res);
     return res;
 }
 
 
 template <typename T>
-void mult(const vector<T> &vec, T scalar, vector<T> &res) {
+void mult(const std::vector<T> &vec, T scalar, std::vector<T> &res) {
     res.resize(vec.size());
 
     for (int i = 0; i < vec.size(); ++i) {
@@ -99,15 +99,15 @@ void mult(const vector<T> &vec, T scalar, vector<T> &res) {
 
 
 template <typename T>
-vector<T> mult(const vector<T> &vec, T scalar) {
-    vector<T> res;
+std::vector<T> mult(const std::vector<T> &vec, T scalar) {
+    std::vector<T> res;
     mult<T>(vec, scalar, res);
     return res;
 }
 
 
 template <typename T>
-void mult(const vector<T> &vec1, const vector<T> &vec2, vector<T> &res) {
+void mult(const std::vector<T> &vec1, const std::vector<T> &vec2, std::vector<T> &res) {
     if (vec1.size() <= vec2.size()) {
         res.resize(vec1.size());
     } else {
@@ -121,15 +121,15 @@ void mult(const vector<T> &vec1, const vector<T> &vec2, vector<T> &res) {
 
 
 template <typename T>
-vector<T> mult(const vector<T> &vec1, const vector<T> &vec2) {
-    vector<T> res;
+std::vector<T> mult(const std::vector<T> &vec1, const std::vector<T> &vec2) {
+    std::vector<T> res;
     mult<T>(vec1, vec2, res);
     return res;
 }
 
 
 template <typename T>
-void div(const vector<T> &vec, T scalar, vector<T> &res) {
+void div(const std::vector<T> &vec, T scalar, std::vector<T> &res) {
     res.resize(vec.size());
 
     for (int i = 0; i < vec.size(); ++i) {
@@ -139,14 +139,14 @@ void div(const vector<T> &vec, T scalar, vector<T> &res) {
 
 
 template <typename T>
-vector<T> div(const vector<T> &vec, T scalar) {
-    vector<T> res;
+std::vector<T> div(const std::vector<T> &vec, T scalar) {
+    std::vector<T> res;
     div<T>(vec, scalar, res);
     return res;
 }
 
 template <typename T>
-void div(T scalar, const vector<T> &vec, vector<T> &res) {
+void div(T scalar, const std::vector<T> &vec, std::vector<T> &res) {
     res.resize(vec.size());
 
     for (int i = 0; i < vec.size(); ++i) {
@@ -156,15 +156,15 @@ void div(T scalar, const vector<T> &vec, vector<T> &res) {
 
 
 template <typename T>
-vector<T> div(T scalar, const vector<T> &vec) {
-    vector<T> res;
+std::vector<T> div(T scalar, const std::vector<T> &vec) {
+    std::vector<T> res;
     div<T>(scalar, vec, res);
     return res;
 }
 
 
 template <typename T>
-void div(const vector<T> &vec1, const vector<T> &vec2, vector<T> &res) {
+void div(const std::vector<T> &vec1, const std::vector<T> &vec2, std::vector<T> &res) {
     if (vec1.size() <= vec2.size()) {
         res.resize(vec1.size());
     } else {
@@ -178,15 +178,15 @@ void div(const vector<T> &vec1, const vector<T> &vec2, vector<T> &res) {
 
 
 template <typename T>
-vector<T> div(const vector<T> &vec1, const vector<T> &vec2) {
-    vector<T> res;
+std::vector<T> div(const std::vector<T> &vec1, const std::vector<T> &vec2) {
+    std::vector<T> res;
     div<T>(vec1, vec2, res);
     return res;
 }
 
 
 template <typename T>
-void power(const vector<T> &vec, double pwr, vector<T> &res) {
+void power(const std::vector<T> &vec, double pwr, std::vector<T> &res) {
     res.resize(vec.size());
 
     for (int i = 0; i < vec.size(); ++i) {
@@ -196,8 +196,8 @@ void power(const vector<T> &vec, double pwr, vector<T> &res) {
 
 
 template <typename T>
-vector<T> power(vector<T> &vec, double pwr) {
-    vector<T> res;
+std::vector<T> power(std::vector<T> &vec, double pwr) {
+    std::vector<T> res;
     power<T>(vec, pwr, res);
     return res;
 }
