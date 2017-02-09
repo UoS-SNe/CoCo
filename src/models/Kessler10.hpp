@@ -13,7 +13,7 @@ public:
     std::vector<double> sigma_;
 
     // Constructor
-    Bazin09();
+    Kessler10();
 
     // Override for the mathematical definition of the model
     double function(double);

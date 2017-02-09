@@ -12,7 +12,7 @@
 #include "core/Filters.hpp"
 #include "core/SN.hpp"
 #include "core/utils.hpp"
-#include "models/Bazin13.hpp"
+#include "models/Karpenka12.hpp"
 #include "solvers/MPFitter.hpp"
 
 struct Workspace {
@@ -128,11 +128,11 @@ void fitPhase(std::shared_ptr<Workspace> w) {
         auto lc = sn.second.lc_[w->zeroFilter_];
 
         // Initialise the model
-        std::shared_ptr<Bazin13> bazin13(new Bazin13);
-        bazin13->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
-        bazin13->y_ = vmath::div<double>(lc.flux_, lc.normalization_);
-        bazin13->sigma_ = std::vector<double>(lc.flux_.size(), 1);
-        std::shared_ptr<Model> model = dynamic_pointer_cast<Model>(bazin13);
+        std::shared_ptr<Karpenka12> karpenka12(new Karpenka12);
+        karpenka12->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
+        karpenka12->y_ = vmath::div<double>(lc.flux_, lc.normalization_);
+        karpenka12->sigma_ = std::vector<double>(lc.flux_.size(), 1);
+        std::shared_ptr<Model> model = dynamic_pointer_cast<Model>(karpenka12);
 
         // Initialise solver
         MPFitter solver(model);
