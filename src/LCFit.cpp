@@ -9,7 +9,7 @@
 
 #include "core/utils.hpp"
 #include "core/SN.hpp"
-#include "models/Bazin13.hpp"
+#include "models/Karpenka12.hpp"
 #include "solvers/MNest.hpp"
 
 
@@ -129,11 +129,11 @@ void fitLC(shared_ptr<Workspace> w) {
         // Loop though each filter
         for (auto lc : sn.second.lc_) {
             // Initialise the model
-            std::shared_ptr<Bazin13> bazin13(new Bazin13);
-            bazin13->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
-            bazin13->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
-            bazin13->sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
-            std::shared_ptr<Model> model = dynamic_pointer_cast<Model>(bazin13);
+            std::shared_ptr<Karpenka12> karpenka12(new Karpenka12);
+            karpenka12->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+            karpenka12->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+            karpenka12->sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
+            std::shared_ptr<Model> model = dynamic_pointer_cast<Model>(karpenka12);
 
             // Initialise solver
             MNest solver(model);
