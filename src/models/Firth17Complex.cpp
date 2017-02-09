@@ -1,4 +1,4 @@
-#include "Firth17.hpp"
+#include "Firth17Complex.hpp"
 
 #include <math.h>
 
@@ -6,7 +6,7 @@
 #include <limits>
 
 
-Firth17::Firth17() : Model() {
+Firth17Complex::Firth17Complex() : Model() {
     noParams_ = 8;
     paramNames_ = {"A",
                    "B",
@@ -46,7 +46,7 @@ Firth17::Firth17() : Model() {
 }
 
 
-double Firth17::function(double t) {
+double Firth17Complex::function(double t) {
     double flux = params_[0] * (1.0 + params_[1] * pow(t - params_[2], 2.0));
     flux *= exp(-(t-params_[5])/params_[4]);
     flux /= (1.0 + exp(-(t - params_[5]) / params_[3]));
@@ -56,7 +56,7 @@ double Firth17::function(double t) {
 }
 
 
-std::vector<double> Firth17::function(std::vector<double>& t) {
+std::vector<double> Firth17Complex::function(std::vector<double>& t) {
     std::vector<double> res(t.size(), 0);
     for (size_t i = 0; i < t.size(); ++i) {
         res[i] = function(t[i]);
@@ -66,7 +66,7 @@ std::vector<double> Firth17::function(std::vector<double>& t) {
 }
 
 
-std::vector<double> Firth17::residual() {
+std::vector<double> Firth17Complex::residual() {
     std::vector<double> res(x_.size(), 0);
 
     double flux;
