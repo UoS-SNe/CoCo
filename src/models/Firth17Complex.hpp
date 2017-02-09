@@ -1,11 +1,11 @@
-#ifndef COCO_MODELS_FIRTH17_HPP_
-#define COCO_MODELS_FIRTH17_HPP_
+#ifndef COCO_MODELS_FIRTH17COMPLEX_HPP_
+#define COCO_MODELS_FIRTH17COMPLEX_HPP_
 
 #include <vector>
 #include "../core/Model.hpp"
 
 
-class Firth17 : public Model {
+class Firth17Complex : public Model {
 public:
     // Data specific to the model
     std::vector<double> x_;
@@ -13,7 +13,7 @@ public:
     std::vector<double> sigma_;
 
     // Constructor
-    Firth17();
+    Firth17Complex();
 
     // Override for the mathematical definition of the model
     double function(double);
@@ -22,4 +22,4 @@ public:
 };
 
 
-#endif  // COCO_MODELS_FIRTH17_HPP_
+#endif  // COCO_MODELS_FIRTH17COMPLEX_HPP_

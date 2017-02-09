@@ -19,7 +19,8 @@ src/core/SN.cpp
 MPFIT = src/solvers/mpfit.c
 SOLVERS = src/core/Solver.cpp src/solvers/priors.cpp src/solvers/MNest.cpp \
 src/solvers/MPFitter.cpp
-MODELS = src/core/Model.cpp src/models/Firth17.cpp src/models/SpecMangle.cpp
+MODELS = src/core/Model.cpp src/models/Bazin13.cpp src/models/Firth17Complex.cpp \
+src/models/SpecMangle.cpp
 
 LCEXEC = src/LCFit.cpp
 SPECEXEC = src/SpecFit.cpp

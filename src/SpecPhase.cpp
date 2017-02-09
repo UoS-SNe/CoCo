@@ -12,7 +12,7 @@
 #include "core/Filters.hpp"
 #include "core/SN.hpp"
 #include "core/utils.hpp"
-#include "models/Firth17.hpp"
+#include "models/Bazin13.hpp"
 #include "solvers/MPFitter.hpp"
 
 struct Workspace {
@@ -128,11 +128,11 @@ void fitPhase(std::shared_ptr<Workspace> w) {
         auto lc = sn.second.lc_[w->zeroFilter_];
 
         // Initialise the model
-        std::shared_ptr<Firth17> firth17(new Firth17);
-        firth17->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
-        firth17->y_ = vmath::div<double>(lc.flux_, lc.normalization_);
-        firth17->sigma_ = std::vector<double>(lc.flux_.size(), 1);
-        std::shared_ptr<Model> model = dynamic_pointer_cast<Model>(firth17);
+        std::shared_ptr<Bazin13> bazin13(new Bazin13);
+        bazin13->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
+        bazin13->y_ = vmath::div<double>(lc.flux_, lc.normalization_);
+        bazin13->sigma_ = std::vector<double>(lc.flux_.size(), 1);
+        std::shared_ptr<Model> model = dynamic_pointer_cast<Model>(bazin13);
 
         // Initialise solver
         MPFitter solver(model);
