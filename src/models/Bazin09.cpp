@@ -32,9 +32,8 @@ Bazin09::Bazin09() : Model() {
 
 
 double Bazin09::function(double t) {
-    double flux = params_[0] * exp(-(t-params_[4])/params_[3]);
-    flux /= (1.0 + exp(-(t-params_[4])/params_[2]));
-    flux += params_[1];
+    double flux = params_[0] * exp(-(t-params_[3])/params_[2]);
+    flux /= (1.0 + exp(-(t-params_[3])/params_[1]));
 
     return flux;
 }

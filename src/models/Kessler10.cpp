@@ -40,9 +40,9 @@ Kessler10::Kessler10() : Model() {
 
 
 double Kessler10::function(double t) {
-    double flux = params_[0] * exp(-(t-params_[4])/params_[3]);
-    flux /= (1.0 + exp(-(t-params_[4])/params_[2]));
-    flux += params_[1];
+    double flux = params_[0] * (1.0 + params_[1]*(t-params_[5]) + params_[2]*(t-params_[5]));
+    flux *= exp(-(t-params_[5])/params_[4]);
+    flux /= (1.0 + exp(-(t-params_[5])/params_[3]));
 
     return flux;
 }
