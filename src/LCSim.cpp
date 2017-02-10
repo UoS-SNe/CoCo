@@ -1,3 +1,18 @@
+// CoCo - Supernova templates and simulations package
+// Copyright (C) 2017  Szymon Prajs
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// Contact author: S.Prajs@soton.ac.uk
+
 #include <vector>
 #include <iostream>
 #include <string>
@@ -9,11 +24,11 @@
 
 
 struct Workspace {
-    std::vector<string> templateList_;
+    std::vector<std::string> templateList_;
     std::vector<double> z_;
     std::vector<double> absMag_;
     std::vector<double> mjdPeak_;
-    std::vector<string> simSetupList_;
+    std::vector<std::string> simSetupList_;
 };
 
 
@@ -58,7 +73,7 @@ void applyOptions(std::vector<std::string> &options, std::shared_ptr<Workspace> 
     }
 
     if (skip == 1) {
-        std::vector< std::vector<string> > inputData = vmath::loadtxt<string>(options[0], 5);
+        std::vector< std::vector<std::string> > inputData = vmath::loadtxt<std::string>(options[0], 5);
         w->templateList_ = inputData[0];
         w->z_ = vmath::castString<double>(inputData[1]);
         w->absMag_ = vmath::castString<double>(inputData[2]);
