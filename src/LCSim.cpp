@@ -3,12 +3,17 @@
 #include <string>
 
 #include "vmath/loadtxt.hpp"
+#include "vmath/convert.hpp"
 
 #include "core/utils.hpp"
 
 
 struct Workspace {
-
+    std::vector<string> templateList_;
+    std::vector<double> z_;
+    std::vector<double> absMag_;
+    std::vector<double> mjdPeak_;
+    std::vector<string> simSetupList_;
 };
 
 
@@ -29,28 +34,50 @@ void help() {
 
 // Assign input options to workspace parameters
 void applyOptions(std::vector<std::string> &options, std::shared_ptr<Workspace> w) {
-    if (options.size() < 2 || options[0] == "-h" || options[0] == "--help") {
+    if (options.size() < 1 || options[0] == "-h" || options[0] == "--help") {
         help();
         exit(0);
     }
 
-    // If the first parameter is a list then break it down into std::vectors
-    if (options[0].substr(options[0].find_last_of(".") + 1) == "list") {
+    // Number of inputs to skip depending on input type
+    int skip = 1;
+
+    // If the first parameter is a list then break it down into vectors
+    if (options.size() >= 5) {
+        if (options[0].substr(options[0].find_last_of(".") + 1) == "list") {
+            skip = 1;
+        } else {
+            skip = 5;
+        }
+    } else if (options.size() >= 1 &&
+             options[0].substr(options[0].find_last_of(".") + 1) == "list") {
+        skip = 1;
 
     } else {
-        // If a list isn't present and at least 4 parameters are not given, exit.
-        if (options.size() < 4) {
-            help();
-            exit(0);
-        }
+        skip = 0;
     }
 
+    if (skip == 1) {
+        std::vector< std::vector<string> > inputData = vmath::loadtxt<string>(options[0], 5);
+        w->templateList_ = inputData[0];
+        w->z_ = vmath::castString<double>(inputData[1]);
+        w->absMag_ = vmath::castString<double>(inputData[2]);
+        w->mjdPeak_ = vmath::castString<double>(inputData[3]);
+        w->simSetupList_ = inputData[4];
+
+    } else if (skip == 5) {
+        w->templateList_ = {options[0]};
+        w->z_ = {atof(options[1].c_str())};
+        w->absMag_ = {atof(options[2].c_str())};
+        w->mjdPeak_ = {atof(options[3].c_str())};
+        w->simSetupList_ = {options[4]};
+    }
 
     // Go though each option and assign the correct properties
     std::vector<std::string> command;
-    for (size_t i = 0; i < options.size(); ++i) {
+    for (size_t i = skip; i < options.size(); ++i) {
         // Deal with flags by loading pairs of options into commands
-        if (options[i] == "-f") {
+        if (options[i] == "-m") {
             if (i+1 < options.size()) {
                 command = {options[i], options[i+1]};
                 i++;  // skip the next option as it's already assigned above
@@ -72,10 +99,8 @@ void applyOptions(std::vector<std::string> &options, std::shared_ptr<Workspace> 
             std::cout << command[0] << " is not a valid command." << std::endl;
             continue;
 
-        } else if (command[0] == "-f" ||
-                   command[0] == "--filters" ||
-                   command[0] == "--filter" ) {
-            // w->filterList_ = utils::split(command[1], ',');
+        } else if (command[0] == "-m" || command[0] == "--model" ) {
+            // w->model_ = command[1];
 
         } else {
             std::cout << command[0] << " is not a valid command." << std::endl;
@@ -84,7 +109,7 @@ void applyOptions(std::vector<std::string> &options, std::shared_ptr<Workspace> 
 }
 
 
-/* Automatically fill in all unassigned properties with defaults */
+// Fill properties based on input parameters
 void fillUnassigned(std::shared_ptr<Workspace> w) {
     // TODO - Load or create an array of MJDs at which to generate the photometry.
 }
