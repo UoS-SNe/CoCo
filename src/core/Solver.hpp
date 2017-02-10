@@ -1,5 +1,5 @@
 // CoCo - Supernova templates and simulations package
-// Copyright (C) 2017  Szymon Prajs
+// Copyright (C) 2016, 2017  Szymon Prajs
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
