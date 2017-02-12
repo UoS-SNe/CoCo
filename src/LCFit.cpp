@@ -1,3 +1,18 @@
+// CoCo - Supernova templates and simulations package
+// Copyright (C) 2016, 2017  Szymon Prajs
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// Contact author: S.Prajs@soton.ac.uk
+
 #include <vector>
 #include <iostream>
 #include <string>
@@ -9,7 +24,7 @@
 
 #include "core/utils.hpp"
 #include "core/SN.hpp"
-#include "models/Firth17.hpp"
+#include "models/Karpenka12.hpp"
 #include "solvers/MNest.hpp"
 
 
@@ -38,7 +53,7 @@ void help() {
 
 
 // Assign input options to workspace parameters
-void applyOptions(std::vector<std::string> &options, shared_ptr<Workspace> w) {
+void applyOptions(std::vector<std::string> &options, std::shared_ptr<Workspace> w) {
     if (options.size() < 1 || options[0] == "-h" || options[0] == "--help") {
         help();
         exit(0);
@@ -94,7 +109,7 @@ void applyOptions(std::vector<std::string> &options, shared_ptr<Workspace> w) {
 
 
 // Automatically fill in all unassigned properties with defaults
-void fillUnassigned(shared_ptr<Workspace> w) {
+void fillUnassigned(std::shared_ptr<Workspace> w) {
     // Do a sanity check for the LC files
     if (w->fileList_.size() == 0) {
         std::cout << "Something went seriously wrong.";
@@ -115,25 +130,25 @@ void fillUnassigned(shared_ptr<Workspace> w) {
 }
 
 
-void fitLC(shared_ptr<Workspace> w) {
+void fitLC(std::shared_ptr<Workspace> w) {
     // Loop though each SN
     for (auto sn : w->sn_) {
         utils::createDirectory(sn.second.name_, "chains");
 
         // Open output text files for light curve reconstructions
-        ofstream reconLCFile;
-        ofstream reconStatFile;
+        std::ofstream reconLCFile;
+        std::ofstream reconStatFile;
         reconLCFile.open("recon/" + sn.second.name_ + ".dat");
         reconStatFile.open("recon/" + sn.second.name_ + ".stat");
 
         // Loop though each filter
         for (auto lc : sn.second.lc_) {
             // Initialise the model
-            std::shared_ptr<Firth17> firth17(new Firth17);
-            firth17->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
-            firth17->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
-            firth17->sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
-            std::shared_ptr<Model> model = dynamic_pointer_cast<Model>(firth17);
+            std::shared_ptr<Karpenka12> karpenka12(new Karpenka12);
+            karpenka12->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+            karpenka12->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+            karpenka12->sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
+            std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(karpenka12);
 
             // Initialise solver
             MNest solver(model);
@@ -172,7 +187,7 @@ void fitLC(shared_ptr<Workspace> w) {
 // Main program
 int main(int argc, char *argv[]) {
     std::vector<std::string> options;
-    shared_ptr<Workspace> w(new Workspace);
+    std::shared_ptr<Workspace> w(new Workspace);
 
     utils::getArgv(argc, argv, options);
     applyOptions(options, w);

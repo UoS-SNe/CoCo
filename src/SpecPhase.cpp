@@ -1,3 +1,18 @@
+// CoCo - Supernova templates and simulations package
+// Copyright (C) 2016, 2017  Szymon Prajs
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// Contact author: S.Prajs@soton.ac.uk
+
 #include <iostream>
 #include <vector>
 #include <string>
@@ -12,7 +27,7 @@
 #include "core/Filters.hpp"
 #include "core/SN.hpp"
 #include "core/utils.hpp"
-#include "models/Firth17.hpp"
+#include "models/Karpenka12.hpp"
 #include "solvers/MPFitter.hpp"
 
 struct Workspace {
@@ -128,11 +143,11 @@ void fitPhase(std::shared_ptr<Workspace> w) {
         auto lc = sn.second.lc_[w->zeroFilter_];
 
         // Initialise the model
-        std::shared_ptr<Firth17> firth17(new Firth17);
-        firth17->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
-        firth17->y_ = vmath::div<double>(lc.flux_, lc.normalization_);
-        firth17->sigma_ = std::vector<double>(lc.flux_.size(), 1);
-        std::shared_ptr<Model> model = dynamic_pointer_cast<Model>(firth17);
+        std::shared_ptr<Karpenka12> karpenka12(new Karpenka12);
+        karpenka12->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
+        karpenka12->y_ = vmath::div<double>(lc.flux_, lc.normalization_);
+        karpenka12->sigma_ = std::vector<double>(lc.flux_.size(), 1);
+        std::shared_ptr<Model> model = dynamic_pointer_cast<Model>(karpenka12);
 
         // Initialise solver
         MPFitter solver(model);
@@ -147,7 +162,8 @@ void fitPhase(std::shared_ptr<Workspace> w) {
         double mjdZeroPhase = solver.xRecon_[indexMax] + lc.mjdMin_;
 
         for (auto &spec : sn.second.spec_) {
-            phaseFile << spec.second.file_ << " " << spec.second.mjd_ - mjdZeroPhase << "\n";
+            phaseFile << "spectra/" << sn.second.name_ << "_" << spec.second.mjd_;
+            phaseFile << " " << (spec.second.mjd_ - mjdZeroPhase) / (1.0 + sn.second.zRaw_) << "\n";
         }
 
         phaseFile.close();

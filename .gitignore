@@ -35,9 +35,9 @@ lcfit
 specfit
 specphase
 lcsim
-test
 
 # Data directories
+scripts
 chains
 recon
 #data

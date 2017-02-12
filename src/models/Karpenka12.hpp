@@ -13,36 +13,28 @@
 //
 // Contact author: S.Prajs@soton.ac.uk
 
-#ifndef COCO_SOLVERS_MPFITTER_HPP_
-#define COCO_SOLVERS_MPFITTER_HPP_
+#ifndef COCO_MODELS_KARPENKA12_HPP_
+#define COCO_MODELS_KARPENKA12_HPP_
 
-#include "mpfit.h"
-
-#include "../core/Solver.hpp"
+#include <vector>
 #include "../core/Model.hpp"
 
 
-class MPFitter : public Solver {
+class Karpenka12 : public Model {
 public:
-    // MPFitter specific temporary data containers
-    int status;
-    mp_result result;
-    mp_config config;
-    mp_par *pars;
-    std::vector<double> par;
-    std::vector<double> parErr;
-
-    // Static function for mpfit.c
-    static int resFunc(int,int,double*,double*,double**,void*);
-
-    // Overrides for solver specific methods
-    void fit();
-    void read();
-    void stats();
+    // Data specific to the model
+    std::vector<double> x_;
+    std::vector<double> y_;
+    std::vector<double> sigma_;
 
     // Constructor
-    MPFitter(std::shared_ptr<Model>);
+    Karpenka12();
+
+    // Override for the mathematical definition of the model
+    double function(double);
+    std::vector<double> function(std::vector<double>&);
+    std::vector<double> residual();
 };
 
 
-#endif  // COCO_SOLVERS_MPFITTER_HPP_
+#endif  // COCO_MODELS_KARPENKA12_HPP_
