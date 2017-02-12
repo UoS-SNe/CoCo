@@ -90,6 +90,7 @@ public:
     std::string lcFile_;
 
     // SN properties
+    double zRaw_;
     double z_;
     std::string name_;
     std::vector<std::string> filterList_;

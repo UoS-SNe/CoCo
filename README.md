@@ -1,4 +1,4 @@
-# CoCo - v0.4.5
+# CoCo - v0.4.6
 Core Collapse Supernovae templates
 
 Code still in VERY active development - Full release will be available shortly.

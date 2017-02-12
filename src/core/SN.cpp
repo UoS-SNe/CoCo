@@ -72,19 +72,9 @@ void SN::addSpec(std::string fileName, double mjd) {
 void SN::saveSpec(double mjdZeroPhase, double scale) {
     utils::createDirectory("spectra");
 
-    int phase;
-    std::string sPhase;
     for (auto &spec : spec_) {
         ofstream specFile;
-        phase = round(spec.second.mjd_ - mjdZeroPhase);
-        if (phase < 0) {
-            sPhase = "m" + std::to_string(abs(phase));
-        } else if (phase > 0) {
-            sPhase = "p" + std::to_string(phase);
-        } else {
-            sPhase = "max";
-        }
-        specFile.open("spectra/" + name_ + "." + sPhase + ".dat");
+        specFile.open("spectra/" + name_ + "_" + to_string(spec.second.mjd_) + ".spec");
 
         for (size_t i = 0; i < spec.second.flux_.size(); ++i) {
             specFile << spec.second.wav_[i] << " ";
@@ -221,7 +211,8 @@ void SN::redshift(double zNew, std::shared_ptr<Cosmology> cosmology) {
         vmath::mult(spec.second.flux_, scale);
         spec.second.fluxNorm_ *= scale;
     }
-
+    
+    zRaw_ = z_;
     z_ = zNew;
 }
 
