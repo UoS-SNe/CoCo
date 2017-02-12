@@ -1,15 +1,29 @@
+// CoCo - Supernova templates and simulations package
+// Copyright (C) 2014, 2016, 2017  Szymon Prajs
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// Contact author: S.Prajs@soton.ac.uk
+
 #ifndef COCO_VMATH_INTERP_HPP_
 #define COCO_VMATH_INTERP_HPP_
 
 #include <vector>
 #include <math.h>
 
-using namespace std;
 
 namespace vmath {  // NAMESPACE vmath
 
 template <typename T>
-T interp(T org_x, const vector<T> &temp_x, const vector<T> &temp_y, T out = 0) {
+T interp(T org_x, const std::vector<T> &temp_x, const std::vector<T> &temp_y, T out = 0) {
     T org_y = out;
     T m;
     T c;
@@ -55,8 +69,8 @@ T interp(T org_x, const vector<T> &temp_x, const vector<T> &temp_y, T out = 0) {
 
 
 template <typename T>
-vector<T> interp(const vector<T> &org_x, const vector<T> &temp_x, const vector<T> &temp_y, T out = 0) {
-    vector<T> org_y(org_x.size(), out);
+std::vector<T> interp(const std::vector<T> &org_x, const std::vector<T> &temp_x, const std::vector<T> &temp_y, T out = 0) {
+    std::vector<T> org_y(org_x.size(), out);
 
     for (int i = 0; i < org_x.size(); ++i) {
         org_y[i] = interp<T>(org_x[i], temp_x, temp_y, out);

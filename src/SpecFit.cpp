@@ -1,3 +1,18 @@
+// CoCo - Supernova templates and simulations package
+// Copyright (C) 2016, 2017  Szymon Prajs
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// Contact author: S.Prajs@soton.ac.uk
+
 #include <stdio.h>
 
 #include <math.h>
@@ -157,34 +172,49 @@ void mangleSpectra(std::shared_ptr<Workspace> w) {
     for (auto sn : w->sn_) {
         // Loop though each spectrum
         for (auto &spec : sn.second.spec_) {
+            std::cout << "# " << spec.second.file_ << "\n";
             // Initialise the model
             std::shared_ptr<SpecMangle> specMangle(new SpecMangle);
             specMangle->lcData_ = sn.second.epoch_[spec.second.mjd_];
             specMangle->specData_ = spec.second;
 
-            // Normalise the spectrum and LC before fitting
-            double lcNorm = specMangle->lcData_[0].flux_;
-            specMangle->specData_.flux_ =
-                vmath::div<double>(specMangle->specData_.flux_, spec.second.fluxNorm_);
+            // Assign filter central wavelengths to each lc data point
             for (auto &obs : specMangle->lcData_) {
-                obs.flux_ /= lcNorm;
-                obs.fluxErr_ /= lcNorm;
+                obs.wav_ = w->filters_->filter_[obs.filter_].centralWavelength_;
+                obs.minWav_ = w->filters_->filter_[obs.filter_].min_;
+                obs.maxWav_ = w->filters_->filter_[obs.filter_].max_;
+            }
+
+            // Remove LC points that do not overlap with spectra
+            double specMin = vmath::min(spec.second.wav_);
+            double specMax = vmath::max(spec.second.wav_);
+            for (int i = specMangle->lcData_.size() - 1; i >= 0; --i) {
+                if (specMangle->lcData_[i].minWav_ < specMin ||
+                    specMangle->lcData_[i].maxWav_ > specMax) {
+                    specMangle->lcData_.erase(specMangle->lcData_.begin()+i);
+                }
             }
 
             // Rescale filters to the data wavelength and assign to model
             w->filters_->rescale(spec.second.wav_);
             specMangle->filters_ = w->filters_;
 
-            // Assign filter central wavelengths to each lc data point
-            for (auto &obs : specMangle->lcData_) {
-                obs.wav_ = w->filters_->filter_[obs.filter_].centralWavelength_;
-            }
-
             // Sort light curve slice by filter central wavelengths
             std::sort(specMangle->lcData_.begin(), specMangle->lcData_.end(),
                       [](const Obs &a, const Obs &b) -> bool {
                          return a.wav_ < b.wav_;
                       });
+
+            // Normalise LC
+            double lcNorm = specMangle->lcData_[0].flux_;
+            for (auto &obs : specMangle->lcData_) {
+                obs.flux_ /= lcNorm;
+                obs.fluxErr_ /= lcNorm;
+            }
+
+            // Normalise the spectrum
+            double specNorm = w->filters_->flux(specMangle->specData_.flux_, specMangle->lcData_[0].filter_);
+            specMangle->specData_.flux_ = vmath::div<double>(specMangle->specData_.flux_, specNorm);
 
             // Set priors and number of paramters
             specMangle->setPriors();
@@ -217,6 +247,8 @@ void mangleSpectra(std::shared_ptr<Workspace> w) {
                                to_string(spec.second.mjd_) + ".stat");
 
             // Write reconstructed spectra to a file
+            reconSpecFile << "# " << spec.second.file_ << "\n";
+            reconStatFile << "# " << spec.second.file_ << "\n";
             for (size_t i = 0; i < solver->xRecon_.size(); ++i) {
                 reconSpecFile << solver->xRecon_[i] << " " << solver->mean_[i];
                 reconSpecFile << " " << solver->meanSigma_[i] << " " << "\n";

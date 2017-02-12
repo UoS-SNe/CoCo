@@ -1,7 +1,7 @@
 CC = clang
 CXX = clang++
-CFLAGS = -c -O3
-CXXFLAGS = -c -O3 -std=c++11
+CFLAGS = -c -g -O3
+CXXFLAGS = -c -g -O3 -std=c++11
 LDFLAGS = -lgsl -lnest3 -lgfortran -llapack -Wl,-no_compact_unwind
 
 .cpp.o:
@@ -19,20 +19,21 @@ src/core/SN.cpp
 MPFIT = src/solvers/mpfit.c
 SOLVERS = src/core/Solver.cpp src/solvers/priors.cpp src/solvers/MNest.cpp \
 src/solvers/MPFitter.cpp
-MODELS = src/core/Model.cpp src/models/Firth17.cpp src/models/SpecMangle.cpp
+MODELS = src/core/Model.cpp src/models/Karpenka12.cpp src/models/Bazin09.cpp \
+src/models/Kessler10.cpp src/models/Firth17Complex.cpp src/models/SpecMangle.cpp
 
 LCEXEC = src/LCFit.cpp
 SPECEXEC = src/SpecFit.cpp
 PHASEEXEC = src/SpecPhase.cpp
-# SIMEXEC = src/LCSim.cpp
+SIMEXEC = src/LCSim.cpp
 
 
 LCFIT = ${CORE:.cpp=.o} ${MPFIT:.c=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${LCEXEC:.cpp=.o}
 SPECFIT = ${CORE:.cpp=.o} ${MPFIT:.c=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${SPECEXEC:.cpp=.o}
 SPECPHASE = ${CORE:.cpp=.o} ${MPFIT:.c=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${PHASEEXEC:.cpp=.o}
-# LCSIM = ${CORE:.cpp=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${SIMEXEC:.cpp=.o}
+LCSIM = ${CORE:.cpp=.o} ${MPFIT:.c=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${SIMEXEC:.cpp=.o}
 
-all: lcfit specfit specphase # lcsim
+all: lcfit specfit specphase lcsim
 
 lcfit: $(LCFIT)
 	$(CXX) $(LCFIT) $(LDFLAGS) -o $@
@@ -43,8 +44,8 @@ specfit: $(SPECFIT)
 specphase: $(SPECPHASE)
 	$(CXX) $(SPECPHASE) $(LDFLAGS) -o $@
 
-# lcsim: $(LCSIM)
-# 	$(CXX) $(LCSIM) $(LDFLAGS) -o $@
+lcsim: $(LCSIM)
+	$(CXX) $(LCSIM) $(LDFLAGS) -o $@
 
 
 clean:

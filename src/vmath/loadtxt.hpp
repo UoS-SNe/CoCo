@@ -1,3 +1,18 @@
+// CoCo - Supernova templates and simulations package
+// Copyright (C) 2014, 2016, 2017  Szymon Prajs
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// Contact author: S.Prajs@soton.ac.uk
+
 #ifndef COCO_VMATH_LOADTXT_HPP_
 #define COCO_VMATH_LOADTXT_HPP_
 
@@ -7,28 +22,34 @@
 #include <string>
 #include <vector>
 
-using namespace std;
 
 namespace vmath {  // NAMESPACE vmath
 
+// Load text file with l columns
 template <typename T>
-void loadtxt(const string &fileName, int l, vector< vector<T> > &data) {
+void loadtxt(const std::string &fileName, int l, std::vector< std::vector<T> > &data) {
+    // Prepare the output data vector
     data.resize(l);
     for (int i = 0; i < l; ++i) {
         data[i].clear();
     }
 
-    ifstream file;
+    // Open the text file into a buffer
+    std::ifstream file;
     file.open(fileName.c_str());
+
+    // Loop througheach line and pass into a stringstream
     T temp;
-    string s;
+    std::string s;
+    while (std::getline(file, s)) {
+        if(!(s[0] == '#' || s.size() < (2*l - 1))) {
+            std::istringstream iss(s);
 
-    while (getline(file, s)) {
-        istringstream iss(s);
-
-        for (int i = 0; i < l; ++i) {
-            iss >> temp;
-            data[i].push_back(temp);
+            // loop though each column and save the output
+            for (int i = 0; i < l; ++i) {
+                iss >> temp;
+                data[i].push_back(temp);
+            }
         }
     }
 
@@ -37,22 +58,22 @@ void loadtxt(const string &fileName, int l, vector< vector<T> > &data) {
 
 
 template <typename T>
-vector< vector<T> > loadtxt(const string &fileName, int l) {
-    vector< vector<T> > data;
+std::vector< std::vector<T> > loadtxt(const std::string &fileName, int l) {
+    std::vector< std::vector<T> > data;
     loadtxt<T>(fileName, l, data);
     return data;
 }
 
 
 template <typename T>
-void loadtxt(const string &fileName, int l, vector<T> &data) {
-    vector< vector<T> > dataTemp;
+void loadtxt(const std::string &fileName, int l, std::vector<T> &data) {
+    std::vector< std::vector<T> > dataTemp;
     loadtxt<T>(fileName, l, dataTemp);
     if (l == 1) {
         data = dataTemp[0];
 
     } else {
-        cout << "Cannot read multiple columns to a 1D vector" << endl;
+        std::cout << "Cannot read multiple columns to a 1D std::vector" << std::endl;
         exit(0);
     }
 }

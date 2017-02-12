@@ -1,3 +1,18 @@
+// CoCo - Supernova templates and simulations package
+// Copyright (C) 2016, 2017  Szymon Prajs
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// Contact author: S.Prajs@soton.ac.uk
+
 #ifndef COCO_CORE_SN_HPP_
 #define COCO_CORE_SN_HPP_
 
@@ -46,8 +61,11 @@ struct Obs {
     double mjd_;
     double flux_;
     double fluxErr_;
-    double wav_;
+
     std::string filter_;
+    double wav_;
+    double minWav_;
+    double maxWav_;
 };
 
 
@@ -72,6 +90,7 @@ public:
     std::string lcFile_;
 
     // SN properties
+    double zRaw_;
     double z_;
     std::string name_;
     std::vector<std::string> filterList_;

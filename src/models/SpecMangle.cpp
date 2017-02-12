@@ -1,3 +1,18 @@
+// CoCo - Supernova templates and simulations package
+// Copyright (C) 2016, 2017  Szymon Prajs
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// Contact author: S.Prajs@soton.ac.uk
+
 #include "SpecMangle.hpp"
 
 #include <math.h>
@@ -35,7 +50,7 @@ void SpecMangle::setPriors() {
     noParams_ = lcData_.size();
 
     priorRange_ = std::vector< std::pair<double,double> >(noParams_,
-        std::make_pair<double,double>(1e-4, 1e4));
+        std::make_pair<double,double>(1e-3, 1e3));
     paramGuess_ = std::vector<double>(noParams_, 1.0);
     priorType_ = std::vector<std::string>(noParams_, "flat");
 }
@@ -90,7 +105,7 @@ std::vector<double> SpecMangle::residual() {
     std::vector<double> res(lcData_.size(), 0);
 
     for (size_t i = 0; i < lcData_.size(); ++i) {
-        res[i] = (lcData_[i].flux_ - filters_->flux(mangledSpec, lcData_[i].filter_)) / lcData_[i].fluxErr_ ;
+        res[i] = (lcData_[i].flux_ - filters_->flux(mangledSpec, lcData_[i].filter_)) / lcData_[i].fluxErr_;
     }
 
     return res;

@@ -1,3 +1,18 @@
+// CoCo - Supernova templates and simulations package
+// Copyright (C) 2014, 2016, 2017  Szymon Prajs
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// Contact author: S.Prajs@soton.ac.uk
+
 #ifndef COCO_VMATH_CONVERT_HPP_
 #define COCO_VMATH_CONVERT_HPP_
 
@@ -8,16 +23,15 @@
 #include <sstream>
 #include <string>
 
-using namespace std;
 
 namespace vmath {  // NAMESPACE vmath
 
 template <typename T>
-void castString(const vector<string> &s, vector<T> &res) {
+void castString(const std::vector<std::string> &s, std::vector<T> &res) {
     res.resize(s.size());
     T x;
     for (int i = 0; i < s.size(); ++i) {
-        istringstream ss(s[i]);
+        std::istringstream ss(s[i]);
         if (!(ss >> x))
             res[i] = -99;
         res[i] = x;
@@ -26,15 +40,15 @@ void castString(const vector<string> &s, vector<T> &res) {
 
 
 template <typename T>
-vector<T> castString(const vector<string> &s) {
-    vector<T> res;
+std::vector<T> castString(const std::vector<std::string> &s) {
+    std::vector<T> res;
     castString<T>(s, res);
 	return res;
 }
 
 
 template <typename T>
-void transpose(const vector< vector<T> > &data, vector< vector<T> > &cols) {
+void transpose(const std::vector< std::vector<T> > &data, std::vector< std::vector<T> > &cols) {
     int x = data.size();
     int y = data[0].size();
     cols.resize(y);
@@ -51,8 +65,8 @@ void transpose(const vector< vector<T> > &data, vector< vector<T> > &cols) {
 
 
 template <typename T>
-vector< vector<T> > transpose(const vector< vector<T> > &data) {
-    vector< vector<T> > cols;
+std::vector< std::vector<T> > transpose(const std::vector< std::vector<T> > &data) {
+    std::vector< std::vector<T> > cols;
     transpose<T>(data, cols);
     return cols;
 }

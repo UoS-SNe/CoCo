@@ -35,12 +35,14 @@ lcfit
 specfit
 specphase
 lcsim
-test
 
 # Data directories
+scripts
 chains
 recon
-data
+#data
+data/lc
+data/spectra
 shared
 spectra
 *.list
