@@ -40,7 +40,9 @@ lcsim
 scripts
 chains
 recon
-data
+#data
+data/lc
+data/spectra
 shared
 spectra
 *.list
