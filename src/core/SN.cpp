@@ -211,7 +211,8 @@ void SN::redshift(double zNew, std::shared_ptr<Cosmology> cosmology) {
         vmath::mult(spec.second.flux_, scale);
         spec.second.fluxNorm_ *= scale;
     }
-
+    
+    zRaw_ = z_;
     z_ = zNew;
 }
 
