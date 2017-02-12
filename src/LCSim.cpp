@@ -16,11 +16,13 @@
 #include <vector>
 #include <iostream>
 #include <string>
+#include <unordered_map>
 
 #include "vmath/loadtxt.hpp"
 #include "vmath/convert.hpp"
 
 #include "core/utils.hpp"
+#include "core/SN.hpp"
 
 
 struct Workspace {
@@ -29,6 +31,8 @@ struct Workspace {
     std::vector<double> absMag_;
     std::vector<double> mjdPeak_;
     std::vector<std::string> simSetupList_;
+
+    std::unordered_map<std::string,SN> rawSNe_;
 };
 
 
@@ -126,7 +130,20 @@ void applyOptions(std::vector<std::string> &options, std::shared_ptr<Workspace> 
 
 // Fill properties based on input parameters
 void fillUnassigned(std::shared_ptr<Workspace> w) {
-    // TODO - Load or create an array of MJDs at which to generate the photometry.
+    std::vector<std::string> uniqueSN = w->templateList_;
+    utils::removeDuplicates(uniqueSN);
+
+    for (auto &snName : uniqueSN) {
+        if (!utils::fileExists("recon/" + snName + ".phase")) {
+            exit(0);
+        }
+        std::vector< std::vector<std::string> > phaseFile =
+          vmath::loadtxt<std::string>("recon/" + snName + ".phase", 2);
+
+        for (size_t i = 0; i < phaseFile[0].size(); ++i) {
+            w->rawSNe_[snName].addSpec(phaseFile[0][i], atof(phaseFile[1][i].c_str()));
+        }
+    }
 }
 
 
