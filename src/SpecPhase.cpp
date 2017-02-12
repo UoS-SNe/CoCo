@@ -162,7 +162,8 @@ void fitPhase(std::shared_ptr<Workspace> w) {
         double mjdZeroPhase = solver.xRecon_[indexMax] + lc.mjdMin_;
 
         for (auto &spec : sn.second.spec_) {
-            phaseFile << spec.second.file_ << " " << spec.second.mjd_ - mjdZeroPhase << "\n";
+            phaseFile << "spectra/" << sn.second.name_ << "_" << to_string(spec.second.mjd_);
+            phaseFile << " " << spec.second.mjd_ - mjdZeroPhase << "\n";
         }
 
         phaseFile.close();
