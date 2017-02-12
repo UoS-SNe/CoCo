@@ -1,7 +1,7 @@
 CC = clang
 CXX = clang++
-CFLAGS = -c -g -O3
-CXXFLAGS = -c -g -O3 -std=c++11
+CFLAGS = -c -O3
+CXXFLAGS = -c -O3 -std=c++11
 LDFLAGS = -lgsl -lnest3 -lgfortran -llapack -Wl,-no_compact_unwind
 
 .cpp.o:
