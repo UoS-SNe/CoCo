@@ -69,7 +69,7 @@ void SN::addSpec(std::string fileName, double mjd) {
 }
 
 
-void SN::saveSpec(double mjdZeroPhase, double scale) {
+void SN::saveSpec(double mjdZeroPhase) {
     utils::createDirectory("spectra");
 
     for (auto &spec : spec_) {
@@ -78,10 +78,17 @@ void SN::saveSpec(double mjdZeroPhase, double scale) {
 
         for (size_t i = 0; i < spec.second.flux_.size(); ++i) {
             specFile << spec.second.wav_[i] << " ";
-            specFile << spec.second.flux_[i] * scale << "\n";
+            specFile << spec.second.flux_[i] << "\n";
         }
 
         specFile.close();
+    }
+}
+
+
+void SN::scaleSpectra(double scale) {
+    for (auto &spec : spec_) {
+        spec.second.flux_ = vmath::mult<double>(spec.second.flux_, scale);
     }
 }
 
@@ -211,9 +218,23 @@ void SN::redshift(double zNew, std::shared_ptr<Cosmology> cosmology) {
         vmath::mult(spec.second.flux_, scale);
         spec.second.fluxNorm_ *= scale;
     }
-    
+
     zRaw_ = z_;
     z_ = zNew;
+}
+
+
+void SN::moveMJD(double mult, double add) {
+    for (auto &lc : lc_) {
+        lc.second.mjd_ = vmath::mult<double>(lc.second.mjd_, mult);
+        lc.second.mjd_ = vmath::add<double>(lc.second.mjd_, add);
+    }
+
+    for (auto &epoch : epoch_) {
+        for (auto &obs : epoch.second) {
+            obs.mjd_ = mult * obs.mjd_ + add;
+        }
+    }
 }
 
 

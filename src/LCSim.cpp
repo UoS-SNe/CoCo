@@ -18,11 +18,17 @@
 #include <string>
 #include <unordered_map>
 
+#include "vmath/algebra.hpp"
 #include "vmath/loadtxt.hpp"
 #include "vmath/convert.hpp"
 
+#include "core/Cosmology.hpp"
 #include "core/utils.hpp"
 #include "core/SN.hpp"
+#include "core/Model.hpp"
+#include "core/Solver.hpp"
+#include "models/Karpenka12.hpp"
+#include "solvers/MPFitter.hpp"
 
 
 struct Workspace {
@@ -31,8 +37,11 @@ struct Workspace {
     std::vector<double> absMag_;
     std::vector<double> mjdPeak_;
     std::vector<std::string> simSetupList_;
+    std::vector< std::vector<std::string> > simFilters_;
+    std::vector< std::vector<double> > mjdSim_;
 
-    std::unordered_map<std::string,SN> rawSNe_;
+    std::unordered_map<std::string,SN> templateSNe_;
+    std::shared_ptr<Filters> filters_;
 };
 
 
@@ -130,19 +139,119 @@ void applyOptions(std::vector<std::string> &options, std::shared_ptr<Workspace> 
 
 // Fill properties based on input parameters
 void fillUnassigned(std::shared_ptr<Workspace> w) {
+    w->simFilters_.clear();
+    for (size_t i = 0; i < w->templateList_.size(); ++i) {
+        if (!utils::fileExists(w->templateList_[i])) {
+            std::cout << "Setup file does not exist: " << w->templateList_[i] << std::endl;
+            exit(0);
+        }
+
+        std::vector< std::vector<std::string> > temp =
+          vmath::loadtxt<std::string>(w->templateList_[i], 2);
+        w->mjdSim_.push_back(vmath::castString<double>(temp[0]));
+        w->simFilters_.push_back(temp[1]);
+    }
+
     std::vector<std::string> uniqueSN = w->templateList_;
     utils::removeDuplicates(uniqueSN);
 
     for (auto &snName : uniqueSN) {
         if (!utils::fileExists("recon/" + snName + ".phase")) {
+            std::cout << "Template \"" << snName << "\" does not exists, exiting!";
             exit(0);
         }
         std::vector< std::vector<std::string> > phaseFile =
           vmath::loadtxt<std::string>("recon/" + snName + ".phase", 2);
 
         for (size_t i = 0; i < phaseFile[0].size(); ++i) {
-            w->rawSNe_[snName].addSpec(phaseFile[0][i], atof(phaseFile[1][i].c_str()));
+            w->templateSNe_[snName].addSpec(phaseFile[0][i], atof(phaseFile[1][i].c_str()));
+            w->templateSNe_[snName].z_ = 0.0;
         }
+    }
+}
+
+
+// Split mjdSim_ into individual vectors for each filter
+std::vector<double> mjdRange(std::string flt,
+                             const std::vector<double> &mjd,
+                             const std::vector<std::string> &filters) {
+    std::vector<double> res;
+    for (size_t i = 0; i < mjd.size(); ++i) {
+        if (filters[i] == flt) {
+            res.push_back(mjd[i]);
+        }
+    }
+
+    return res;
+}
+
+
+// Simulate light curves
+// This function needs to be thread safe. Workspace can only be used for read
+// never write as this will cause race conditions. Each loop must have its
+// own instance of the Cosmology class. Filters is a bit more of an issue.
+// This will have to be addressed correctly later (TODO - Issue #23)
+void simulate(std::shared_ptr<Workspace> w) {
+    // Until the function is multi-threaded with openMP the cosmology class is safe here
+    std::shared_ptr<Cosmology> cosmology(new Cosmology());
+    double offset = 1;
+    for (size_t i = 0; i < w->templateList_.size(); ++i) {
+        // Make a working copy of the template spectra
+        SN sn = w->templateSNe_[w->templateList_[i]];
+
+        // Apply host galaxy reddening
+        // TODO (Issue #21)- implement host galaxy reddening before redshifting
+
+        // Move the spectra to new redshift
+        sn.redshift(w->z_[i], cosmology);
+        sn.moveMJD((1.0 + w->z_[i]), w->mjdPeak_[i]);
+
+        // offset absolute magnitude
+        offset = pow(10, 0.4 * (-17 - w->absMag_[i]));
+        sn.scaleSpectra(offset);
+
+        // Apply Milky Way extinction
+        // TODO (Issue #21) - implement reddening at z=0
+
+        // synthesise LC for every unique filter
+        std::vector<std::string> uniqueFilters = w->simFilters_[i];
+        utils::removeDuplicates(uniqueFilters);
+        sn.synthesiseLC(uniqueFilters, w->filters_);
+
+        // Open the output file
+        std::string outFileName = "sim/" + w->templateList_[i] + "_" +
+          std::to_string(w->z_[i]) + "_" +
+          std::to_string(w->absMag_[i]) + "_" +
+          std::to_string(w->mjdPeak_[i]) + "_" +
+          utils::baseName(w->simSetupList_[i]) + ".dat";
+        std::ofstream outFile;
+        outFile.open(outFileName);
+
+        for (auto &lc : sn.lc_) {
+            // Initialise model
+            std::shared_ptr<Karpenka12> karpenka12(new Karpenka12);
+            karpenka12->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+            karpenka12->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+            karpenka12->sigma_ = std::vector<double>(lc.second.flux_.size(), 1);
+            std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(karpenka12);
+
+            // Initialise solver
+            MPFitter solver(model);
+            std::vector<double> xTemp = mjdRange(lc.second.filter_, w->mjdSim_[i], w->simFilters_[i]);
+            solver.xRecon_ = vmath::sub<double>(xTemp, lc.second.mjdMin_);
+
+            // Perform fitting
+            solver.analyse();
+            solver.xRecon_ = vmath::add<double>(solver.xRecon_, lc.second.mjdMin_);
+            solver.bestFit_ = vmath::mult<double>(solver.bestFit_, lc.second.normalization_);
+
+            for (size_t j = 0; j < solver.xRecon_.size(); ++j) {
+                outFile << solver.xRecon_[i] << " ";
+                outFile << "flux" << " ";
+                outFile << lc.second.filter_ << "\n";
+            }
+        }
+        outFile.close();
     }
 }
 
@@ -150,10 +259,15 @@ void fillUnassigned(std::shared_ptr<Workspace> w) {
 int main(int argc, char *argv[]) {
     std::vector<std::string> options;
     std::shared_ptr<Workspace> w(new Workspace());
+    w->filters_ = std::shared_ptr<Filters>(new Filters("data/filters"));
 
     utils::getArgv(argc, argv, options);
     applyOptions(options, w);
     fillUnassigned(w);
+
+    // Perform the simulations
+    utils::createDirectory("sim");
+    simulate(w);
 
 	return 0;
 }

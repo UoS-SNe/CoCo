@@ -106,11 +106,13 @@ public:
 
     // Data loading routines
     void addSpec(std::string,double);
-    void saveSpec(double, double scale=1);
+    void saveSpec(double);
     void addEpoch(double);
+    void scaleSpectra(double);
     void synthesiseLC(const std::vector<std::string>&,std::shared_ptr<Filters>);
     void redshift(double,std::shared_ptr<Cosmology>);
     void loadLC(std::string);
+    void moveMJD(double,double);
     void setLCStats();
     void restoreCompleteLC();
 };
