@@ -147,7 +147,7 @@ void fitPhase(std::shared_ptr<Workspace> w) {
         karpenka12->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
         karpenka12->y_ = vmath::div<double>(lc.flux_, lc.normalization_);
         karpenka12->sigma_ = std::vector<double>(lc.flux_.size(), 1);
-        std::shared_ptr<Model> model = dynamic_pointer_cast<Model>(karpenka12);
+        std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(karpenka12);
 
         // Initialise solver
         MPFitter solver(model);

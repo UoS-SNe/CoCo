@@ -18,12 +18,17 @@
 #include <string>
 #include <unordered_map>
 
+#include "vmath/algebra.hpp"
 #include "vmath/loadtxt.hpp"
 #include "vmath/convert.hpp"
 
 #include "core/Cosmology.hpp"
 #include "core/utils.hpp"
 #include "core/SN.hpp"
+#include "core/Model.hpp"
+#include "core/Solver.hpp"
+#include "models/Karpenka12.hpp"
+#include "solvers/MPFitter.hpp"
 
 
 struct Workspace {
@@ -166,6 +171,21 @@ void fillUnassigned(std::shared_ptr<Workspace> w) {
 }
 
 
+// Split mjdSim_ into individual vectors for each filter
+std::vector<double> mjdRange(std::string flt,
+                             const std::vector<double> &mjd,
+                             const std::vector<std::string> &filters) {
+    std::vector<double> res;
+    for (size_t i = 0; i < mjd.size(); ++i) {
+        if (filters[i] == flt) {
+            res.push_back(mjd[i]);
+        }
+    }
+
+    return res;
+}
+
+
 // Simulate light curves
 // This function needs to be thread safe. Workspace can only be used for read
 // never write as this will cause race conditions. Each loop must have its
@@ -193,10 +213,28 @@ void simulate(std::shared_ptr<Workspace> w) {
         // Apply Milky Way extinction
         // TODO (Issue #21) - implement reddening at z=0
 
-        // synthesise LC for every unique filter 
+        // synthesise LC for every unique filter
         std::vector<std::string> uniqueFilters = w->simFilters_[i];
         utils::removeDuplicates(uniqueFilters);
         sn.synthesiseLC(uniqueFilters, w->filters_);
+
+        for (auto &lc : sn.lc_) {
+            // Initialise model
+            std::shared_ptr<Karpenka12> karpenka12(new Karpenka12);
+            karpenka12->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+            karpenka12->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+            karpenka12->sigma_ = std::vector<double>(lc.second.flux_.size(), 1);
+            std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(karpenka12);
+
+            // Initialise solver
+            MPFitter solver(model);
+            solver.xRecon_ = mjdRange(lc.second.filter_, w->mjdSim_[i], w->simFilters_[i]);
+
+            // Perform fitting
+            solver.analyse();
+
+            // TODO - Save simulation results
+        }
     }
 }
 
@@ -209,6 +247,9 @@ int main(int argc, char *argv[]) {
     utils::getArgv(argc, argv, options);
     applyOptions(options, w);
     fillUnassigned(w);
+
+    // Perform the simulations
+    simulate(w);
 
 	return 0;
 }
