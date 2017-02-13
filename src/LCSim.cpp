@@ -218,6 +218,15 @@ void simulate(std::shared_ptr<Workspace> w) {
         utils::removeDuplicates(uniqueFilters);
         sn.synthesiseLC(uniqueFilters, w->filters_);
 
+        // Open the output file
+        std::string outFileName = "sim/" + w->templateList_[i] + "_" +
+          std::to_string(w->z_[i]) + "_" +
+          std::to_string(w->absMag_[i]) + "_" +
+          std::to_string(w->mjdPeak_[i]) + "_" +
+          utils::baseName(w->simSetupList_[i]) + ".dat";
+        std::ofstream outFile;
+        outFile.open(outFileName);
+
         for (auto &lc : sn.lc_) {
             // Initialise model
             std::shared_ptr<Karpenka12> karpenka12(new Karpenka12);
@@ -228,13 +237,21 @@ void simulate(std::shared_ptr<Workspace> w) {
 
             // Initialise solver
             MPFitter solver(model);
-            solver.xRecon_ = mjdRange(lc.second.filter_, w->mjdSim_[i], w->simFilters_[i]);
+            std::vector<double> xTemp = mjdRange(lc.second.filter_, w->mjdSim_[i], w->simFilters_[i]);
+            solver.xRecon_ = vmath::sub<double>(xTemp, lc.second.mjdMin_);
 
             // Perform fitting
             solver.analyse();
+            solver.xRecon_ = vmath::add<double>(solver.xRecon_, lc.second.mjdMin_);
+            solver.bestFit_ = vmath::mult<double>(solver.bestFit_, lc.second.normalization_);
 
-            // TODO - Save simulation results
+            for (size_t j = 0; j < solver.xRecon_.size(); ++j) {
+                outFile << solver.xRecon_[i] << " ";
+                outFile << "flux" << " ";
+                outFile << lc.second.filter_ << "\n";
+            }
         }
+        outFile.close();
     }
 }
 

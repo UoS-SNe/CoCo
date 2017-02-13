@@ -137,7 +137,7 @@ void makeSyntheticLC(std::shared_ptr<Workspace> w) {
 
 void fitPhase(std::shared_ptr<Workspace> w) {
     for (auto &sn : w->sn_) {
-        ofstream phaseFile;
+        std::ofstream phaseFile;
         phaseFile.open("recon/" + sn.second.name_ + ".phase");
 
         auto lc = sn.second.lc_[w->zeroFilter_];
