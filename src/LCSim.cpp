@@ -266,6 +266,7 @@ int main(int argc, char *argv[]) {
     fillUnassigned(w);
 
     // Perform the simulations
+    utils::createDirectory("sim");
     simulate(w);
 
 	return 0;
