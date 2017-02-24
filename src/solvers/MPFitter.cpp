@@ -14,7 +14,7 @@
 // Contact author: S.Prajs@soton.ac.uk
 
 #include "MPFitter.hpp"
-
+#include <cstring>
 #include <vector>
 
 
