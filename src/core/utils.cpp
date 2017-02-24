@@ -109,8 +109,8 @@ std::string utils::fileExtention(const std::string& path) {
 
 
 std::string utils::getCWD() {
-    char charCurDir[PATH_MAX];
-    getcwd(charCurDir, PATH_MAX);
+    char charCurDir[1000];
+    getcwd(charCurDir, 1000);
 
     return std::string(charCurDir);
 }
