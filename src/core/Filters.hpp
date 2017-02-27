@@ -59,6 +59,7 @@ public:
 
     // Flux for (wavelength, filterName)
     double flux(const std::vector<double>&, const std::string&);
+    static std::vector<double> CCM89(const std::vector<double>&,double,double);
 };
 
 #endif

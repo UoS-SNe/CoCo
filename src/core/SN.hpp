@@ -110,6 +110,7 @@ public:
     void saveSpec(double);
     void addEpoch(double);
     void scaleSpectra(double);
+    void applyReddening(double,double);
     void synthesiseLC(const std::vector<std::string>&,std::shared_ptr<Filters>);
     void redshift(double,std::shared_ptr<Cosmology>);
     void loadLC(std::string);

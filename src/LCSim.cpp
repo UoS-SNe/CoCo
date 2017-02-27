@@ -36,6 +36,9 @@ struct Workspace {
     std::vector<double> z_;
     std::vector<double> absMag_;
     std::vector<double> mjdPeak_;
+    std::vector<double> Ebv_MW_;
+    std::vector<double> Ebv_Host_;
+    std::vector<double> R_v_;
     std::vector<std::string> simSetupList_;
     std::vector< std::vector<std::string> > simFilters_;
     std::vector< std::vector<double> > mjdSim_;
@@ -55,7 +58,7 @@ void help() {
     std::cout << "./lcsim SN_name redshift abs_mag MJD_peak MJD+filters.list\n\n";
     std::cout << "or\n";
     std::cout << "*.list file must have the following columns:\n";
-    std::cout << "SN_name redshift abs_mag MJD_peak MJD+filters.list\n";
+    std::cout << "SN_name redshift abs_mag E(B-V)_MW E(B-V)_Host Rv_Host MJD_peak MJD+filters.list\n";
     std::cout << std::endl;
 }
 
@@ -90,15 +93,21 @@ void applyOptions(std::vector<std::string> &options, std::shared_ptr<Workspace> 
         w->templateList_ = inputData[0];
         w->z_ = vmath::castString<double>(inputData[1]);
         w->absMag_ = vmath::castString<double>(inputData[2]);
-        w->mjdPeak_ = vmath::castString<double>(inputData[3]);
-        w->simSetupList_ = inputData[4];
+        w->Ebv_MW_ = vmath::castString<double>(inputData[3]);
+        w->Ebv_Host_ = vmath::castString<double>(inputData[4]);
+        w->R_v_ = vmath::castString<double>(inputData[5]);
+        w->mjdPeak_ = vmath::castString<double>(inputData[6]);
+        w->simSetupList_ = inputData[7];
 
     } else if (skip == 5) {
         w->templateList_ = {options[0]};
         w->z_ = {atof(options[1].c_str())};
         w->absMag_ = {atof(options[2].c_str())};
-        w->mjdPeak_ = {atof(options[3].c_str())};
-        w->simSetupList_ = {options[4]};
+        w->Ebv_MW_ = {atof(options[3].c_str())};
+        w->Ebv_Host_ = {atof(options[4].c_str())};
+        w->R_v_ = {atof(options[5].c_str())};
+        w->mjdPeak_ = {atof(options[6].c_str())};
+        w->simSetupList_ = {options[7]};
     }
 
     // Go though each option and assign the correct properties
@@ -201,6 +210,7 @@ void simulate(std::shared_ptr<Workspace> w) {
 
         // Apply host galaxy reddening
         // TODO (Issue #21)- implement host galaxy reddening before redshifting
+        sn.applyReddening(w->Ebv_Host_[i], w->R_v_[i]);
 
         // Move the spectra to new redshift
         sn.redshift(w->z_[i], cosmology);
@@ -212,6 +222,7 @@ void simulate(std::shared_ptr<Workspace> w) {
 
         // Apply Milky Way extinction
         // TODO (Issue #21) - implement reddening at z=0
+        sn.applyReddening(w->Ebv_MW_[i], 3.1);
 
         // synthesise LC for every unique filter
         std::vector<std::string> uniqueFilters = w->simFilters_[i];
