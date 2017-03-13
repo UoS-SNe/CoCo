@@ -141,3 +141,62 @@ double Filters::flux(const std::vector<double>& SED, const std::string& filterNa
         return integFlux / filter_[filterName].area_;
     }
 }
+
+std::vector<double> Filters::CCM89(const std::vector<double>& wav, double Eb_v, double r_v) {
+    // Cardelli'89 extinction coefficients
+    const std::vector<double> ccm89CoeffsA = {1., 0.17699, -0.50447, -0.02427,
+                                              0.72085, 0.01979, -0.77530, 0.32999};
+
+    const std::vector<double> ccm89CoeffsB = {0., 1.41338, 2.28305, 1.07233,
+                                              -5.38434, -0.62251, 5.30260, -2.09002};
+
+    std::vector<double> res(wav.size(), 1);
+    std::vector<double> x(wav.size(), 1e4);
+    x = vmath::div(x, wav);
+
+    double a, b, y, y2, y3, yn;
+
+    for (size_t i = 0; i < wav.size(); ++i) {
+        if (x[i] < 1.1) {
+            y = pow(x[i], 1.61);
+            a = 0.574 * y;
+            b = -0.527 * y;
+
+        } else if (x[i] < 3.3) {
+            y = x[i] - 1.82;
+            a = ccm89CoeffsA[0];
+            b = ccm89CoeffsB[0];
+            yn = 1.;
+            for (size_t j = 1; j < 8; ++j) {
+                yn *= y;
+                a += ccm89CoeffsA[j] * yn;
+                b += ccm89CoeffsB[j] * yn;
+            }
+
+        } else if (x[i] < 8.0) {
+            y = x[i] - 4.67;
+            a = 1.752 - 0.316*x[i] - (0.104 / (y*y + 0.341));
+            y = x[i] - 4.62;
+            b = -3.090 + 1.825*x[i] + (1.206 / (y*y + 0.263));
+
+            if (x[i] > 5.9) {
+                y = x[i] - 5.9;
+                y2 = y * y;
+                y3 = y2 * y;
+                a += -0.04473*y2 - 0.009779*y3;
+                b += 0.2130*y2 + 0.1207*y3;
+            }
+
+        } else {
+            y = x[i] - 8.0;
+            y2 = y * y;
+            y3 = y2 * y;
+            a = -0.070*y3 + 0.137*y2 - 0.628*y - 1.073;
+            b = 0.374*y3 - 0.420*y2 + 4.257*y + 13.670;
+        }
+
+        res[i] = Eb_v * (a * r_v + b);
+    }
+
+    return res;
+}

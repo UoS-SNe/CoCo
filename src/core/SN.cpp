@@ -162,6 +162,14 @@ void SN::loadLC(std::string fileName) {
 }
 
 
+void SN::applyReddening(double Eb_v, double r_v) {
+    for (auto &spec : spec_) {
+        spec.second.flux_ = vmath::mult(spec.second.flux_,
+          Filters::CCM89(spec.second.wav_, Eb_v, r_v));
+    }
+}
+
+
 // Make a synthetic light curve from
 void SN::synthesiseLC(const std::vector<std::string> &filterList,
                       std::shared_ptr<Filters> filters) {
