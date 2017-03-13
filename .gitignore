@@ -41,8 +41,8 @@ scripts
 chains
 recon
 #data
-data/lc
-data/spectra
+#data/lc
+#data/spectra
 lists/test_lists/
 shared
 spectra
