@@ -205,6 +205,16 @@ void mangleSpectra(std::shared_ptr<Workspace> w) {
                          return a.wav_ < b.wav_;
                       });
 
+            // Remove light curve points that are too close in central wavelengths
+            // for (auto it = (specMangle->lcData_.begin() + 1); it != specMangle->lcData_.end(); ) {
+            //     if ((it->wav_ - (it-1)->wav_) < 500) {
+            //         std::cout << it->filter_ << std::endl;
+            //         specMangle->lcData_.erase(it);
+            //     } else {
+            //         it++;
+            //     }
+            // }
+
             // Normalise LC
             double lcNorm = specMangle->lcData_[0].flux_;
             for (auto &obs : specMangle->lcData_) {
