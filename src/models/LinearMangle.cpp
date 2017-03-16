@@ -52,7 +52,7 @@ std::vector<double> LinearMangle::function(std::vector<double>& wav) {
         res[i] = function(wav[i]);
     }
 
-    return res;
+    return vmath::mult(specData_.flux_, res);
 }
 
 
