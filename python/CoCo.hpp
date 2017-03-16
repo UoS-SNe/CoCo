@@ -37,22 +37,22 @@ public:
     double wl_;
 
     // Templates
-    std::unordered_map<std::string, SN> templateSNe_;
+    // std::unordered_map<std::string, SN> templateSNe_;
 
     // Shared data structures
-    std::shared_ptr<Filters> filters_;
-    std::shared_ptr<Cosmology> cosmology_;
+    // std::shared_ptr<Filters> filters_;
+    // std::shared_ptr<Cosmology> cosmology_;
 
     // Constructor
     CoCo();
 
     // routines
-    void simulate(std::string,double,double,double,double,double,double,
-                  std::vector<double>&,std::vector<std::string>&);
-
-    std::vector<double> mjdRange(std::string,
-        const std::vector<double>&,
-        const std::vector<std::string>&);
+    // void simulate(std::string,double,double,double,double,double,double,
+    //               std::vector<double>&,std::vector<std::string>&);
+    //
+    // std::vector<double> mjdRange(std::string,
+    //     const std::vector<double>&,
+    //     const std::vector<std::string>&);
 };
 
 
