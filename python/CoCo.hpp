@@ -36,17 +36,6 @@ public:
     double wm_;
     double wl_;
 
-    // Simulation inputs
-    std::string templateName_;
-    double z_;
-    double absMag_;
-    double mjdPeak_;
-    double Ebv_MW_;
-    double Ebv_Host_;
-    double R_v_;
-    std::vector<double> mjdSim_;
-    std::vector<std::string> filterSim_;
-
     // Templates
     std::unordered_map<std::string, SN> templateSNe_;
 
@@ -58,7 +47,9 @@ public:
     CoCo();
 
     // routines
-    void simulate();
+    void simulate(std::string,double,double,double,double,double,double,
+                  std::vector<double>&,std::vector<std::string>&);
+
     std::vector<double> mjdRange(std::string,
         const std::vector<double>&,
         const std::vector<std::string>&);

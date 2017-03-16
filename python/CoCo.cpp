@@ -40,7 +40,8 @@ CoCo::CoCo() {
     std::vector<std::string> phaseFiles = utils::dirlist(reconRoot_ + "/recon/");
     for (auto it = phaseFiles.begin(); it != phaseFiles.end(); ) {
         if (utils::split(*it, '.').back() != "phase") {
-            it->erase();
+            phaseFiles.erase(it);
+
         } else {
             std::vector< std::vector<std::string> > phaseFile =
               vmath::loadtxt<std::string>(reconRoot_ + "/recon/" + (*it), 2);
@@ -56,50 +57,6 @@ CoCo::CoCo() {
     }
 }
 
-
-void CoCo::simulate() {
-    SN sn = templateSNe_[templateName_];
-
-    // Apply host galaxy reddening
-    sn.applyReddening(Ebv_Host_, R_v_);
-
-    // Move the spectra to new redshift
-    sn.redshift(z_, cosmology_, true);
-    sn.moveMJD((1.0 + z_), mjdPeak_);
-
-    // offset absolute magnitude
-    sn.scaleSpectra(pow(10, -0.4 * (absMag_)));
-
-    // Apply Milky Way extinction
-    sn.applyReddening(Ebv_MW_, 3.1);
-
-    // synthesise LC for every unique filter
-    std::vector<std::string> uniqueFilters = filterSim_;
-    utils::removeDuplicates(uniqueFilters);
-    sn.synthesiseLC(uniqueFilters, filters_);
-
-
-    for (auto &lc : sn.lc_) {
-        // Initialise model
-        std::shared_ptr<Karpenka12> karpenka12(new Karpenka12);
-        karpenka12->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
-        karpenka12->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
-        karpenka12->sigma_ = std::vector<double>(lc.second.flux_.size(), 1);
-        std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(karpenka12);
-
-        // Initialise solver
-        MPFitter solver(model);
-        std::vector<double> xTemp = mjdRange(lc.second.filter_, mjdSim_, filterSim_);
-        solver.xRecon_ = vmath::sub<double>(xTemp, lc.second.mjdMin_);
-
-        // Perform fitting
-        solver.analyse();
-        solver.xRecon_ = vmath::add<double>(solver.xRecon_, lc.second.mjdMin_);
-        solver.bestFit_ = vmath::mult<double>(solver.bestFit_, lc.second.normalization_);
-    }
-}
-
-
 // Split mjdSim_ into individual vectors for each filter
 std::vector<double> CoCo::mjdRange(std::string flt,
                              const std::vector<double> &mjd,
@@ -113,4 +70,56 @@ std::vector<double> CoCo::mjdRange(std::string flt,
     }
 
     return res;
+}
+
+
+void CoCo::simulate(std::string templateName,
+                    double z,
+                    double absMag,
+                    double Ebv_MW,
+                    double Ebv_Host,
+                    double R_v,
+                    double mjdPeak,
+                    std::vector<double> &mjdSim,
+                    std::vector<std::string> &filterSim) {
+
+    SN sn = templateSNe_[templateName];
+
+    // Apply host galaxy reddening
+    sn.applyReddening(Ebv_Host, R_v);
+
+    // Move the spectra to new redshift
+    sn.redshift(z, cosmology_, true);
+    sn.moveMJD((1.0 + z), mjdPeak);
+
+    // offset absolute magnitude
+    sn.scaleSpectra(pow(10, -0.4 * (absMag)));
+
+    // Apply Milky Way extinction
+    sn.applyReddening(Ebv_MW, 3.1);
+
+    // synthesise LC for every unique filter
+    std::vector<std::string> uniqueFilters = filterSim;
+    utils::removeDuplicates(uniqueFilters);
+    sn.synthesiseLC(uniqueFilters, filters_);
+
+    for (auto &lc : sn.lc_) {
+        // Initialise model
+        std::shared_ptr<Karpenka12> karpenka12(new Karpenka12);
+        karpenka12->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+        karpenka12->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+        karpenka12->sigma_ = std::vector<double>(lc.second.flux_.size(), 1);
+        std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(karpenka12);
+
+        // Initialise solver
+        MPFitter solver(model);
+        std::vector<double> xTemp = mjdRange(lc.second.filter_, mjdSim, filterSim);
+        std::cout << filterSim[3] << std::endl;
+        solver.xRecon_ = vmath::sub<double>(xTemp, lc.second.mjdMin_);
+
+        // Perform fitting
+        solver.analyse();
+        solver.xRecon_ = vmath::add<double>(solver.xRecon_, lc.second.mjdMin_);
+        solver.bestFit_ = vmath::mult<double>(solver.bestFit_, lc.second.normalization_);
+    }
 }
