@@ -175,6 +175,7 @@ void mangleSpectra(std::shared_ptr<Workspace> w) {
             std::cout << "# " << spec.second.file_ << "\n";
             // Initialise the model
             std::shared_ptr<SpecMangle> specMangle(new SpecMangle);
+            // std::shared_ptr<LinearMangle> specMangle(new LinearMangle);
             specMangle->lcData_ = sn.second.epoch_[spec.second.mjd_];
             specMangle->specData_ = spec.second;
 
@@ -204,6 +205,16 @@ void mangleSpectra(std::shared_ptr<Workspace> w) {
                       [](const Obs &a, const Obs &b) -> bool {
                          return a.wav_ < b.wav_;
                       });
+
+            // Remove light curve points that are too close in central wavelengths
+            for (auto it = (specMangle->lcData_.begin() + 1); it != specMangle->lcData_.end(); ) {
+                if ((it->wav_ - (it-1)->wav_) < 500) {
+                    std::cout << it->filter_ << std::endl;
+                    specMangle->lcData_.erase(it);
+                } else {
+                    it++;
+                }
+            }
 
             // Normalise LC
             double lcNorm = specMangle->lcData_[0].flux_;

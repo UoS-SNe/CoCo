@@ -173,6 +173,7 @@ void SN::applyReddening(double Eb_v, double r_v) {
 // Make a synthetic light curve from
 void SN::synthesiseLC(const std::vector<std::string> &filterList,
                       std::shared_ptr<Filters> filters) {
+
     // Clear light curve data
     lc_.clear();
     epoch_.clear();
@@ -195,6 +196,7 @@ void SN::synthesiseLC(const std::vector<std::string> &filterList,
         for (auto &flt : filterList) {
             lc_[flt].mjd_.push_back(spec.second.mjd_);
             lc_[flt].flux_.push_back(filters->flux(spec.second.flux_, flt));
+            lc_[flt].filter_ = flt;
 
             Obs obs;
             obs.mjd_ = spec.second.mjd_;
@@ -211,19 +213,22 @@ void SN::synthesiseLC(const std::vector<std::string> &filterList,
 
 
 // Move all spectra to a new chosen redshift
-void SN::redshift(double zNew, std::shared_ptr<Cosmology> cosmology) {
+void SN::redshift(double zNew, std::shared_ptr<Cosmology> cosmology, bool zScale) {
     // Find the wavelength shift between the old and new redshift
     double shift = (1 + zNew) / (1 + z_);
 
     // Find the flux shift between the old and new redshift
-    cosmology->set(z_);
-    double scale = cosmology->lumDis_;
-    cosmology->set(zNew);
-    scale /= cosmology->lumDis_;
+    double scale = shift;
+    if (zScale) {
+        cosmology->set(z_);
+        scale *= pow(cosmology->lumDis_, 2);
+        cosmology->set(zNew);
+        scale /= pow(cosmology->lumDis_, 2);
+    }
 
     for (auto &spec : spec_) {
-        vmath::div(spec.second.wav_, shift);
-        vmath::mult(spec.second.flux_, scale);
+        spec.second.wav_ = vmath::div(spec.second.wav_, shift);
+        spec.second.flux_ = vmath::mult(spec.second.flux_, scale);
         spec.second.fluxNorm_ *= scale;
     }
 

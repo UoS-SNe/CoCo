@@ -2,7 +2,7 @@ CC = clang
 CXX = clang++
 CFLAGS = -c -O3
 CXXFLAGS = -c -O3 -std=c++11
-LDFLAGS = -L /opt/local/lib -lgsl -L /usr/local/lib -lmultinest -L /usr/local/gfortran/lib -lgfortran -llapack -Wl,-no_compact_unwind 
+LDFLAGS = -lgsl -lmultinest -lgfortran -llapack -Wl,-no_compact_unwind
 
 .cpp.o:
 	$(CXX) $(CXXFLAGS) $< -o $@
@@ -20,7 +20,8 @@ MPFIT = src/solvers/mpfit.c
 SOLVERS = src/core/Solver.cpp src/solvers/priors.cpp src/solvers/MNest.cpp \
 src/solvers/MPFitter.cpp
 MODELS = src/core/Model.cpp src/models/Karpenka12.cpp src/models/Bazin09.cpp \
-src/models/Kessler10.cpp src/models/Firth17Complex.cpp src/models/SpecMangle.cpp
+src/models/Kessler10.cpp src/models/Firth17Complex.cpp src/models/SpecMangle.cpp \
+src/models/LinearMangle.cpp
 
 LCEXEC = src/LCFit.cpp
 SPECEXEC = src/SpecFit.cpp
