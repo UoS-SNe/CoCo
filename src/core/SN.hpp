@@ -93,6 +93,7 @@ public:
     // SN properties
     double zRaw_;
     double z_;
+	double distMod_;
     std::string name_;
     std::vector<std::string> filterList_;
 
@@ -112,7 +113,7 @@ public:
     void scaleSpectra(double);
     void applyReddening(double,double);
     void synthesiseLC(const std::vector<std::string>&,std::shared_ptr<Filters>);
-    void redshift(double,std::shared_ptr<Cosmology>);
+    void redshift(double,std::shared_ptr<Cosmology>,bool zScale=true);
     void loadLC(std::string);
     void moveMJD(double,double);
     void setLCStats();

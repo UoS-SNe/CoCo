@@ -55,10 +55,10 @@ void help() {
     std::cout << "Originally developed by Natasha Karpenka\n";
     std::cout << "\nUsage:\n";
     std::cout << "lcsim *.list\n";
-    std::cout << "./lcsim SN_name redshift abs_mag MJD_peak MJD+filters.list\n\n";
+    std::cout << "./lcsim SN_name redshift abs_mag_offset MJD_peak MJD+filters.list\n\n";
     std::cout << "or\n";
     std::cout << "*.list file must have the following columns:\n";
-    std::cout << "SN_name redshift abs_mag E(B-V)_MW E(B-V)_Host Rv_Host MJD_peak MJD+filters.list\n";
+    std::cout << "SN_name redshift abs_mag_offset E(B-V)_MW E(B-V)_Host Rv_Host MJD_peak MJD+filters.list\n";
     std::cout << std::endl;
 }
 
@@ -89,7 +89,7 @@ void applyOptions(std::vector<std::string> &options, std::shared_ptr<Workspace> 
     }
 
     if (skip == 1) {
-        std::vector< std::vector<std::string> > inputData = vmath::loadtxt<std::string>(options[0], 5);
+        std::vector< std::vector<std::string> > inputData = vmath::loadtxt<std::string>(options[0], 8);
         w->templateList_ = inputData[0];
         w->z_ = vmath::castString<double>(inputData[1]);
         w->absMag_ = vmath::castString<double>(inputData[2]);
@@ -149,14 +149,14 @@ void applyOptions(std::vector<std::string> &options, std::shared_ptr<Workspace> 
 // Fill properties based on input parameters
 void fillUnassigned(std::shared_ptr<Workspace> w) {
     w->simFilters_.clear();
-    for (size_t i = 0; i < w->templateList_.size(); ++i) {
-        if (!utils::fileExists(w->templateList_[i])) {
-            std::cout << "Setup file does not exist: " << w->templateList_[i] << std::endl;
+    for (size_t i = 0; i < w->simSetupList_.size(); ++i) {
+        if (!utils::fileExists(w->simSetupList_[i])) {
+            std::cout << "Setup file does not exist: " << w->simSetupList_[i] << std::endl;
             exit(0);
         }
 
         std::vector< std::vector<std::string> > temp =
-          vmath::loadtxt<std::string>(w->templateList_[i], 2);
+          vmath::loadtxt<std::string>(w->simSetupList_[i], 2);
         w->mjdSim_.push_back(vmath::castString<double>(temp[0]));
         w->simFilters_.push_back(temp[1]);
     }
@@ -209,19 +209,17 @@ void simulate(std::shared_ptr<Workspace> w) {
         SN sn = w->templateSNe_[w->templateList_[i]];
 
         // Apply host galaxy reddening
-        // TODO (Issue #21)- implement host galaxy reddening before redshifting
         sn.applyReddening(w->Ebv_Host_[i], w->R_v_[i]);
 
         // Move the spectra to new redshift
-        sn.redshift(w->z_[i], cosmology);
+        sn.redshift(w->z_[i], cosmology, true);
         sn.moveMJD((1.0 + w->z_[i]), w->mjdPeak_[i]);
 
         // offset absolute magnitude
-        offset = pow(10, 0.4 * (-17 - w->absMag_[i]));
+        offset = pow(10, -0.4 * (w->absMag_[i]));
         sn.scaleSpectra(offset);
 
         // Apply Milky Way extinction
-        // TODO (Issue #21) - implement reddening at z=0
         sn.applyReddening(w->Ebv_MW_[i], 3.1);
 
         // synthesise LC for every unique filter
@@ -257,8 +255,8 @@ void simulate(std::shared_ptr<Workspace> w) {
             solver.bestFit_ = vmath::mult<double>(solver.bestFit_, lc.second.normalization_);
 
             for (size_t j = 0; j < solver.xRecon_.size(); ++j) {
-                outFile << solver.xRecon_[i] << " ";
-                outFile << "flux" << " ";
+                outFile << solver.xRecon_[j] << " ";
+                outFile << solver.bestFit_[j]  << " ";
                 outFile << lc.second.filter_ << "\n";
             }
         }
