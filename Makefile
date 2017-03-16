@@ -27,12 +27,12 @@ LCEXEC = src/LCFit.cpp
 SPECEXEC = src/SpecFit.cpp
 PHASEEXEC = src/SpecPhase.cpp
 SIMEXEC = src/LCSim.cpp
-
+PYCOCO = python/CoCo.cpp
 
 LCFIT = ${CORE:.cpp=.o} ${MPFIT:.c=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${LCEXEC:.cpp=.o}
 SPECFIT = ${CORE:.cpp=.o} ${MPFIT:.c=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${SPECEXEC:.cpp=.o}
 SPECPHASE = ${CORE:.cpp=.o} ${MPFIT:.c=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${PHASEEXEC:.cpp=.o}
-LCSIM = ${CORE:.cpp=.o} ${MPFIT:.c=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${SIMEXEC:.cpp=.o}
+LCSIM = ${CORE:.cpp=.o} ${MPFIT:.c=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${PYCOCO:.cpp=.o} ${SIMEXEC:.cpp=.o}
 
 all: lcfit specfit specphase lcsim
 

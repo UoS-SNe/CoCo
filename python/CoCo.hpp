@@ -59,6 +59,9 @@ public:
 
     // routines
     void simulate();
+    std::vector<double> mjdRange(std::string,
+        const std::vector<double>&,
+        const std::vector<std::string>&);
 };
 
 
