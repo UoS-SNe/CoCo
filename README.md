@@ -1,18 +1,18 @@
-# CoCo - v0.5.0
+# CoCo - v0.6.0
 Core Collapse Supernovae templates
 ___
 Developed by Szymon Prajs (S.Prajs@soton.ac.uk).     
 Originally designed by Natasha Karpenka.  
 Currently mainted by Szymon Prajs and Rob Firth.   
 
-This package is still in an active development phase and currently contains **a lot** of known issues. We are working hard to fix them as quickly as possible! Full release is expected in the coming months. 
+This package is still in an active development phase and currently contains **some** known issues. We are working hard to fix them as quickly as possible! Full release is expected in the coming months.
 
 ___
 
 ## Installation
-Future releases of the code will include a `configure` file and follow the standard GNU autoconf routine. 
+Future releases of the code will include a `configure` file and follow the standard GNU autoconf routine.
 
-## Dependencies 
+## Dependencies
 - [GSL](https://www.gnu.org/software/gsl/)
 - [MultiNest](https://ccpforge.cse.rl.ac.uk/gf/project/multinest/)
 - LAPACK (Required for MultiNest)
@@ -34,7 +34,7 @@ lightcurve_files_list.list
 ```
 `lightcurve_files_list.list` is a list of ligh curve files, all of which must follow the above convention.
 
-#### SpecFit 
+#### SpecFit
 ```
 specfit spectrum_file.* SN_name MJD redshift
 ```
@@ -44,7 +44,7 @@ specfit spectra_setup_file.list
 ```
 `spectra_setup_file.list` must have the following columns: path_to_spectrum SN_name MJD redshift.
 
-#### SpecPhase 
+#### SpecPhase
 ```
 specphase SN_redshift_list.list filter_name
 ```
@@ -52,11 +52,11 @@ specphase SN_redshift_list.list filter_name
 
 #### LCSim
 ```
-LCSim SN_name redshift abs_mag MJD_peak MJD_filters.list
+LCSim SN_name redshift abs_mag_offset MJD_peak MJD_filters.list
 ```
-or 
+or
 ```
 lcsim setup_list.list
 ```
-`setup_list.list` must contain the following columns: SN_name redshift abs_mag MJD_peak MJD_filters.list
+`setup_list.list` must contain the following columns: SN_name redshift abs_mag_offset MJD_peak MJD_filters.list
 `MJD_filters.list` must contain two columns: MJD filter

@@ -45,6 +45,7 @@ struct Workspace {
     // SN data
     std::vector<std::string> lcList_;
     std::vector<double> z_;
+    std::vector<double> distMod_;
     std::unordered_map<std::string, SN> sn_;
 };
 
@@ -72,14 +73,16 @@ void applyOptions(std::vector<std::string> &options, std::shared_ptr<Workspace> 
 
         if (utils::fileExists(w->inputLCList_)) {
             std::vector< std::vector<std::string> > temp;
-            vmath::loadtxt<std::string>(w->inputLCList_, 2, temp);
+            vmath::loadtxt<std::string>(w->inputLCList_, 3, temp);
             w->lcList_ = temp[0];
             vmath::castString<double>(temp[1], w->z_);
+            vmath::castString<double>(temp[2], w->distMod_);
         }
 
-    } else if (options.size() == 3) {
+    } else if (options.size() == 4) {
             w->lcList_ = {options[1]};
             w->z_ = {atof(options[2].c_str())};
+            w->distMod_ = {atof(options[3].c_str())};
 
     } else {
         std::cout << "Options are not currently implemented\n";
@@ -104,7 +107,8 @@ void fillUnassigned(std::shared_ptr<Workspace> w) {
             SN sn;
             sn.name_ = utils::baseName(w->lcList_[i]);
             sn.z_ = w->z_[i];
-			w->sn_[sn.name_] = sn;
+            sn.distMod_ = w->distMod_[i];
+            w->sn_[sn.name_] = sn;
 		}
 	}
 }
@@ -129,7 +133,8 @@ void scanRecon(std::shared_ptr<Workspace> w) {
 
 void makeSyntheticLC(std::shared_ptr<Workspace> w) {
     for (auto &sn : w->sn_) {
-        sn.second.redshift(0, w->cosmology_);
+        sn.second.redshift(0, w->cosmology_, false);
+        sn.second.scaleSpectra(pow(10, 0.4 * sn.second.distMod_));
         sn.second.synthesiseLC({w->zeroFilter_}, w->filters_);
     }
 }
@@ -162,7 +167,7 @@ void fitPhase(std::shared_ptr<Workspace> w) {
         double mjdZeroPhase = solver.xRecon_[indexMax] + lc.mjdMin_;
 
         for (auto &spec : sn.second.spec_) {
-            phaseFile << "spectra/" << sn.second.name_ << "_" << spec.second.mjd_;
+            phaseFile << "spectra/" << utils::split(spec.second.file_, '/').back();
             phaseFile << " " << (spec.second.mjd_ - mjdZeroPhase) / (1.0 + sn.second.zRaw_) << "\n";
         }
 
