@@ -36,24 +36,29 @@ public:
     double wm_;
     double wl_;
 
+    // Output
+    std::vector<double> flux_;
+    std::vector<double> fluxErr_;
+
     // Templates
-    // std::unordered_map<std::string, SN> templateSNe_;
+    std::unordered_map<std::string, SN> templateSNe_;
 
     // Shared data structures
-    // std::shared_ptr<Filters> filters_;
-    // std::shared_ptr<Cosmology> cosmology_;
+    std::shared_ptr<Filters> filters_;
+    std::shared_ptr<Cosmology> cosmology_;
 
     // Constructor
-    CoCo();
+    CoCo(std::string,std::string);
 
     // routines
-    // void simulate(std::string,double,double,double,double,double,double,
-    //               std::vector<double>&,std::vector<std::string>&);
-    //
-    // std::vector<double> mjdRange(std::string,
-    //     const std::vector<double>&,
-    //     const std::vector<std::string>&);
-};
+    void init();
+    void simulate(std::string,double,double,double,double,double,double,
+                  std::vector<double>,
+                  std::vector<std::string>);
 
+    std::vector<double> mjdRange(std::string,
+        const std::vector<double>&,
+        const std::vector<std::string>&);
+};
 
 #endif  // COCO_PYTHON_COCO_HPP_
