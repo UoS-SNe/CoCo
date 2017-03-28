@@ -30,7 +30,7 @@ template <typename T>
 void castString(const std::vector<std::string> &s, std::vector<T> &res) {
     res.resize(s.size());
     T x;
-    for (int i = 0; i < s.size(); ++i) {
+    for (size_t i = 0; i < s.size(); ++i) {
         std::istringstream ss(s[i]);
         if (!(ss >> x))
             res[i] = -99;
@@ -52,11 +52,11 @@ void transpose(const std::vector< std::vector<T> > &data, std::vector< std::vect
     int x = data.size();
     int y = data[0].size();
     cols.resize(y);
-    for (int i = 0; i < y; ++i) {
+    for (size_t i = 0; i < y; ++i) {
         cols[i].resize(x);
     }
 
-    for (int i = 0; i < x; i++) {
+    for (size_t i = 0; i < x; i++) {
         for (int j = 0; j < y; j++) {
             cols[j][i] = data[i][j];
         }
