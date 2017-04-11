@@ -20,4 +20,5 @@ echo "Exporting paths"
 
 echo "Running CoCo"
 # This is where CoCo is run
+python $PWD/cocosimtest.py 
 echo "Did it work?"
