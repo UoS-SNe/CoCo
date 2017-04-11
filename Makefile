@@ -1,9 +1,8 @@
-CC = clang
-CXX = clang++
+CC = gcc
+CXX = g++
 CFLAGS = -c -fPIC -O3
-CXXFLAGS = -c -O3 -fPIC -std=c++11
-LDFLAGS = -lgsl
-
+CXXFLAGS = -c -O3 -fPIC -std=c++0x -I $(GSL_DIR)/include
+LDFLAGS = -L $(GSL_DIR)/lib -lgsl -lgslcblas
 .cpp.o:
 	$(CXX) $(CXXFLAGS) $< -o $@
 
