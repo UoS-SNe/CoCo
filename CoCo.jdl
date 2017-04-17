@@ -7,5 +7,5 @@ StdError = "StdErr";
 InputSandbox =  {"CoCoJob.sh","LFN:/lsst/user/d/darren.white/coco.tar.gz","LFN:/lsst/user/d/darren.white/eupscoco.tar.gz"};
 OutputSandbox = {"StdOut","StdErr"};
 OutputSE = "UKI-LT2-IC-HEP-disk";
-Site = "LCG.UKI-LT2-IC-HEP.uk";
+Site = "";
 OutputData = {""};
