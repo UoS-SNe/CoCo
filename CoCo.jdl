@@ -1,6 +1,6 @@
 JobName = "CoCo_Test";
 JobGroup = "lsst";
-Executable = "testJob.sh";
+Executable = "CoCoJob.sh";
 Arguments = "coco.tar.gz eupscoco.tar.gz";
 StdOutput = "StdOut";
 StdError = "StdErr";
