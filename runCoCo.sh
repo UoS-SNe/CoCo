@@ -6,13 +6,13 @@ export EUPS_PATH=$MY_EUPS:/cvmfs/lsst.opensciencegrid.org/fnal/products/
 echo $EUPS_PATH
 
 echo "Setup required modules"
-setup gcc v4_9_2
-setup gsl
-setup numpy
-setup setuptools
-setup python v2_7_8
+echo "gcc v4_9_2"; setup gcc v4_9_2
+echo "gsl"; setup gsl
+echo "numpy v1_9_1"; setup numpy v1_9_1
+echo "setuptools"; setup setuptools
+echo "python v2_7_8"; setup python v2_7_8
 
-echo "Exporting paths"
+echo "Exporting paths (if needed)"
 #export PYTHONPATH=$PYTHONPATH:$PWD/im3shape
 #export PATH=$PATH:$PWD/deps/bin
 #export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PWD/deps/lib
