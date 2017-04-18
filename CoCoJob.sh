@@ -9,8 +9,10 @@ EUPS_LOCAL_PATH=$2
 
 # unzip the software and change to its directory
 tar -xzf $(basename $CODE_LOCAL_PATH)  2>&1
-tar -xzf $(basename $EUPS_LOCAL_PATH) CoCo 2>&1
+tar -xzf $(basename $EUPS_LOCAL_PATH) --directory CoCo 2>&1
+ls
 cd CoCo 2>&1
+ls
 pwd
 
 #Run the main code - also sets up environment
