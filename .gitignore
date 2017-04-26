@@ -49,5 +49,5 @@ spectra
 sim
 build
 eups/
-*/ipynb_checkpoints/
+*/.ipynb_checkpoints/
 examples/.ipynb_checkpoints/
