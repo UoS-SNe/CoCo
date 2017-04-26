@@ -19,6 +19,7 @@ DESr.dat
 DESu.dat
 DESy.dat
 DESz.dat
+F2_Y.dat
 g.dat
 gsSAGEMrf4.dat
 H.dat
@@ -32,6 +33,12 @@ isSAGEMrf4.dat
 J.dat
 K.dat
 LSQ_gr.dat
+LSST_g.dat
+LSST_i.dat
+LSST_r.dat
+LSST_u.dat
+LSST_y.dat
+LSST_z.dat
 PS1_g.dat
 PS1_i.dat
 PS1_r.dat
