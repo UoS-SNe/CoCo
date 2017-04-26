@@ -2,7 +2,8 @@ CC = clang
 CXX = clang++
 CFLAGS = -c -fPIC -O3
 CXXFLAGS = -c -O3 -fPIC -std=c++11
-LDFLAGS = -lgsl -lmultinest -lgfortran -llapack -Wl,-no_compact_unwind
+# LDFLAGS = -lgsl -lmultinest -lgfortran -llapack -Wl,-no_compact_unwind
+LDFLAGS = -L /opt/local/lib -lgsl -L /usr/local/lib -lmultinest -L /usr/local/gfortran/lib -lgfortran -llapack -Wl,-no_compact_unwind
 
 .cpp.o:
 	$(CXX) $(CXXFLAGS) $< -o $@
