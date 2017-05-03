@@ -1,0 +1,3 @@
+Commented out the 'bump' phase of SN1993J - (i.e. earlier than 49083.00) no spectral coverage in this phase
+
+For iPTF13bvn some of the SDSS uncertainties are 0.00000, this breaks the fit. I have commented out the approprite lines, and below have used the flux observation and the error from the previous epoch in the same filter

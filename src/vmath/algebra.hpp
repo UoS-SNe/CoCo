@@ -26,7 +26,7 @@ template <typename T>
 void add(const std::vector<T> &vec, T scalar, std::vector<T> &res) {
     res.resize(vec.size());
 
-    for (int i = 0; i < vec.size(); ++i) {
+    for (size_t i = 0; i < vec.size(); ++i) {
         res[i] = vec[i] + scalar;
     }
 }
@@ -48,7 +48,7 @@ void add(const std::vector<T> &vec1, const std::vector<T> &vec2, std::vector<T> 
         res.resize(vec2.size());
     }
 
-    for (int i = 0; i < res.size(); ++i) {
+    for (size_t i = 0; i < res.size(); ++i) {
         res[i] = vec1[i] + vec2[i];
     }
 }
@@ -66,7 +66,7 @@ template <typename T>
 void sub(const std::vector<T> &vec, T scalar, std::vector<T> &res) {
     res.resize(vec.size());
 
-    for (int i = 0; i < vec.size(); ++i) {
+    for (size_t i = 0; i < vec.size(); ++i) {
         res[i] = vec[i] - scalar;
     }
 }
@@ -88,7 +88,7 @@ void sub(const std::vector<T> &vec1, const std::vector<T> &vec2, std::vector<T> 
         res.resize(vec2.size());
     }
 
-    for (int i = 0; i < res.size(); ++i) {
+    for (size_t i = 0; i < res.size(); ++i) {
         res[i] = vec1[i] - vec2[i];
     }
 }
@@ -106,7 +106,7 @@ template <typename T>
 void mult(const std::vector<T> &vec, T scalar, std::vector<T> &res) {
     res.resize(vec.size());
 
-    for (int i = 0; i < vec.size(); ++i) {
+    for (size_t i = 0; i < vec.size(); ++i) {
         res[i] = vec[i]*scalar;
     }
 }
@@ -128,7 +128,7 @@ void mult(const std::vector<T> &vec1, const std::vector<T> &vec2, std::vector<T>
         res.resize(vec2.size());
     }
 
-    for (int i = 0; i < res.size(); ++i) {
+    for (size_t i = 0; i < res.size(); ++i) {
         res[i] = vec1[i]*vec2[i];
     }
 }
@@ -146,7 +146,7 @@ template <typename T>
 void div(const std::vector<T> &vec, T scalar, std::vector<T> &res) {
     res.resize(vec.size());
 
-    for (int i = 0; i < vec.size(); ++i) {
+    for (size_t i = 0; i < vec.size(); ++i) {
         res[i] = vec[i] / scalar;
     }
 }
@@ -163,7 +163,7 @@ template <typename T>
 void div(T scalar, const std::vector<T> &vec, std::vector<T> &res) {
     res.resize(vec.size());
 
-    for (int i = 0; i < vec.size(); ++i) {
+    for (size_t i = 0; i < vec.size(); ++i) {
         res[i] = scalar / vec[i];
     }
 }
@@ -185,7 +185,7 @@ void div(const std::vector<T> &vec1, const std::vector<T> &vec2, std::vector<T> 
         res.resize(vec2.size());
     }
 
-    for (int i = 0; i < res.size(); ++i) {
+    for (size_t i = 0; i < res.size(); ++i) {
         res[i] = vec1[i] / vec2[i];
     }
 }
@@ -203,7 +203,7 @@ template <typename T>
 void power(const std::vector<T> &vec, double pwr, std::vector<T> &res) {
     res.resize(vec.size());
 
-    for (int i = 0; i < vec.size(); ++i) {
+    for (size_t i = 0; i < vec.size(); ++i) {
         res[i] = pow(vec[i], pwr);
     }
 }

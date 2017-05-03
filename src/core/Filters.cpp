@@ -196,6 +196,7 @@ std::vector<double> Filters::CCM89(const std::vector<double>& wav, double Eb_v, 
         }
 
         res[i] = Eb_v * (a * r_v + b);
+        res[i] = pow(10, 0.4*res[i]);
     }
 
     return res;

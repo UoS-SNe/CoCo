@@ -31,6 +31,7 @@
 #include "core/Filters.hpp"
 #include "core/SN.hpp"
 #include "solvers/MNest.hpp"
+// #include "models/SpecMangle.hpp"
 #include "models/LinearMangle.hpp"
 
 
@@ -174,13 +175,13 @@ void mangleSpectra(std::shared_ptr<Workspace> w) {
         for (auto &spec : sn.second.spec_) {
             std::cout << "# " << spec.second.file_ << "\n";
             // Initialise the model
-            // std::shared_ptr<SpecMangle> linearMangle(new SpecMangle);
-            std::shared_ptr<LinearMangle> linearMangle(new LinearMangle);
-            linearMangle->lcData_ = sn.second.epoch_[spec.second.mjd_];
-            linearMangle->specData_ = spec.second;
+            // std::shared_ptr<SpecMangle> specMangle(new SpecMangle);
+            std::shared_ptr<LinearMangle> specMangle(new LinearMangle);
+            specMangle->lcData_ = sn.second.epoch_[spec.second.mjd_];
+            specMangle->specData_ = spec.second;
 
             // Assign filter central wavelengths to each lc data point
-            for (auto &obs : linearMangle->lcData_) {
+            for (auto &obs : specMangle->lcData_) {
                 obs.wav_ = w->filters_->filter_[obs.filter_].centralWavelength_;
                 obs.minWav_ = w->filters_->filter_[obs.filter_].min_;
                 obs.maxWav_ = w->filters_->filter_[obs.filter_].max_;
@@ -189,49 +190,49 @@ void mangleSpectra(std::shared_ptr<Workspace> w) {
             // Remove LC points that do not overlap with spectra
             double specMin = vmath::min(spec.second.wav_);
             double specMax = vmath::max(spec.second.wav_);
-            for (int i = linearMangle->lcData_.size() - 1; i >= 0; --i) {
-                if (linearMangle->lcData_[i].minWav_ < specMin ||
-                    linearMangle->lcData_[i].maxWav_ > specMax) {
-                    linearMangle->lcData_.erase(linearMangle->lcData_.begin()+i);
+            for (int i = specMangle->lcData_.size() - 1; i >= 0; --i) {
+                if (specMangle->lcData_[i].minWav_ < specMin ||
+                    specMangle->lcData_[i].maxWav_ > specMax) {
+                    specMangle->lcData_.erase(specMangle->lcData_.begin()+i);
                 }
             }
 
             // Rescale filters to the data wavelength and assign to model
             w->filters_->rescale(spec.second.wav_);
-            linearMangle->filters_ = w->filters_;
+            specMangle->filters_ = w->filters_;
 
             // Sort light curve slice by filter central wavelengths
-            std::sort(linearMangle->lcData_.begin(), linearMangle->lcData_.end(),
+            std::sort(specMangle->lcData_.begin(), specMangle->lcData_.end(),
                       [](const Obs &a, const Obs &b) -> bool {
                          return a.wav_ < b.wav_;
                       });
 
             // Remove light curve points that are too close in central wavelengths
-            // for (auto it = (linearMangle->lcData_.begin() + 1); it != linearMangle->lcData_.end(); ) {
-            //     if ((it->wav_ - (it-1)->wav_) < 500) {
-            //         std::cout << it->filter_ << std::endl;
-            //         linearMangle->lcData_.erase(it);
-            //     } else {
-            //         it++;
-            //     }
-            // }
+            for (auto it = (specMangle->lcData_.begin() + 1); it != specMangle->lcData_.end(); ) {
+                if ((it->wav_ - (it-1)->wav_) < 500) {
+                    std::cout << it->filter_ << std::endl;
+                    specMangle->lcData_.erase(it);
+                } else {
+                    it++;
+                }
+            }
 
             // Normalise LC
-            double lcNorm = linearMangle->lcData_[0].flux_;
-            for (auto &obs : linearMangle->lcData_) {
+            double lcNorm = specMangle->lcData_[0].flux_;
+            for (auto &obs : specMangle->lcData_) {
                 obs.flux_ /= lcNorm;
                 obs.fluxErr_ /= lcNorm;
             }
 
             // Normalise the spectrum
-            double specNorm = w->filters_->flux(linearMangle->specData_.flux_, linearMangle->lcData_[0].filter_);
-            linearMangle->specData_.flux_ = vmath::div<double>(linearMangle->specData_.flux_, specNorm);
+            double specNorm = w->filters_->flux(specMangle->specData_.flux_, specMangle->lcData_[0].filter_);
+            specMangle->specData_.flux_ = vmath::div<double>(specMangle->specData_.flux_, specNorm);
 
             // Set priors and number of paramters
-            // linearMangle->setPriors();
+            // specMangle->setPriors();
 
             // Initialise the solver
-            std::shared_ptr<Model> model = dynamic_pointer_cast<Model>(linearMangle);
+            std::shared_ptr<Model> model = dynamic_pointer_cast<Model>(specMangle);
             std::shared_ptr<MNest> mnest(new MNest(model));
             mnest->livePoints_ = 10;
 
