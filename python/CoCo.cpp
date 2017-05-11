@@ -89,15 +89,15 @@ void CoCo::simulate(std::string templateName,
 
     SN sn = templateSNe_[templateName];
 
+    // offset absolute magnitude
+    sn.scaleSpectra(pow(10, -0.4 * (absMag)));
+
     // Apply host galaxy reddening
     sn.applyReddening(Ebv_Host, R_v);
 
     // Move the spectra to new redshift
     sn.redshift(z, cosmology_, true);
     sn.moveMJD((1.0 + z), mjdPeak);
-
-    // offset absolute magnitude
-    sn.scaleSpectra(pow(10, -0.4 * (absMag)));
 
     // Apply Milky Way extinction
     sn.applyReddening(Ebv_MW, 3.1);
