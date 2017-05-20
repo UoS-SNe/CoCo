@@ -15,6 +15,7 @@ cdef extern from "python/CoCo.hpp":
         void simulate(string,double,double,double,double,double,double,
             vector[double],
             vector[string]) except +
+        void spec_photometry(string,double,double,vector[string]) except +
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
@@ -49,3 +50,11 @@ cdef class pyCoCo:
         res[1] = self.thisptr.fluxErr_
 
         return res
+
+    def spec_photometry(self,
+                        string name,
+                        double z,
+                        double mjdPeak,
+                        np.ndarray flt not None):
+
+        self.thisptr.spec_photometry(name,z,mjdPeak,flt)

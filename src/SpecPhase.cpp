@@ -29,6 +29,9 @@
 #include "core/utils.hpp"
 #include "models/Karpenka12.hpp"
 #include "solvers/MPFitter.hpp"
+#include "solvers/MNest.hpp"
+
+
 
 struct Workspace {
     // Code inputs
@@ -151,12 +154,14 @@ void fitPhase(std::shared_ptr<Workspace> w) {
         std::shared_ptr<Karpenka12> karpenka12(new Karpenka12);
         karpenka12->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
         karpenka12->y_ = vmath::div<double>(lc.flux_, lc.normalization_);
-        karpenka12->sigma_ = std::vector<double>(lc.flux_.size(), 1);
+        karpenka12->sigma_ = std::vector<double>(lc.flux_.size(), 0.001);
         std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(karpenka12);
 
         // Initialise solver
-        MPFitter solver(model);
+        // MPFitter solver(model);
+        MNest solver(model);
         solver.xRecon_ = vmath::range<double>(-15, lc.mjdMax_ - lc.mjdMin_ + 20, 1);
+        solver.chainPath_ = "chains/" + sn.second.name_ + "/phase";
 
         // Perform fitting
         solver.analyse();
@@ -164,6 +169,11 @@ void fitPhase(std::shared_ptr<Workspace> w) {
         size_t indexMax = std::distance(solver.bestFit_.begin(),
                                         max_element(solver.bestFit_.begin(),
                                                     solver.bestFit_.end()));
+        cout << lc.mjdMin_ << " "  << solver.xRecon_[indexMax] << " " << lc.mjdMin_ << endl;
+        for (int i = 0; i < lc.mjd_.size(); ++i) {
+            cout << lc.mjd_[i] << " " << lc.flux_[i] << endl;
+            cout << solver.xRecon_[i] << " " << solver.bestFit_[i] << "\n" << endl;
+        }
         double mjdZeroPhase = solver.xRecon_[indexMax] + lc.mjdMin_;
 
         for (auto &spec : sn.second.spec_) {

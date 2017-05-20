@@ -59,6 +59,11 @@ public:
     std::vector<double> mjdRange(std::string,
         const std::vector<double>&,
         const std::vector<std::string>&);
+
+    void spec_photometry(std::string,
+                         double,
+                         double,
+                         std::vector<std::string>);
 };
 
 #endif  // COCO_PYTHON_COCO_HPP_
