@@ -16,12 +16,16 @@
 #include "MPFitter.hpp"
 #include <cstring>
 #include <vector>
+#include <iostream>
 
 
 MPFitter::MPFitter(std::shared_ptr<Model> model) : Solver(model) {
     // Fit parameters
     par = model->paramGuess_;
     parErr = std::vector<double>(par.size());
+
+    // Number of data points
+    noFitParams = model->get_num_parameters();
 
     // Memset MPFitter variable
     memset(&config, 0, sizeof(config));
@@ -45,7 +49,7 @@ int MPFitter::resFunc(int m, int n, double *p, double *residual, double **dvec, 
 void MPFitter::fit() {
     void *context = static_cast<void*>(this);
 
-    status = mpfit(MPFitter::resFunc, xRecon_.size(), par.size(), par.data(), pars,
+    status = mpfit(MPFitter::resFunc, noFitParams, par.size(), par.data(), pars,
                    &config, context, &result);
 }
 
@@ -55,7 +59,6 @@ void MPFitter::read() {
 }
 
 
-#include <iostream>
 void MPFitter::stats() {
     mean_ = std::vector<double>(xRecon_.size(), 0);
     meanSigma_ = std::vector<double>(xRecon_.size(), 0);

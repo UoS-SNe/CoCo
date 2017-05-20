@@ -50,6 +50,8 @@ Karpenka12::Karpenka12() : Model() {
                   "flat", // Trise
                   "flat", // Tfall
                   "flat"};// t0
+
+    count = 0;
 }
 
 
@@ -80,10 +82,18 @@ std::vector<double> Karpenka12::residual() {
         flux = function(x_[i]);
         if (flux < 0) {
             res[i] = std::numeric_limits<double>::max();
+            
         } else {
             res[i] = (y_[i] - flux) / sigma_[i];
+            std::cout << count << " " << res[i] << " " << y_[i] << " " << flux << std::endl;
         }
     }
 
+    count++;
     return res;
+}
+
+
+int Karpenka12::get_num_parameters() {
+    return y_.size();
 }

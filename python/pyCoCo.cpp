@@ -2004,30 +2004,15 @@ static PyObject *__pyx_pw_6pyCoCo_6pyCoCo_9spec_photometry(PyObject *__pyx_v_sel
 }
 
 static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_8spec_photometry(struct __pyx_obj_6pyCoCo_pyCoCo *__pyx_v_self, std::string __pyx_v_name, double __pyx_v_z, double __pyx_v_mjdPeak, PyArrayObject *__pyx_v_flt) {
-  PyArrayObject *__pyx_v_res = 0;
-  __Pyx_LocalBuf_ND __pyx_pybuffernd_res;
-  __Pyx_Buffer __pyx_pybuffer_res;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   std::vector<std::string>  __pyx_t_1;
-  PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
-  PyObject *__pyx_t_5 = NULL;
-  PyObject *__pyx_t_6 = NULL;
-  PyArrayObject *__pyx_t_7 = NULL;
   __Pyx_RefNannySetupContext("spec_photometry", 0);
-  __pyx_pybuffer_res.pybuffer.buf = NULL;
-  __pyx_pybuffer_res.refcount = 0;
-  __pyx_pybuffernd_res.data = NULL;
-  __pyx_pybuffernd_res.rcbuffer = &__pyx_pybuffer_res;
 
   /* "pyCoCo.pyx":60
  *                         np.ndarray flt not None):
  * 
  *         self.thisptr.spec_photometry(name,z,mjdPeak,flt)             # <<<<<<<<<<<<<<
- * 
- *         cdef np.ndarray[double, ndim=2] res = np.zeros((2,self.thisptr.flux_.size()), dtype=np.float64)
  */
   __pyx_t_1 = __pyx_convert_vector_from_py_std_3a__3a_string(((PyObject *)__pyx_v_flt)); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 60, __pyx_L1_error)
   try {
@@ -2036,95 +2021,6 @@ static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_8spec_photometry(struct __pyx_obj_6pyC
     __Pyx_CppExn2PyErr();
     __PYX_ERR(0, 60, __pyx_L1_error)
   }
-
-  /* "pyCoCo.pyx":62
- *         self.thisptr.spec_photometry(name,z,mjdPeak,flt)
- * 
- *         cdef np.ndarray[double, ndim=2] res = np.zeros((2,self.thisptr.flux_.size()), dtype=np.float64)             # <<<<<<<<<<<<<<
- *         res[0] = self.thisptr.flux_
- *         res[1] = self.thisptr.fluxErr_
- */
-  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 62, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_zeros); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 62, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = __Pyx_PyInt_FromSize_t(__pyx_v_self->thisptr->flux_.size()); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 62, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = PyTuple_New(2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 62, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_INCREF(__pyx_int_2);
-  __Pyx_GIVEREF(__pyx_int_2);
-  PyTuple_SET_ITEM(__pyx_t_4, 0, __pyx_int_2);
-  __Pyx_GIVEREF(__pyx_t_2);
-  PyTuple_SET_ITEM(__pyx_t_4, 1, __pyx_t_2);
-  __pyx_t_2 = 0;
-  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 62, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __Pyx_GIVEREF(__pyx_t_4);
-  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_4);
-  __pyx_t_4 = 0;
-  __pyx_t_4 = PyDict_New(); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 62, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 62, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_5, __pyx_n_s_float64); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 62, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_6);
-  __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (PyDict_SetItem(__pyx_t_4, __pyx_n_s_dtype, __pyx_t_6) < 0) __PYX_ERR(0, 62, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  __pyx_t_6 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_2, __pyx_t_4); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 62, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_6);
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (!(likely(((__pyx_t_6) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_6, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 62, __pyx_L1_error)
-  __pyx_t_7 = ((PyArrayObject *)__pyx_t_6);
-  {
-    __Pyx_BufFmt_StackElem __pyx_stack[1];
-    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_res.rcbuffer->pybuffer, (PyObject*)__pyx_t_7, &__Pyx_TypeInfo_double, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack) == -1)) {
-      __pyx_v_res = ((PyArrayObject *)Py_None); __Pyx_INCREF(Py_None); __pyx_pybuffernd_res.rcbuffer->pybuffer.buf = NULL;
-      __PYX_ERR(0, 62, __pyx_L1_error)
-    } else {__pyx_pybuffernd_res.diminfo[0].strides = __pyx_pybuffernd_res.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_res.diminfo[0].shape = __pyx_pybuffernd_res.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_res.diminfo[1].strides = __pyx_pybuffernd_res.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_res.diminfo[1].shape = __pyx_pybuffernd_res.rcbuffer->pybuffer.shape[1];
-    }
-  }
-  __pyx_t_7 = 0;
-  __pyx_v_res = ((PyArrayObject *)__pyx_t_6);
-  __pyx_t_6 = 0;
-
-  /* "pyCoCo.pyx":63
- * 
- *         cdef np.ndarray[double, ndim=2] res = np.zeros((2,self.thisptr.flux_.size()), dtype=np.float64)
- *         res[0] = self.thisptr.flux_             # <<<<<<<<<<<<<<
- *         res[1] = self.thisptr.fluxErr_
- * 
- */
-  __pyx_t_6 = __pyx_convert_vector_to_py_double(__pyx_v_self->thisptr->flux_); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 63, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_6);
-  if (unlikely(__Pyx_SetItemInt(((PyObject *)__pyx_v_res), 0, __pyx_t_6, long, 1, __Pyx_PyInt_From_long, 0, 0, 0) < 0)) __PYX_ERR(0, 63, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-
-  /* "pyCoCo.pyx":64
- *         cdef np.ndarray[double, ndim=2] res = np.zeros((2,self.thisptr.flux_.size()), dtype=np.float64)
- *         res[0] = self.thisptr.flux_
- *         res[1] = self.thisptr.fluxErr_             # <<<<<<<<<<<<<<
- * 
- *         return res
- */
-  __pyx_t_6 = __pyx_convert_vector_to_py_double(__pyx_v_self->thisptr->fluxErr_); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 64, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_6);
-  if (unlikely(__Pyx_SetItemInt(((PyObject *)__pyx_v_res), 1, __pyx_t_6, long, 1, __Pyx_PyInt_From_long, 0, 0, 0) < 0)) __PYX_ERR(0, 64, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-
-  /* "pyCoCo.pyx":66
- *         res[1] = self.thisptr.fluxErr_
- * 
- *         return res             # <<<<<<<<<<<<<<
- */
-  __Pyx_XDECREF(__pyx_r);
-  __Pyx_INCREF(((PyObject *)__pyx_v_res));
-  __pyx_r = ((PyObject *)__pyx_v_res);
-  goto __pyx_L0;
 
   /* "pyCoCo.pyx":54
  *         return res
@@ -2135,25 +2031,12 @@ static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_8spec_photometry(struct __pyx_obj_6pyC
  */
 
   /* function exit code */
+  __pyx_r = Py_None; __Pyx_INCREF(Py_None);
+  goto __pyx_L0;
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_XDECREF(__pyx_t_5);
-  __Pyx_XDECREF(__pyx_t_6);
-  { PyObject *__pyx_type, *__pyx_value, *__pyx_tb;
-    __Pyx_PyThreadState_declare
-    __Pyx_PyThreadState_assign
-    __Pyx_ErrFetch(&__pyx_type, &__pyx_value, &__pyx_tb);
-    __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_res.rcbuffer->pybuffer);
-  __Pyx_ErrRestore(__pyx_type, __pyx_value, __pyx_tb);}
   __Pyx_AddTraceback("pyCoCo.pyCoCo.spec_photometry", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
-  goto __pyx_L2;
   __pyx_L0:;
-  __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_res.rcbuffer->pybuffer);
-  __pyx_L2:;
-  __Pyx_XDECREF((PyObject *)__pyx_v_res);
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;

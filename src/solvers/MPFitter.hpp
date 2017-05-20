@@ -26,6 +26,7 @@ class MPFitter : public Solver {
 public:
     // MPFitter specific temporary data containers
     int status;
+    int num_data_points;
     mp_result result;
     mp_config config;
     mp_par *pars;
