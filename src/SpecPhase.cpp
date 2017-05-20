@@ -169,11 +169,6 @@ void fitPhase(std::shared_ptr<Workspace> w) {
         size_t indexMax = std::distance(solver.bestFit_.begin(),
                                         max_element(solver.bestFit_.begin(),
                                                     solver.bestFit_.end()));
-        cout << lc.mjdMin_ << " "  << solver.xRecon_[indexMax] << " " << lc.mjdMin_ << endl;
-        for (int i = 0; i < lc.mjd_.size(); ++i) {
-            cout << lc.mjd_[i] << " " << lc.flux_[i] << endl;
-            cout << solver.xRecon_[i] << " " << solver.bestFit_[i] << "\n" << endl;
-        }
         double mjdZeroPhase = solver.xRecon_[indexMax] + lc.mjdMin_;
 
         for (auto &spec : sn.second.spec_) {
