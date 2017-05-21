@@ -26,13 +26,6 @@ MPFitter::MPFitter(std::shared_ptr<Model> model) : Solver(model) {
 
     // Number of data points
     noFitParams = model->get_num_parameters();
-
-    // Memset MPFitter variable
-    memset(&config, 0, sizeof(config));
-    memset(&result, 0, sizeof(result));
-    memset(&pars, 0, sizeof(par.data()));
-    result.xerror = parErr.data();
-    config.maxiter = 2000;
 }
 
 
@@ -48,6 +41,17 @@ int MPFitter::resFunc(int m, int n, double *p, double *residual, double **dvec, 
 
 void MPFitter::fit() {
     void *context = static_cast<void*>(this);
+
+    // Memset MPFitter variable
+    mp_result result;
+    mp_config config;
+    mp_par pars[par.size()];
+
+    memset(&config, 0, sizeof(config));
+    memset(&result, 0, sizeof(result));
+    memset(&pars, 0, sizeof(pars));
+    result.xerror = parErr.data();
+    config.maxiter = 2000;
 
     status = mpfit(MPFitter::resFunc, noFitParams, par.size(), par.data(), pars,
                    &config, context, &result);

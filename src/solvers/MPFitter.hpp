@@ -27,9 +27,6 @@ public:
     // MPFitter specific temporary data containers
     int status;
     int num_data_points;
-    mp_result result;
-    mp_config config;
-    mp_par *pars;
     std::vector<double> par;
     std::vector<double> parErr;
 
