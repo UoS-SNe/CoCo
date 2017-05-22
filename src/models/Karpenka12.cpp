@@ -82,7 +82,7 @@ std::vector<double> Karpenka12::residual() {
         flux = function(x_[i]);
         if (flux < 0) {
             res[i] = std::numeric_limits<double>::max();
-            
+
         } else {
             res[i] = (y_[i] - flux) / sigma_[i];
             std::cout << count << " " << res[i] << " " << y_[i] << " " << flux << std::endl;

@@ -25,7 +25,7 @@
 
 #include "../src/core/utils.hpp"
 #include "../src/models/Karpenka12.hpp"
-#include "../src/solvers/MPFitter.hpp"
+#include "../src/solvers/Minuit.hpp"
 
 
 CoCo::CoCo(std::string flt, std::string root) : filtersDir_(flt), reconRoot_(root) {
@@ -116,7 +116,7 @@ void CoCo::simulate(std::string templateName,
         std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(karpenka12);
 
         // Initialise solver
-        MPFitter solver(model);
+        Minuit solver(model);
         std::vector<double> xTemp = mjdRange(lc.second.filter_, mjdSim, filterSim);
         xTemp = vmath::sub<double>(xTemp, mjdPeak);
         solver.xRecon_ = vmath::sub<double>(xTemp, lc.second.mjdMin_);

@@ -28,9 +28,7 @@
 #include "core/SN.hpp"
 #include "core/utils.hpp"
 #include "models/Karpenka12.hpp"
-#include "solvers/MPFitter.hpp"
 #include "solvers/MNest.hpp"
-
 
 
 struct Workspace {
@@ -158,7 +156,6 @@ void fitPhase(std::shared_ptr<Workspace> w) {
         std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(karpenka12);
 
         // Initialise solver
-        // MPFitter solver(model);
         MNest solver(model);
         solver.xRecon_ = vmath::range<double>(-15, lc.mjdMax_ - lc.mjdMin_ + 20, 1);
         solver.chainPath_ = "chains/" + sn.second.name_ + "/phase";
