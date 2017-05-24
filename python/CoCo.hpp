@@ -37,6 +37,7 @@ public:
     double wl_;
 
     // Output
+    std::vector<double> mjd_;
     std::vector<double> flux_;
     std::vector<double> fluxErr_;
 
@@ -62,8 +63,7 @@ public:
 
     void spec_photometry(std::string,
                          double,
-                         double,
-                         std::vector<std::string>);
+                         std::string);
 };
 
 #endif  // COCO_PYTHON_COCO_HPP_

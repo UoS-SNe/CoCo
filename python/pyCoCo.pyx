@@ -8,6 +8,7 @@ np.import_array()
 
 cdef extern from "python/CoCo.hpp":
     cdef cppclass CoCo:
+        vector[double] mjd_
         vector[double] flux_
         vector[double] fluxErr_
         CoCo(string,string) except +
@@ -15,7 +16,7 @@ cdef extern from "python/CoCo.hpp":
         void simulate(string,double,double,double,double,double,double,
             vector[double],
             vector[string]) except +
-        void spec_photometry(string,double,double,vector[string]) except +
+        void spec_photometry(string,double,string) except +
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
@@ -54,7 +55,12 @@ cdef class pyCoCo:
     def spec_photometry(self,
                         string name,
                         double z,
-                        double mjdPeak,
-                        np.ndarray flt not None):
+                        string flt):
 
-        self.thisptr.spec_photometry(name,z,mjdPeak,flt)
+        self.thisptr.spec_photometry(name,z,flt)
+
+        cdef np.ndarray[double, ndim=2] res = np.zeros((2,self.thisptr.flux_.size()), dtype=np.float64)
+        res[0] = self.thisptr.mjd_
+        res[1] = self.thisptr.flux_
+
+        return res

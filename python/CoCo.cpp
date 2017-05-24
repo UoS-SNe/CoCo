@@ -137,28 +137,28 @@ void CoCo::simulate(std::string templateName,
 }
 
 
-void CoCo::spec_photometry(std::string templateName,
-                           double z,
-                           double mjdPeak,
-                           std::vector<std::string> output_filters) {
+ void CoCo::spec_photometry(std::string templateName,
+                            double z,
+                            std::string output_filter) {
 
-    flux_ = std::vector<double>(output_filters.size(), 0);
-    fluxErr_ = std::vector<double>(output_filters.size(), 0);
-
+    mjd_.clear();
+    flux_.clear();
     SN sn = templateSNe_[templateName];
 
     // Move the spectra to new redshift
     sn.redshift(z, cosmology_, true);
-    sn.moveMJD((1.0 + z), mjdPeak);
+    sn.moveMJD((1.0 + z), 0);
 
     // synthesise LC for every unique filter
-    std::vector<std::string> uniqueFilters = output_filters;
-    utils::removeDuplicates(uniqueFilters);
+    std::vector<std::string> uniqueFilters = {output_filter};
     sn.synthesiseLC(uniqueFilters, filters_);
 
     for (auto &lc : sn.lc_) {
         for (size_t i = 0; i < lc.second.mjd_.size(); ++i) {
-            std::cout << lc.second.mjd_[i] <<  " " << lc.second.flux_[i] << " " << lc.second.filter_ << endl;
+            if (output_filter == lc.second.filter_) {
+                mjd_.push_back(lc.second.mjd_[i]);
+                flux_.push_back(lc.second.flux_[i]);
+            }
         }
     }
 }
