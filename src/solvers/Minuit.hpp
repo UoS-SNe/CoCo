@@ -16,7 +16,6 @@
 #ifndef COCO_SOLVERS_MINUIT_HPP_
 #define COCO_SOLVERS_MINUIT_HPP_
 
-#include "mpfit.h"
 
 #include <Minuit2/FunctionMinimum.h>
 #include <Minuit2/MnUserParameterState.h>

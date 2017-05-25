@@ -38,7 +38,7 @@ Karpenka12::Karpenka12() : Model() {
                    {0.0, 100.0}};   // t0
 
     paramGuess_ = {1.0,   // A
-                   0.1,   // B
+                   0.01,   // B
                    10.0,  // t1
                    5.0,   // Trise
                    20.0,  // Tfall
@@ -50,8 +50,6 @@ Karpenka12::Karpenka12() : Model() {
                   "flat", // Trise
                   "flat", // Tfall
                   "flat"};// t0
-
-    count = 0;
 }
 
 
@@ -85,11 +83,9 @@ std::vector<double> Karpenka12::residual() {
 
         } else {
             res[i] = (y_[i] - flux) / sigma_[i];
-            std::cout << count << " " << res[i] << " " << y_[i] << " " << flux << std::endl;
         }
     }
 
-    count++;
     return res;
 }
 
