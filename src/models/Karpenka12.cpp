@@ -42,7 +42,7 @@ Karpenka12::Karpenka12() : Model() {
                    10.0,  // t1
                    5.0,   // Trise
                    20.0,  // Tfall
-                   1.0};  // t0
+                   40.0};  // t0
 
     priorType_ = {"log",  // A
                   "log",  // B
