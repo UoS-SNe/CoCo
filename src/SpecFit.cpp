@@ -31,8 +31,9 @@
 #include "core/Filters.hpp"
 #include "core/SN.hpp"
 #include "solvers/MNest.hpp"
-// #include "models/SpecMangle.hpp"
-#include "models/LinearMangle.hpp"
+#include "solvers/Minuit.hpp"
+#include "models/SpecMangle.hpp"
+// #include "models/LinearMangle.hpp"
 
 
 // Data structure for parameters that are passed between functions
@@ -175,8 +176,8 @@ void mangleSpectra(std::shared_ptr<Workspace> w) {
         for (auto &spec : sn.second.spec_) {
             std::cout << "# " << spec.second.file_ << "\n";
             // Initialise the model
-            // std::shared_ptr<SpecMangle> specMangle(new SpecMangle);
-            std::shared_ptr<LinearMangle> specMangle(new LinearMangle);
+            std::shared_ptr<SpecMangle> specMangle(new SpecMangle);
+            // std::shared_ptr<LinearMangle> specMangle(new LinearMangle);
             specMangle->lcData_ = sn.second.epoch_[spec.second.mjd_];
             specMangle->specData_ = spec.second;
 
@@ -229,14 +230,16 @@ void mangleSpectra(std::shared_ptr<Workspace> w) {
             specMangle->specData_.flux_ = vmath::div<double>(specMangle->specData_.flux_, specNorm);
 
             // Set priors and number of paramters
-            // specMangle->setPriors();
+            specMangle->setPriors();
 
             // Initialise the solver
             std::shared_ptr<Model> model = dynamic_pointer_cast<Model>(specMangle);
             std::shared_ptr<MNest> mnest(new MNest(model));
-            mnest->livePoints_ = 10;
+            mnest->livePoints_ = 100;
+            // std::shared_ptr<Minuit> minuit(new Minuit(model));
 
             std::shared_ptr<Solver> solver = dynamic_pointer_cast<Solver>(mnest);
+            // std::shared_ptr<Solver> solver = dynamic_pointer_cast<Solver>(minuit);
             solver->xRecon_ = spec.second.wav_;
             solver->chainPath_ = "chains/" + sn.second.name_ + "/" + to_string(spec.second.mjd_);
 
