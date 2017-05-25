@@ -2,8 +2,7 @@ CC = clang
 CXX = clang++
 CFLAGS = -c -fPIC -O3
 CXXFLAGS = -c -O3 -fPIC -std=c++11
-LDFLAGS = -lgsl -lmultinest -lgfortran -llapack -Wl,-no_compact_unwind
-# LDFLAGS = -L /opt/local/lib -lgsl -L /usr/local/lib -lmultinest -L /usr/local/gfortran/lib -lgfortran -llapack -Wl,-no_compact_unwind
+LDFLAGS = -lgsl -lmultinest -lgfortran -llapack -lminuit2 -Wl,-no_compact_unwind
 
 .cpp.o:
 	$(CXX) $(CXXFLAGS) $< -o $@
@@ -19,7 +18,7 @@ src/core/SN.cpp
 
 MPFIT = src/solvers/mpfit.c
 SOLVERS = src/core/Solver.cpp src/solvers/priors.cpp src/solvers/MNest.cpp \
-src/solvers/MPFitter.cpp
+src/solvers/MPFitter.cpp src/solvers/Minuit.cpp
 MODELS = src/core/Model.cpp src/models/Karpenka12.cpp src/models/Bazin09.cpp \
 src/models/Kessler10.cpp src/models/Firth17Complex.cpp src/models/SpecMangle.cpp \
 src/models/LinearMangle.cpp

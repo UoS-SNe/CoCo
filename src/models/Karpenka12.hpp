@@ -26,7 +26,7 @@ public:
     std::vector<double> x_;
     std::vector<double> y_;
     std::vector<double> sigma_;
-
+    int count;
     // Constructor
     Karpenka12();
 
@@ -34,6 +34,8 @@ public:
     double function(double);
     std::vector<double> function(std::vector<double>&);
     std::vector<double> residual();
+
+    int get_num_parameters();
 };
 
 

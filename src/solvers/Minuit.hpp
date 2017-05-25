@@ -13,25 +13,42 @@
 //
 // Contact author: S.Prajs@soton.ac.uk
 
-#ifndef COCO_SOLVERS_MPFITTER_HPP_
-#define COCO_SOLVERS_MPFITTER_HPP_
+#ifndef COCO_SOLVERS_MINUIT_HPP_
+#define COCO_SOLVERS_MINUIT_HPP_
 
 #include "mpfit.h"
+
+#include <Minuit2/FunctionMinimum.h>
+#include <Minuit2/MnUserParameterState.h>
+#include <Minuit2/FCNBase.h>
+#include <Minuit2/MnSimplex.h>
+#include <Minuit2/MnMigrad.h>
+#include <Minuit2/MnMinos.h>
 
 #include "../core/Solver.hpp"
 #include "../core/Model.hpp"
 
+using namespace ROOT::Minuit2;
 
-class MPFitter : public Solver {
+
+class MinuitResidual : public FCNBase {
 public:
-    // MPFitter specific temporary data containers
-    int status;
-    int num_data_points;
-    std::vector<double> par;
-    std::vector<double> parErr;
+  MinuitResidual(std::shared_ptr<Model>&);
+  ~MinuitResidual() {}
 
-    // Static function for mpfit.c
-    static int resFunc(int,int,double*,double*,double**,void*);
+  virtual double Up() const {return error_definition_;}
+  virtual double operator()(const std::vector<double>&) const;
+
+private:
+	std::shared_ptr<Model> model_;
+	double error_definition_;
+};
+
+
+class Minuit : public Solver {
+public:
+    //Minuit globals
+    std::vector<double> par;
 
     // Overrides for solver specific methods
     void fit();
@@ -39,8 +56,8 @@ public:
     void stats();
 
     // Constructor
-    MPFitter(std::shared_ptr<Model>);
+    Minuit(std::shared_ptr<Model>);
 };
 
 
-#endif  // COCO_SOLVERS_MPFITTER_HPP_
+#endif  // COCO_SOLVERS_MINUIT_HPP_

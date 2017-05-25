@@ -38,3 +38,8 @@ void Model::operator()(std::vector<double> &x, std::vector<double> &result) {
         result[i] = function(x[i]);
     }
 }
+
+
+int Model::get_num_parameters() {
+    return 0;
+}

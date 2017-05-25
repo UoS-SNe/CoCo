@@ -1,19 +1,19 @@
-/*
+/* 
  * MINPACK-1 Least Squares Fitting Library
  *
  * Original public domain version by B. Garbow, K. Hillstrom, J. More'
  *   (Argonne National Laboratory, MINPACK project, March 1980)
- *
+ * 
  * Tranlation to C Language by S. Moshier (moshier.net)
- *
+ * 
  * Enhancements and packaging by C. Markwardt
  *   (comparable to IDL fitting routine MPFIT
  *    see http://cow.physics.wisc.edu/~craigm/idl/idl.html)
  */
 
 /* Header file defining constants, data structures and functions of
-   mpfit library
-   $Id: mpfit.h,v 1.14 2010/11/13 08:15:07 craigm Exp $
+   mpfit library 
+   $Id: mpfit.h,v 1.16 2016/06/02 19:14:16 craigm Exp $
 */
 
 #ifndef MPFIT_H
@@ -25,7 +25,7 @@ extern "C" {
 #endif
 
 /* MPFIT version string */
-#define MPFIT_VERSION "1.2"
+#define MPFIT_VERSION "1.3"
 
 /* Definition of a parameter constraint structure */
 struct mp_par_struct {
@@ -36,11 +36,11 @@ struct mp_par_struct {
   char *parname;    /* Name of parameter, or 0 for none */
   double step;      /* Step size for finite difference */
   double relstep;   /* Relative step size for finite difference */
-  int side;         /* Sidedness of finite difference derivative
+  int side;         /* Sidedness of finite difference derivative 
 		        0 - one-sided derivative computed automatically
 		        1 - one-sided derivative (f(x+h) - f(x)  )/h
 		       -1 - one-sided derivative (f(x)   - f(x-h))/h
-		        2 - two-sided derivative (f(x+h) - f(x-h))/(2*h)
+		        2 - two-sided derivative (f(x+h) - f(x-h))/(2*h) 
 			3 - user-computed analytical derivatives
 		    */
   int deriv_debug;  /* Derivative debug mode: 1 = Yes; 0 = No;
@@ -74,12 +74,13 @@ struct mp_config_struct {
   double epsfcn;  /* Finite derivative step size               Default: MP_MACHEP0 */
   double stepfactor; /* Initial step bound                     Default: 100.0 */
   double covtol;  /* Range tolerance for covariance calculation Default: 1e-14 */
-  int maxiter;    /* Maximum number of iterations.  If maxiter == 0,
+  int maxiter;    /* Maximum number of iterations.  If maxiter == MP_NO_ITER,
                      then basic error checking is done, and parameter
                      errors/covariances are estimated based on input
-                     parameter values, but no fitting iterations are done.
+                     parameter values, but no fitting iterations are done. 
 		     Default: 200
 		  */
+#define MP_NO_ITER (-1) /* No iterations, just checking */
   int maxfev;     /* Maximum number of function evaluations, or 0 for no limit
 		     Default: 0 (no limit) */
   int nprint;     /* Default: 1 */
@@ -88,7 +89,7 @@ struct mp_config_struct {
 		     0 = no, variables scaled internally (Default) */
   int nofinitecheck; /* Disable check for infinite quantities from user?
 			0 = do not perform check (Default)
-			1 = perform check
+			1 = perform check 
 		     */
   mp_iterproc iterproc; /* Placeholder pointer - must set to 0 */
 
@@ -101,7 +102,7 @@ struct mp_result_struct {
   int niter;           /* Number of iterations */
   int nfev;            /* Number of function evaluations */
   int status;          /* Fitting status code */
-
+  
   int npar;            /* Total number of parameters */
   int nfree;           /* Number of free parameters */
   int npegged;         /* Number of pegged parameters */
@@ -114,9 +115,9 @@ struct mp_result_struct {
   double *covar;       /* Final parameter covariance matrix
 			  npar x npar array, or 0 if not desired */
   char version[20];    /* MPFIT version string */
-};
+};  
 
-/* Convenience typedefs */
+/* Convenience typedefs */  
 typedef struct mp_par_struct mp_par;
 typedef struct mp_config_struct mp_config;
 typedef struct mp_result_struct mp_result;
@@ -169,8 +170,8 @@ typedef int (*mp_func)(int m, /* Number of functions (elts of fvec) */
 
 /* External function prototype declarations */
 extern int mpfit(mp_func funct, int m, int npar,
-		 double *xall, mp_par *pars, mp_config *config,
-		 void *private_data,
+		 double *xall, mp_par *pars, mp_config *config, 
+		 void *private_data, 
 		 mp_result *result);
 
 
@@ -186,7 +187,7 @@ extern int mpfit(mp_func funct, int m, int npar,
 
 /* Default is to assume that compiler/library has finite() function */
 #else
-#define mpfinite(x) isfinite(x)
+#define mpfinite(x) finite(x)
 
 #endif
 
