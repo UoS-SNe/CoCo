@@ -49,3 +49,6 @@ spectra
 sim
 build
 .ipynb_checkpoints
+
+# Temporary test files
+test.*
