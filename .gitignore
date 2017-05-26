@@ -50,3 +50,5 @@ sim
 build
 .ipynb_checkpoints
 eups
+# Temporary test files
+test.*

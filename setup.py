@@ -24,7 +24,7 @@ setup(
               extra_link_args=link_args,
               runtime_library_dirs=lib,
               library_dirs=lib,
-              libraries=["coco", "gsl"],
+              libraries=["coco", "gsl", "minuit2"],
               language="c++"),
             ],
   cmdclass = {'build_ext': build_ext},
