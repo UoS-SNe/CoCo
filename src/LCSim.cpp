@@ -28,7 +28,7 @@
 #include "core/Model.hpp"
 #include "core/Solver.hpp"
 #include "models/Karpenka12.hpp"
-#include "solvers/MPFitter.hpp"
+#include "solvers/Minuit.hpp"
 
 
 struct Workspace {
@@ -245,7 +245,7 @@ void simulate(std::shared_ptr<Workspace> w) {
             std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(karpenka12);
 
             // Initialise solver
-            MPFitter solver(model);
+            Minuit solver(model);
             std::vector<double> xTemp = mjdRange(lc.second.filter_, w->mjdSim_[i], w->simFilters_[i]);
             solver.xRecon_ = vmath::sub<double>(xTemp, lc.second.mjdMin_);
 

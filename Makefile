@@ -18,9 +18,8 @@ LDFLAGS = -lgsl -lmultinest -lgfortran -llapack -lminuit2 -Wl,-no_compact_unwind
 CORE = src/core/utils.cpp src/core/Filters.cpp src/core/Cosmology.cpp \
 src/core/SN.cpp
 
-MPFIT = src/solvers/mpfit.c
 SOLVERS = src/core/Solver.cpp src/solvers/priors.cpp src/solvers/MNest.cpp \
-src/solvers/MPFitter.cpp src/solvers/Minuit.cpp
+src/solvers/Minuit.cpp
 MODELS = src/core/Model.cpp src/models/Karpenka12.cpp src/models/Bazin09.cpp \
 src/models/Kessler10.cpp src/models/Firth17Complex.cpp src/models/SpecMangle.cpp \
 src/models/LinearMangle.cpp
@@ -31,11 +30,11 @@ PHASEEXEC = src/SpecPhase.cpp
 SIMEXEC = src/LCSim.cpp
 PYCOCO = python/CoCo.cpp
 
-LCFIT = ${CORE:.cpp=.o} ${MPFIT:.c=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${LCEXEC:.cpp=.o}
-SPECFIT = ${CORE:.cpp=.o} ${MPFIT:.c=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${SPECEXEC:.cpp=.o}
-SPECPHASE = ${CORE:.cpp=.o} ${MPFIT:.c=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${PHASEEXEC:.cpp=.o}
-LCSIM = ${CORE:.cpp=.o} ${MPFIT:.c=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${PYCOCO:.cpp=.o} ${SIMEXEC:.cpp=.o}
-LIB = ${CORE:.cpp=.o} ${MPFIT:.c=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o}
+LCFIT = ${CORE:.cpp=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${LCEXEC:.cpp=.o}
+SPECFIT = ${CORE:.cpp=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${SPECEXEC:.cpp=.o}
+SPECPHASE = ${CORE:.cpp=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${PHASEEXEC:.cpp=.o}
+LCSIM = ${CORE:.cpp=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o} ${PYCOCO:.cpp=.o} ${SIMEXEC:.cpp=.o}
+LIB = ${CORE:.cpp=.o} ${SOLVERS:.cpp=.o} ${MODELS:.cpp=.o}
 
 all: lcfit specfit specphase lcsim lib
 

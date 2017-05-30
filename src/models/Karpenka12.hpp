@@ -26,7 +26,6 @@ public:
     std::vector<double> x_;
     std::vector<double> y_;
     std::vector<double> sigma_;
-    int count;
     // Constructor
     Karpenka12();
 

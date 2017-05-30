@@ -34,7 +34,6 @@ double MinuitResidual::operator()(const std::vector<double>& par) const {
         chi2 += pow(residual[i], 2.0);
     }
 
-    std::cout << chi2 << std::endl;
     return chi2;
 }
 
