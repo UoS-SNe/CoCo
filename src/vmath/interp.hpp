@@ -54,7 +54,7 @@ T interp(T org_x, const std::vector<T> &temp_x, const std::vector<T> &temp_y, T 
      *TODO - Choose a better search algorithm
      */
     if (sizeTry != temp_x.size()) {
-        for (int i = 0 ; i < (temp_x.size() - 1) ; i++) {
+        for (size_t i = 0 ; i < (temp_x.size() - 1) ; i++) {
             if (temp_x[i] <= org_x && temp_x[i+1] >= org_x) {
                 m = (temp_y[i+1] - temp_y[i])/(temp_x[i+1] - temp_x[i]);
                 c = temp_y[i] - m*temp_x[i];
@@ -72,7 +72,7 @@ template <typename T>
 std::vector<T> interp(const std::vector<T> &org_x, const std::vector<T> &temp_x, const std::vector<T> &temp_y, T out = 0) {
     std::vector<T> org_y(org_x.size(), out);
 
-    for (int i = 0; i < org_x.size(); ++i) {
+    for (size_t i = 0; i < org_x.size(); ++i) {
         org_y[i] = interp<T>(org_x[i], temp_x, temp_y, out);
     }
 

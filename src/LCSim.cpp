@@ -28,7 +28,7 @@
 #include "core/Model.hpp"
 #include "core/Solver.hpp"
 #include "models/Karpenka12.hpp"
-#include "solvers/MPFitter.hpp"
+#include "solvers/Minuit.hpp"
 
 
 struct Workspace {
@@ -208,16 +208,16 @@ void simulate(std::shared_ptr<Workspace> w) {
         // Make a working copy of the template spectra
         SN sn = w->templateSNe_[w->templateList_[i]];
 
+        // offset absolute magnitude
+        offset = pow(10, -0.4 * (w->absMag_[i]));
+        sn.scaleSpectra(offset);
+
         // Apply host galaxy reddening
         sn.applyReddening(w->Ebv_Host_[i], w->R_v_[i]);
 
         // Move the spectra to new redshift
         sn.redshift(w->z_[i], cosmology, true);
         sn.moveMJD((1.0 + w->z_[i]), w->mjdPeak_[i]);
-
-        // offset absolute magnitude
-        offset = pow(10, -0.4 * (w->absMag_[i]));
-        sn.scaleSpectra(offset);
 
         // Apply Milky Way extinction
         sn.applyReddening(w->Ebv_MW_[i], 3.1);
@@ -245,7 +245,7 @@ void simulate(std::shared_ptr<Workspace> w) {
             std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(karpenka12);
 
             // Initialise solver
-            MPFitter solver(model);
+            Minuit solver(model);
             std::vector<double> xTemp = mjdRange(lc.second.filter_, w->mjdSim_[i], w->simFilters_[i]);
             solver.xRecon_ = vmath::sub<double>(xTemp, lc.second.mjdMin_);
 

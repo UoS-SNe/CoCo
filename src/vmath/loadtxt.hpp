@@ -30,7 +30,7 @@ template <typename T>
 void loadtxt(const std::string &fileName, int l, std::vector< std::vector<T> > &data) {
     // Prepare the output data vector
     data.resize(l);
-    for (int i = 0; i < l; ++i) {
+    for (size_t i = 0; i < l; ++i) {
         data[i].clear();
     }
 
@@ -46,7 +46,7 @@ void loadtxt(const std::string &fileName, int l, std::vector< std::vector<T> > &
             std::istringstream iss(s);
 
             // loop though each column and save the output
-            for (int i = 0; i < l; ++i) {
+            for (size_t i = 0; i < l; ++i) {
                 iss >> temp;
                 data[i].push_back(temp);
             }

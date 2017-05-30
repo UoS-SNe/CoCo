@@ -53,6 +53,7 @@ void SpecMangle::setPriors() {
         std::make_pair<double,double>(1e-3, 1e3));
     paramGuess_ = std::vector<double>(noParams_, 1.0);
     priorType_ = std::vector<std::string>(noParams_, "flat");
+    paramNames_ = std::vector<std::string>(noParams_, "node");
 }
 
 

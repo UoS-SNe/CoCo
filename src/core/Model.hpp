@@ -43,6 +43,9 @@ public:
     double operator()(double);
     std::vector<double> operator()(std::vector<double>&);
     void operator()(std::vector<double>&, std::vector<double>&);
+
+    // Helper function for MPFIT fitters
+    virtual int get_num_parameters();
 };
 
 
