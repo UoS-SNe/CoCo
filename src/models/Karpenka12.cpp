@@ -85,7 +85,7 @@ std::vector<double> Karpenka12::residual() {
 
         } else {
             res[i] = (y_[i] - flux) / sigma_[i];
-            std::cout << count << " " << res[i] << " " << y_[i] << " " << flux << std::endl;
+            // std::cout << count << " " << res[i] << " " << y_[i] << " " << flux << std::endl;
         }
     }
 
