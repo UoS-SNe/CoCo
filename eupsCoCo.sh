@@ -14,8 +14,9 @@ echo "gcc v4_9_2"; setup gcc v4_9_2
 echo "gsl"; setup gsl
 echo "numpy v1_9_1"; setup numpy v1_9_1
 echo "setuptools"; setup setuptools
+echo "minuit2"; setup minuit2
 
-read -p "Python v2_7_8 setup breaks eups. Do you wish to continue? " -n 1 -r
+read -p "Python v2_7_8 setup breaks eups. Do you wish to continue [y/n]? " -n 1 -r
 echo    # (optional) move to a new line
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
