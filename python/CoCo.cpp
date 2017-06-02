@@ -25,7 +25,7 @@
 
 #include "../src/core/utils.hpp"
 #include "../src/models/Karpenka12.hpp"
-#include "../src/solvers/MPFitter.hpp"
+#include "../src/solvers/Minuit.hpp"
 
 
 CoCo::CoCo(std::string flt, std::string root) : filtersDir_(flt), reconRoot_(root) {
@@ -116,7 +116,7 @@ void CoCo::simulate(std::string templateName,
         std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(karpenka12);
 
         // Initialise solver
-        MPFitter solver(model);
+        Minuit solver(model);
         std::vector<double> xTemp = mjdRange(lc.second.filter_, mjdSim, filterSim);
         xTemp = vmath::sub<double>(xTemp, mjdPeak);
         solver.xRecon_ = vmath::sub<double>(xTemp, lc.second.mjdMin_);
@@ -131,6 +131,33 @@ void CoCo::simulate(std::string templateName,
             if (filterSim[i] == lc.second.filter_) {
                 flux_[i] = solver.bestFit_[j];
                 j++;
+            }
+        }
+    }
+}
+
+
+ void CoCo::spec_photometry(std::string templateName,
+                            double z,
+                            std::string output_filter) {
+
+    mjd_.clear();
+    flux_.clear();
+    SN sn = templateSNe_[templateName];
+
+    // Move the spectra to new redshift
+    sn.redshift(z, cosmology_, true);
+    sn.moveMJD((1.0 + z), 0);
+
+    // synthesise LC for every unique filter
+    std::vector<std::string> uniqueFilters = {output_filter};
+    sn.synthesiseLC(uniqueFilters, filters_);
+
+    for (auto &lc : sn.lc_) {
+        for (size_t i = 0; i < lc.second.mjd_.size(); ++i) {
+            if (output_filter == lc.second.filter_) {
+                mjd_.push_back(lc.second.mjd_[i]);
+                flux_.push_back(lc.second.flux_[i]);
             }
         }
     }

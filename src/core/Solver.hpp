@@ -30,6 +30,9 @@ public:
     std::vector<double> fitParams_;
     std::string chainPath_;
 
+    // Number of fit parameters
+    int noFitParams;
+
     // Model fit statistics
     std::vector<double> xRecon_;
     std::vector<double> bestFit_;

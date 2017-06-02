@@ -38,11 +38,18 @@ Karpenka12::Karpenka12() : Model() {
                    {0.0, 100.0}};   // t0
 
     paramGuess_ = {1.0,   // A
-                   0.1,   // B
-                   10.0,  // t1
+                   0.01,   // B
+                   99.0,  // t1
                    5.0,   // Trise
-                   20.0,  // Tfall
-                   1.0};  // t0
+                   99.0,  // Tfall
+                   59.0};  // t0
+
+    // paramGuess_ = {1.0,   // A
+    //               0.01,   // B
+    //               10.0,  // t1
+    //               5.0,   // Trise
+    //               20.0,  // Tfall
+    //               40.0};  // t0
 
     priorType_ = {"log",  // A
                   "log",  // B
@@ -80,10 +87,16 @@ std::vector<double> Karpenka12::residual() {
         flux = function(x_[i]);
         if (flux < 0) {
             res[i] = std::numeric_limits<double>::max();
+
         } else {
             res[i] = (y_[i] - flux) / sigma_[i];
         }
     }
 
     return res;
+}
+
+
+int Karpenka12::get_num_parameters() {
+    return y_.size();
 }
