@@ -56,7 +56,7 @@ specfit spectra_setup_file.list
 ```
 specphase SN_redshift_list.list filter_name
 ```
-`SN_redshift_list.list` must have three columns: SN_name redshift dist_mod 
+`SN_redshift_list.list` must have three columns: SN_name redshift dist_mod
 
 #### LCSim
 ```
@@ -68,8 +68,6 @@ lcsim setup_list.list
 ```
 `setup_list.list` must contain the following columns: SN_name redshift abs_mag_offset MJD_peak MJD_filters.list
 `MJD_filters.list` must contain two columns: MJD filter
-
-
 
 ------
 
