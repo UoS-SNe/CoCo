@@ -12,8 +12,7 @@ LDFLAGS = -L $(GSL_DIR)/lib -lgsl -lgslcblas -lminuit2
 CORE = src/core/utils.cpp src/core/Filters.cpp src/core/Cosmology.cpp \
 src/core/SN.cpp
 
-SOLVERS = src/core/Solver.cpp src/solvers/priors.cpp src/solvers/MNest.cpp \
-src/solvers/Minuit.cpp
+SOLVERS = src/core/Solver.cpp src/solvers/priors.cpp src/solvers/Minuit.cpp
 MODELS = src/core/Model.cpp src/models/Karpenka12.cpp src/models/Bazin09.cpp \
 src/models/Kessler10.cpp src/models/Firth17Complex.cpp src/models/SpecMangle.cpp \
 src/models/LinearMangle.cpp
