@@ -21,8 +21,15 @@ DESy.dat
 DESz.dat
 F2_Y.dat
 g.dat
+gaussian_6000_500.dat
 gsSAGEMrf4.dat
 H.dat
+hardware_g.dat
+hardware_i.dat
+hardware_r.dat
+hardware_u.dat
+hardware_y.dat
+hardware_z.dat
 hawki_Y.dat
 HST_F755.abs
 HST_F775W.dat
@@ -73,6 +80,8 @@ SNLSg.dat
 SNLSi.dat
 SNLSr.dat
 SNLSz.dat
+swift_U.dat
+swift_UVW1.dat
 u'.dat
 u.dat
 V.dat
