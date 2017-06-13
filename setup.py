@@ -6,8 +6,10 @@ from Cython.Distutils import build_ext
 
 compile_args = ['-O3', '-std=c++11']
 link_args = ['-std=c++11']
-inc = [numpy.get_include(), ".", "/usr/local/include", "/usr/local/include/", "/cvmfs/lsst.opensciencegrid.org/fnal/products/Linux64/external/gsl/1.15+1/include/"]
-lib = [".", "/usr/local/lib", "/usr/local/lib/", "/cvmfs/lsst.opensciencegrid.org/fnal/products/Linux64/external/gsl/1.15+1/lib/"]
+inc = [numpy.get_include(), ".", "/usr/local/include", "/usr/local/include/", "/cvmfs/lsst.opensciencegrid.org/fnal/products/Linux64/external/gsl/1.15+1/include/",
+"/cvmfs/lsst.opensciencegrid.org/fnal/products/Linux64/external/minuit2/5.22.00+1/include"]
+lib = [".", "/usr/local/lib", "/usr/local/lib/", "/cvmfs/lsst.opensciencegrid.org/fnal/products/Linux64/external/gsl/1.15+1/lib/",
+"/cvmfs/lsst.opensciencegrid.org/fnal/products/Linux64/external/minuit2/5.22.00+1/lib"]
 
 if sys.platform == 'darwin':
     compile_args.append('-mmacosx-version-min=10.7')
@@ -24,7 +26,7 @@ setup(
               extra_link_args=link_args,
               runtime_library_dirs=lib,
               library_dirs=lib,
-              libraries=["coco", "gsl", "minuit2"],
+              libraries=["coco", "gsl", "Minuit2"],
               language="c++"),
             ],
   cmdclass = {'build_ext': build_ext},
