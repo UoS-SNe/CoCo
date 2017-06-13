@@ -90,6 +90,10 @@ std::vector<double> Karpenka12::residual() {
 
         } else {
             res[i] = (y_[i] - flux) / sigma_[i];
+
+            if (y_[i] <= 0) {
+                res[i] *= 0;
+            }
         }
     }
 
