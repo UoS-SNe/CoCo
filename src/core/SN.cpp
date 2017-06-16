@@ -194,9 +194,16 @@ void SN::synthesiseLC(const std::vector<std::string> &filterList,
         // loop though each filter and append the LC
         std::vector<Obs> epoch;
         for (auto &flt : filterList) {
-            lc_[flt].mjd_.push_back(spec.second.mjd_);
-            lc_[flt].flux_.push_back(filters->flux(spec.second.flux_, flt));
             lc_[flt].filter_ = flt;
+            lc_[flt].mjd_.push_back(spec.second.mjd_);
+
+            if (vmath::min<double>(spec.second.wav_) <=
+            vmath::min<double>(filters->filter_[flt].inputWavelength_)) {
+                lc_[flt].flux_.push_back(filters->flux(spec.second.flux_, flt));
+
+            } else {
+                lc_[flt].flux_.push_back(0);
+            }
 
             Obs obs;
             obs.mjd_ = spec.second.mjd_;
@@ -227,7 +234,7 @@ void SN::redshift(double zNew, std::shared_ptr<Cosmology> cosmology, bool zScale
     }
 
     for (auto &spec : spec_) {
-        spec.second.wav_ = vmath::div(spec.second.wav_, shift);
+        spec.second.wav_ = vmath::mult(spec.second.wav_, shift);
         spec.second.flux_ = vmath::mult(spec.second.flux_, scale);
         spec.second.fluxNorm_ *= scale;
     }
