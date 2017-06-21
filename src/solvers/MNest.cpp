@@ -94,7 +94,7 @@ void MNest::fit() {
     int updInt = 10000;				// after how many iterations feedback is required & the output files should be updated
                                     // note: posterior files are updated & dumper routine is called after every updInt*10 iterations
     double Ztol = -1e90;			// all the modes with logZ < Ztol are ignored
-    int maxModes = 10;				// expected max no. of modes (used only for memory allocation)
+    int maxModes = 12;				// expected max no. of modes (used only for memory allocation)
     int pWrap[ndims];				// which parameters to have periodic boundary conditions?
     for (size_t i = 0; i < ndims; ++i) {
         pWrap[i] = 0;
