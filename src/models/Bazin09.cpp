@@ -83,7 +83,7 @@
 
 
 Bazin09::Bazin09() : Model() {
-    noParams_ = 6;
+    noParams_ = 4;
     paramNames_ = {"A",
                    "Trise",
                    "Tfall",

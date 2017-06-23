@@ -11,7 +11,7 @@ data/spec/SN2011dh/2011dh_-3.69.txt	SN2011dh 55729.01 0.0015
 data/spec/SN2011dh/2011dh_-0.7.txt	SN2011dh 55732.0 0.0015
 data/spec/SN2011dh/2011dh_4.29.txt	SN2011dh 55736.99 0.0015
 data/spec/SN2011dh/2011dh_9.29.txt	SN2011dh 55740.99 0.0015
-data/spec/SN2011dh/2011dh_8.29.txt	SN2011dh 55741.99 0.0015
+# data/spec/SN2011dh/2011dh_8.29.txt	SN2011dh 55741.99 0.0015 ## Multi mode
 data/spec/SN2011dh/2011dh_14.28.txt	SN2011dh 55746.98 0.0015
 data/spec/SN2011dh/2011dh_19.27.txt	SN2011dh 55751.97 0.0015
 data/spec/SN2011dh/2011dh_23.27.txt	SN2011dh 55755.97 0.0015
