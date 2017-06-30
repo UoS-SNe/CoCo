@@ -197,8 +197,11 @@ void SN::synthesiseLC(const std::vector<std::string> &filterList,
             lc_[flt].filter_ = flt;
             lc_[flt].mjd_.push_back(spec.second.mjd_);
 
-            if (vmath::min<double>(spec.second.wav_) <=
-            vmath::min<double>(filters->filter_[flt].inputWavelength_)) {
+            if ((vmath::min<double>(spec.second.wav_) <=
+                 vmath::min<double>(filters->filter_[flt].inputWavelength_)) &&
+                (vmath::max<double>(spec.second.wav_) >=
+                 vmath::max<double>(filters->filter_[flt].inputWavelength_)))
+            {
                 lc_[flt].flux_.push_back(filters->flux(spec.second.flux_, flt));
 
             } else {
