@@ -90,14 +90,14 @@ Bazin09::Bazin09() : Model() {
                    "t0"};
 
     priorRange_ = {{1e-5, 1000.0}, // A
-                   {0.2, 100.0},   // Trise
-                   {0.0, 100.0},   // Tfall
+                   {0.2, 60.0},   // Trise
+                   {1.0, 100.0},   // Tfall
                    {0.0, 100.0}};   // t0
 
     paramGuess_ = {1.0,   // A
-                   5.0,   // Trise
-                   99.0,  // Tfall
-                   59.0};  // t0
+                   15.0,   // Trise
+                   50.0,  // Tfall
+                   40.0};  // t0
 
     priorType_ = {"log",  // A
                   "flat", // Trise
