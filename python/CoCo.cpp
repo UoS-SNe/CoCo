@@ -74,7 +74,6 @@ std::vector<double> CoCo::mjdRange(std::string flt,
     return res;
 }
 
-
 void CoCo::simulate(std::string templateName,
                     double z,
                     double absMag,
@@ -83,7 +82,8 @@ void CoCo::simulate(std::string templateName,
                     double R_v,
                     double mjdPeak,
                     std::vector<double> mjdSim,
-                    std::vector<std::string> filterSim) {
+                    std::vector<std::string> filterSim,
+                    std::vector<double> guessParams) {
 
     flux_ = std::vector<double>(mjdSim.size(), 0);
     fluxErr_ = std::vector<double>(mjdSim.size(), 0);
@@ -118,6 +118,10 @@ void CoCo::simulate(std::string templateName,
         bazin09->sigma_ = std::vector<double>(lc.second.flux_.size(), 1);
         std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(bazin09);
 
+        if (guessParams.size() > 0) {
+            model->params_ = guessParams;
+        }
+
         // Initialise solver
         Minuit solver(model);
         std::vector<double> xTemp = mjdRange(lc.second.filter_, mjdSim, filterSim);
@@ -141,6 +145,18 @@ void CoCo::simulate(std::string templateName,
     }
 }
 
+
+void CoCo::simulate(std::string templateName,
+                    double z,
+                    double absMag,
+                    double Ebv_MW,
+                    double Ebv_Host,
+                    double R_v,
+                    double mjdPeak,
+                    std::vector<double> mjdSim,
+                    std::vector<std::string> filterSim) {
+    simulate(templateName, z, absMag, Ebv_MW, Ebv_Host, R_v, mjdPeak, mjdSim, filterSim, {});
+}
 
  void CoCo::spec_photometry(std::string templateName,
                             double z,
