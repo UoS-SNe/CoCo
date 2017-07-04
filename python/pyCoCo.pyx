@@ -16,6 +16,10 @@ cdef extern from "python/CoCo.hpp":
         void init()
         void simulate(string,double,double,double,double,double,double,
             vector[double],
+            vector[string],
+            vector[double]) except +
+        void simulate(string,double,double,double,double,double,double,
+            vector[double],
             vector[string]) except +
         void spec_photometry(string,double,string) except +
 
@@ -31,6 +35,29 @@ cdef class pyCoCo:
 
     def init(self):
         self.thisptr.init()
+
+    def simulate_set_params(self,
+                            string name,
+                            double z,
+                            double absMag,
+                            double Ebv_MW,
+                            double Ebv_Host,
+                            double R_v,
+                            double mjdPeak,
+                            np.ndarray[double, ndim=1, mode="c"] mjdSim not None,
+                            np.ndarray flt not None,
+                            np.ndarray[double, ndim=1, mode="c"] params not None):
+
+        self.thisptr.simulate(name,z,absMag,Ebv_MW,Ebv_Host,R_v,mjdPeak,
+            <vector[double]> mjdSim,
+            <vector[string]> flt,
+            <vector[double]> params)
+
+        cdef np.ndarray[double, ndim=2] res = np.zeros((2,mjdSim.shape[0]), dtype=np.float64)
+        res[0] = self.thisptr.flux_
+        res[1] = self.thisptr.fluxErr_
+
+        return res
 
     def simulate(self,
                  string name,
