@@ -126,6 +126,8 @@ void CoCo::simulate(std::string templateName,
         solver.xRecon_ = vmath::add<double>(solver.xRecon_, lc.second.mjdMin_);
         solver.bestFit_ = vmath::mult<double>(solver.bestFit_, lc.second.normalization_);
 
+        bestFitParams_ = model->params_;
+
         size_t j = 0;
         for (size_t i = 0; i < filterSim.size(); ++i) {
             if (filterSim[i] == lc.second.filter_) {
