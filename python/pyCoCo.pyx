@@ -11,6 +11,7 @@ cdef extern from "python/CoCo.hpp":
         vector[double] mjd_
         vector[double] flux_
         vector[double] fluxErr_
+        vector[double] bestFitParams_
         CoCo(string,string) except +
         void init()
         void simulate(string,double,double,double,double,double,double,
@@ -51,6 +52,9 @@ cdef class pyCoCo:
         res[1] = self.thisptr.fluxErr_
 
         return res
+
+    def get_fit_params(self):
+        return self.thisptr.bestFitParams_
 
     def spec_photometry(self,
                         string name,

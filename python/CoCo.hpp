@@ -40,7 +40,8 @@ public:
     std::vector<double> mjd_;
     std::vector<double> flux_;
     std::vector<double> fluxErr_;
-
+    std::vector<double> bestFitParams_;
+    
     // Templates
     std::unordered_map<std::string, SN> templateSNe_;
 

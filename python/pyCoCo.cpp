@@ -966,7 +966,7 @@ typedef npy_clongdouble __pyx_t_5numpy_clongdouble_t;
  */
 typedef npy_cdouble __pyx_t_5numpy_complex_t;
 
-/* "pyCoCo.pyx":23
+/* "pyCoCo.pyx":24
  * @cython.boundscheck(False)
  * @cython.wraparound(False)
  * cdef class pyCoCo:             # <<<<<<<<<<<<<<
@@ -1558,7 +1558,8 @@ static int __pyx_pf_6pyCoCo_6pyCoCo___cinit__(struct __pyx_obj_6pyCoCo_pyCoCo *_
 static void __pyx_pf_6pyCoCo_6pyCoCo_2__dealloc__(struct __pyx_obj_6pyCoCo_pyCoCo *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_4init(struct __pyx_obj_6pyCoCo_pyCoCo *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_6simulate(struct __pyx_obj_6pyCoCo_pyCoCo *__pyx_v_self, std::string __pyx_v_name, double __pyx_v_z, double __pyx_v_absMag, double __pyx_v_Ebv_MW, double __pyx_v_Ebv_Host, double __pyx_v_R_v, double __pyx_v_mjdPeak, PyArrayObject *__pyx_v_mjdSim, PyArrayObject *__pyx_v_flt); /* proto */
-static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_8spec_photometry(struct __pyx_obj_6pyCoCo_pyCoCo *__pyx_v_self, std::string __pyx_v_name, double __pyx_v_z, std::string __pyx_v_flt); /* proto */
+static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_8get_fit_params(struct __pyx_obj_6pyCoCo_pyCoCo *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_10spec_photometry(struct __pyx_obj_6pyCoCo_pyCoCo *__pyx_v_self, std::string __pyx_v_name, double __pyx_v_z, std::string __pyx_v_flt); /* proto */
 static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, Py_buffer *__pyx_v_info, int __pyx_v_flags); /* proto */
 static void __pyx_pf_5numpy_7ndarray_2__releasebuffer__(PyArrayObject *__pyx_v_self, Py_buffer *__pyx_v_info); /* proto */
 static PyObject *__pyx_tp_new_6pyCoCo_pyCoCo(PyTypeObject *t, PyObject *a, PyObject *k); /*proto*/
@@ -1573,7 +1574,7 @@ static PyObject *__pyx_tuple__7;
 static PyObject *__pyx_tuple__8;
 static PyObject *__pyx_tuple__9;
 
-/* "pyCoCo.pyx":25
+/* "pyCoCo.pyx":26
  * cdef class pyCoCo:
  *     cdef CoCo* thisptr # hold a C++ instance
  *     def __cinit__(self, string flt, string root):             # <<<<<<<<<<<<<<
@@ -1609,11 +1610,11 @@ static int __pyx_pw_6pyCoCo_6pyCoCo_1__cinit__(PyObject *__pyx_v_self, PyObject 
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_root)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 2, 2, 1); __PYX_ERR(0, 25, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 2, 2, 1); __PYX_ERR(0, 26, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) __PYX_ERR(0, 25, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) __PYX_ERR(0, 26, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 2) {
       goto __pyx_L5_argtuple_error;
@@ -1621,12 +1622,12 @@ static int __pyx_pw_6pyCoCo_6pyCoCo_1__cinit__(PyObject *__pyx_v_self, PyObject 
       values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
       values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
     }
-    __pyx_v_flt = __pyx_convert_string_from_py_std__in_string(values[0]); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 25, __pyx_L3_error)
-    __pyx_v_root = __pyx_convert_string_from_py_std__in_string(values[1]); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 25, __pyx_L3_error)
+    __pyx_v_flt = __pyx_convert_string_from_py_std__in_string(values[0]); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 26, __pyx_L3_error)
+    __pyx_v_root = __pyx_convert_string_from_py_std__in_string(values[1]); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 26, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 25, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__cinit__", 1, 2, 2, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 26, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pyCoCo.pyCoCo.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -1645,7 +1646,7 @@ static int __pyx_pf_6pyCoCo_6pyCoCo___cinit__(struct __pyx_obj_6pyCoCo_pyCoCo *_
   CoCo *__pyx_t_1;
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
-  /* "pyCoCo.pyx":26
+  /* "pyCoCo.pyx":27
  *     cdef CoCo* thisptr # hold a C++ instance
  *     def __cinit__(self, string flt, string root):
  *         self.thisptr = new CoCo(flt, root)             # <<<<<<<<<<<<<<
@@ -1656,11 +1657,11 @@ static int __pyx_pf_6pyCoCo_6pyCoCo___cinit__(struct __pyx_obj_6pyCoCo_pyCoCo *_
     __pyx_t_1 = new CoCo(__pyx_v_flt, __pyx_v_root);
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 26, __pyx_L1_error)
+    __PYX_ERR(0, 27, __pyx_L1_error)
   }
   __pyx_v_self->thisptr = __pyx_t_1;
 
-  /* "pyCoCo.pyx":25
+  /* "pyCoCo.pyx":26
  * cdef class pyCoCo:
  *     cdef CoCo* thisptr # hold a C++ instance
  *     def __cinit__(self, string flt, string root):             # <<<<<<<<<<<<<<
@@ -1679,7 +1680,7 @@ static int __pyx_pf_6pyCoCo_6pyCoCo___cinit__(struct __pyx_obj_6pyCoCo_pyCoCo *_
   return __pyx_r;
 }
 
-/* "pyCoCo.pyx":28
+/* "pyCoCo.pyx":29
  *         self.thisptr = new CoCo(flt, root)
  * 
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -1702,7 +1703,7 @@ static void __pyx_pf_6pyCoCo_6pyCoCo_2__dealloc__(struct __pyx_obj_6pyCoCo_pyCoC
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__dealloc__", 0);
 
-  /* "pyCoCo.pyx":29
+  /* "pyCoCo.pyx":30
  * 
  *     def __dealloc__(self):
  *         del self.thisptr             # <<<<<<<<<<<<<<
@@ -1711,7 +1712,7 @@ static void __pyx_pf_6pyCoCo_6pyCoCo_2__dealloc__(struct __pyx_obj_6pyCoCo_pyCoC
  */
   delete __pyx_v_self->thisptr;
 
-  /* "pyCoCo.pyx":28
+  /* "pyCoCo.pyx":29
  *         self.thisptr = new CoCo(flt, root)
  * 
  *     def __dealloc__(self):             # <<<<<<<<<<<<<<
@@ -1723,7 +1724,7 @@ static void __pyx_pf_6pyCoCo_6pyCoCo_2__dealloc__(struct __pyx_obj_6pyCoCo_pyCoC
   __Pyx_RefNannyFinishContext();
 }
 
-/* "pyCoCo.pyx":31
+/* "pyCoCo.pyx":32
  *         del self.thisptr
  * 
  *     def init(self):             # <<<<<<<<<<<<<<
@@ -1749,7 +1750,7 @@ static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_4init(struct __pyx_obj_6pyCoCo_pyCoCo 
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("init", 0);
 
-  /* "pyCoCo.pyx":32
+  /* "pyCoCo.pyx":33
  * 
  *     def init(self):
  *         self.thisptr.init()             # <<<<<<<<<<<<<<
@@ -1758,7 +1759,7 @@ static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_4init(struct __pyx_obj_6pyCoCo_pyCoCo 
  */
   __pyx_v_self->thisptr->init();
 
-  /* "pyCoCo.pyx":31
+  /* "pyCoCo.pyx":32
  *         del self.thisptr
  * 
  *     def init(self):             # <<<<<<<<<<<<<<
@@ -1773,7 +1774,7 @@ static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_4init(struct __pyx_obj_6pyCoCo_pyCoCo 
   return __pyx_r;
 }
 
-/* "pyCoCo.pyx":34
+/* "pyCoCo.pyx":35
  *         self.thisptr.init()
  * 
  *     def simulate(self,             # <<<<<<<<<<<<<<
@@ -1823,46 +1824,46 @@ static PyObject *__pyx_pw_6pyCoCo_6pyCoCo_7simulate(PyObject *__pyx_v_self, PyOb
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_z)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("simulate", 1, 9, 9, 1); __PYX_ERR(0, 34, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("simulate", 1, 9, 9, 1); __PYX_ERR(0, 35, __pyx_L3_error)
         }
         case  2:
         if (likely((values[2] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_absMag)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("simulate", 1, 9, 9, 2); __PYX_ERR(0, 34, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("simulate", 1, 9, 9, 2); __PYX_ERR(0, 35, __pyx_L3_error)
         }
         case  3:
         if (likely((values[3] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_Ebv_MW)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("simulate", 1, 9, 9, 3); __PYX_ERR(0, 34, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("simulate", 1, 9, 9, 3); __PYX_ERR(0, 35, __pyx_L3_error)
         }
         case  4:
         if (likely((values[4] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_Ebv_Host)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("simulate", 1, 9, 9, 4); __PYX_ERR(0, 34, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("simulate", 1, 9, 9, 4); __PYX_ERR(0, 35, __pyx_L3_error)
         }
         case  5:
         if (likely((values[5] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_R_v)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("simulate", 1, 9, 9, 5); __PYX_ERR(0, 34, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("simulate", 1, 9, 9, 5); __PYX_ERR(0, 35, __pyx_L3_error)
         }
         case  6:
         if (likely((values[6] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_mjdPeak)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("simulate", 1, 9, 9, 6); __PYX_ERR(0, 34, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("simulate", 1, 9, 9, 6); __PYX_ERR(0, 35, __pyx_L3_error)
         }
         case  7:
         if (likely((values[7] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_mjdSim)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("simulate", 1, 9, 9, 7); __PYX_ERR(0, 34, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("simulate", 1, 9, 9, 7); __PYX_ERR(0, 35, __pyx_L3_error)
         }
         case  8:
         if (likely((values[8] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_flt)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("simulate", 1, 9, 9, 8); __PYX_ERR(0, 34, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("simulate", 1, 9, 9, 8); __PYX_ERR(0, 35, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "simulate") < 0)) __PYX_ERR(0, 34, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "simulate") < 0)) __PYX_ERR(0, 35, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 9) {
       goto __pyx_L5_argtuple_error;
@@ -1877,26 +1878,26 @@ static PyObject *__pyx_pw_6pyCoCo_6pyCoCo_7simulate(PyObject *__pyx_v_self, PyOb
       values[7] = PyTuple_GET_ITEM(__pyx_args, 7);
       values[8] = PyTuple_GET_ITEM(__pyx_args, 8);
     }
-    __pyx_v_name = __pyx_convert_string_from_py_std__in_string(values[0]); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 35, __pyx_L3_error)
-    __pyx_v_z = __pyx_PyFloat_AsDouble(values[1]); if (unlikely((__pyx_v_z == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 36, __pyx_L3_error)
-    __pyx_v_absMag = __pyx_PyFloat_AsDouble(values[2]); if (unlikely((__pyx_v_absMag == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 37, __pyx_L3_error)
-    __pyx_v_Ebv_MW = __pyx_PyFloat_AsDouble(values[3]); if (unlikely((__pyx_v_Ebv_MW == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 38, __pyx_L3_error)
-    __pyx_v_Ebv_Host = __pyx_PyFloat_AsDouble(values[4]); if (unlikely((__pyx_v_Ebv_Host == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 39, __pyx_L3_error)
-    __pyx_v_R_v = __pyx_PyFloat_AsDouble(values[5]); if (unlikely((__pyx_v_R_v == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 40, __pyx_L3_error)
-    __pyx_v_mjdPeak = __pyx_PyFloat_AsDouble(values[6]); if (unlikely((__pyx_v_mjdPeak == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 41, __pyx_L3_error)
+    __pyx_v_name = __pyx_convert_string_from_py_std__in_string(values[0]); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 36, __pyx_L3_error)
+    __pyx_v_z = __pyx_PyFloat_AsDouble(values[1]); if (unlikely((__pyx_v_z == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 37, __pyx_L3_error)
+    __pyx_v_absMag = __pyx_PyFloat_AsDouble(values[2]); if (unlikely((__pyx_v_absMag == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 38, __pyx_L3_error)
+    __pyx_v_Ebv_MW = __pyx_PyFloat_AsDouble(values[3]); if (unlikely((__pyx_v_Ebv_MW == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 39, __pyx_L3_error)
+    __pyx_v_Ebv_Host = __pyx_PyFloat_AsDouble(values[4]); if (unlikely((__pyx_v_Ebv_Host == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 40, __pyx_L3_error)
+    __pyx_v_R_v = __pyx_PyFloat_AsDouble(values[5]); if (unlikely((__pyx_v_R_v == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 41, __pyx_L3_error)
+    __pyx_v_mjdPeak = __pyx_PyFloat_AsDouble(values[6]); if (unlikely((__pyx_v_mjdPeak == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 42, __pyx_L3_error)
     __pyx_v_mjdSim = ((PyArrayObject *)values[7]);
     __pyx_v_flt = ((PyArrayObject *)values[8]);
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("simulate", 1, 9, 9, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 34, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("simulate", 1, 9, 9, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 35, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pyCoCo.pyCoCo.simulate", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_mjdSim), __pyx_ptype_5numpy_ndarray, 0, "mjdSim", 0))) __PYX_ERR(0, 42, __pyx_L1_error)
-  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_flt), __pyx_ptype_5numpy_ndarray, 0, "flt", 0))) __PYX_ERR(0, 43, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_mjdSim), __pyx_ptype_5numpy_ndarray, 0, "mjdSim", 0))) __PYX_ERR(0, 43, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_flt), __pyx_ptype_5numpy_ndarray, 0, "flt", 0))) __PYX_ERR(0, 44, __pyx_L1_error)
   __pyx_r = __pyx_pf_6pyCoCo_6pyCoCo_6simulate(((struct __pyx_obj_6pyCoCo_pyCoCo *)__pyx_v_self), __pyx_v_name, __pyx_v_z, __pyx_v_absMag, __pyx_v_Ebv_MW, __pyx_v_Ebv_Host, __pyx_v_R_v, __pyx_v_mjdPeak, __pyx_v_mjdSim, __pyx_v_flt);
 
   /* function exit code */
@@ -1935,29 +1936,29 @@ static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_6simulate(struct __pyx_obj_6pyCoCo_pyC
   __pyx_pybuffernd_mjdSim.rcbuffer = &__pyx_pybuffer_mjdSim;
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
-    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_mjdSim.rcbuffer->pybuffer, (PyObject*)__pyx_v_mjdSim, &__Pyx_TypeInfo_double, PyBUF_FORMAT| PyBUF_C_CONTIGUOUS, 1, 0, __pyx_stack) == -1)) __PYX_ERR(0, 34, __pyx_L1_error)
+    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_mjdSim.rcbuffer->pybuffer, (PyObject*)__pyx_v_mjdSim, &__Pyx_TypeInfo_double, PyBUF_FORMAT| PyBUF_C_CONTIGUOUS, 1, 0, __pyx_stack) == -1)) __PYX_ERR(0, 35, __pyx_L1_error)
   }
   __pyx_pybuffernd_mjdSim.diminfo[0].strides = __pyx_pybuffernd_mjdSim.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_mjdSim.diminfo[0].shape = __pyx_pybuffernd_mjdSim.rcbuffer->pybuffer.shape[0];
 
-  /* "pyCoCo.pyx":46
+  /* "pyCoCo.pyx":47
  * 
  *         self.thisptr.simulate(name,z,absMag,Ebv_MW,Ebv_Host,R_v,mjdPeak,
  *             <vector[double]> mjdSim,             # <<<<<<<<<<<<<<
  *             <vector[string]> flt)
  * 
  */
-  __pyx_t_1 = __pyx_convert_vector_from_py_double(((PyObject *)__pyx_v_mjdSim)); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 46, __pyx_L1_error)
+  __pyx_t_1 = __pyx_convert_vector_from_py_double(((PyObject *)__pyx_v_mjdSim)); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 47, __pyx_L1_error)
 
-  /* "pyCoCo.pyx":47
+  /* "pyCoCo.pyx":48
  *         self.thisptr.simulate(name,z,absMag,Ebv_MW,Ebv_Host,R_v,mjdPeak,
  *             <vector[double]> mjdSim,
  *             <vector[string]> flt)             # <<<<<<<<<<<<<<
  * 
  *         cdef np.ndarray[double, ndim=2] res = np.zeros((2,mjdSim.shape[0]), dtype=np.float64)
  */
-  __pyx_t_2 = __pyx_convert_vector_from_py_std_3a__3a_string(((PyObject *)__pyx_v_flt)); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 47, __pyx_L1_error)
+  __pyx_t_2 = __pyx_convert_vector_from_py_std_3a__3a_string(((PyObject *)__pyx_v_flt)); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 48, __pyx_L1_error)
 
-  /* "pyCoCo.pyx":45
+  /* "pyCoCo.pyx":46
  *                  np.ndarray flt not None):
  * 
  *         self.thisptr.simulate(name,z,absMag,Ebv_MW,Ebv_Host,R_v,mjdPeak,             # <<<<<<<<<<<<<<
@@ -1968,24 +1969,24 @@ static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_6simulate(struct __pyx_obj_6pyCoCo_pyC
     __pyx_v_self->thisptr->simulate(__pyx_v_name, __pyx_v_z, __pyx_v_absMag, __pyx_v_Ebv_MW, __pyx_v_Ebv_Host, __pyx_v_R_v, __pyx_v_mjdPeak, ((std::vector<double> )__pyx_t_1), ((std::vector<std::string> )__pyx_t_2));
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 45, __pyx_L1_error)
+    __PYX_ERR(0, 46, __pyx_L1_error)
   }
 
-  /* "pyCoCo.pyx":49
+  /* "pyCoCo.pyx":50
  *             <vector[string]> flt)
  * 
  *         cdef np.ndarray[double, ndim=2] res = np.zeros((2,mjdSim.shape[0]), dtype=np.float64)             # <<<<<<<<<<<<<<
  *         res[0] = self.thisptr.flux_
  *         res[1] = self.thisptr.fluxErr_
  */
-  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 49, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 50, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_zeros); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 49, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_zeros); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 50, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyInt_From_Py_intptr_t((__pyx_v_mjdSim->dimensions[0])); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 49, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_From_Py_intptr_t((__pyx_v_mjdSim->dimensions[0])); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 50, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 49, __pyx_L1_error)
+  __pyx_t_5 = PyTuple_New(2); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 50, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_INCREF(__pyx_int_2);
   __Pyx_GIVEREF(__pyx_int_2);
@@ -1993,32 +1994,32 @@ static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_6simulate(struct __pyx_obj_6pyCoCo_pyC
   __Pyx_GIVEREF(__pyx_t_3);
   PyTuple_SET_ITEM(__pyx_t_5, 1, __pyx_t_3);
   __pyx_t_3 = 0;
-  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 49, __pyx_L1_error)
+  __pyx_t_3 = PyTuple_New(1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 50, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_GIVEREF(__pyx_t_5);
   PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_5);
   __pyx_t_5 = 0;
-  __pyx_t_5 = PyDict_New(); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 49, __pyx_L1_error)
+  __pyx_t_5 = PyDict_New(); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 50, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  __pyx_t_6 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 49, __pyx_L1_error)
+  __pyx_t_6 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 50, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_6);
-  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_float64); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 49, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_6, __pyx_n_s_float64); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 50, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
-  if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_dtype, __pyx_t_7) < 0) __PYX_ERR(0, 49, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_5, __pyx_n_s_dtype, __pyx_t_7) < 0) __PYX_ERR(0, 50, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-  __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_3, __pyx_t_5); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 49, __pyx_L1_error)
+  __pyx_t_7 = __Pyx_PyObject_Call(__pyx_t_4, __pyx_t_3, __pyx_t_5); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 50, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  if (!(likely(((__pyx_t_7) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_7, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 49, __pyx_L1_error)
+  if (!(likely(((__pyx_t_7) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_7, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 50, __pyx_L1_error)
   __pyx_t_8 = ((PyArrayObject *)__pyx_t_7);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
     if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_res.rcbuffer->pybuffer, (PyObject*)__pyx_t_8, &__Pyx_TypeInfo_double, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack) == -1)) {
       __pyx_v_res = ((PyArrayObject *)Py_None); __Pyx_INCREF(Py_None); __pyx_pybuffernd_res.rcbuffer->pybuffer.buf = NULL;
-      __PYX_ERR(0, 49, __pyx_L1_error)
+      __PYX_ERR(0, 50, __pyx_L1_error)
     } else {__pyx_pybuffernd_res.diminfo[0].strides = __pyx_pybuffernd_res.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_res.diminfo[0].shape = __pyx_pybuffernd_res.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_res.diminfo[1].strides = __pyx_pybuffernd_res.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_res.diminfo[1].shape = __pyx_pybuffernd_res.rcbuffer->pybuffer.shape[1];
     }
   }
@@ -2026,43 +2027,43 @@ static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_6simulate(struct __pyx_obj_6pyCoCo_pyC
   __pyx_v_res = ((PyArrayObject *)__pyx_t_7);
   __pyx_t_7 = 0;
 
-  /* "pyCoCo.pyx":50
+  /* "pyCoCo.pyx":51
  * 
  *         cdef np.ndarray[double, ndim=2] res = np.zeros((2,mjdSim.shape[0]), dtype=np.float64)
  *         res[0] = self.thisptr.flux_             # <<<<<<<<<<<<<<
  *         res[1] = self.thisptr.fluxErr_
  * 
  */
-  __pyx_t_7 = __pyx_convert_vector_to_py_double(__pyx_v_self->thisptr->flux_); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 50, __pyx_L1_error)
+  __pyx_t_7 = __pyx_convert_vector_to_py_double(__pyx_v_self->thisptr->flux_); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 51, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  if (unlikely(__Pyx_SetItemInt(((PyObject *)__pyx_v_res), 0, __pyx_t_7, long, 1, __Pyx_PyInt_From_long, 0, 0, 0) < 0)) __PYX_ERR(0, 50, __pyx_L1_error)
+  if (unlikely(__Pyx_SetItemInt(((PyObject *)__pyx_v_res), 0, __pyx_t_7, long, 1, __Pyx_PyInt_From_long, 0, 0, 0) < 0)) __PYX_ERR(0, 51, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-  /* "pyCoCo.pyx":51
+  /* "pyCoCo.pyx":52
  *         cdef np.ndarray[double, ndim=2] res = np.zeros((2,mjdSim.shape[0]), dtype=np.float64)
  *         res[0] = self.thisptr.flux_
  *         res[1] = self.thisptr.fluxErr_             # <<<<<<<<<<<<<<
  * 
  *         return res
  */
-  __pyx_t_7 = __pyx_convert_vector_to_py_double(__pyx_v_self->thisptr->fluxErr_); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 51, __pyx_L1_error)
+  __pyx_t_7 = __pyx_convert_vector_to_py_double(__pyx_v_self->thisptr->fluxErr_); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 52, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_7);
-  if (unlikely(__Pyx_SetItemInt(((PyObject *)__pyx_v_res), 1, __pyx_t_7, long, 1, __Pyx_PyInt_From_long, 0, 0, 0) < 0)) __PYX_ERR(0, 51, __pyx_L1_error)
+  if (unlikely(__Pyx_SetItemInt(((PyObject *)__pyx_v_res), 1, __pyx_t_7, long, 1, __Pyx_PyInt_From_long, 0, 0, 0) < 0)) __PYX_ERR(0, 52, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
 
-  /* "pyCoCo.pyx":53
+  /* "pyCoCo.pyx":54
  *         res[1] = self.thisptr.fluxErr_
  * 
  *         return res             # <<<<<<<<<<<<<<
  * 
- *     def spec_photometry(self,
+ *     def get_fit_params(self):
  */
   __Pyx_XDECREF(__pyx_r);
   __Pyx_INCREF(((PyObject *)__pyx_v_res));
   __pyx_r = ((PyObject *)__pyx_v_res);
   goto __pyx_L0;
 
-  /* "pyCoCo.pyx":34
+  /* "pyCoCo.pyx":35
  *         self.thisptr.init()
  * 
  *     def simulate(self,             # <<<<<<<<<<<<<<
@@ -2097,8 +2098,68 @@ static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_6simulate(struct __pyx_obj_6pyCoCo_pyC
   return __pyx_r;
 }
 
-/* "pyCoCo.pyx":55
+/* "pyCoCo.pyx":56
  *         return res
+ * 
+ *     def get_fit_params(self):             # <<<<<<<<<<<<<<
+ *         return self.thisptr.bestFitParams_
+ * 
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_6pyCoCo_6pyCoCo_9get_fit_params(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static PyObject *__pyx_pw_6pyCoCo_6pyCoCo_9get_fit_params(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("get_fit_params (wrapper)", 0);
+  __pyx_r = __pyx_pf_6pyCoCo_6pyCoCo_8get_fit_params(((struct __pyx_obj_6pyCoCo_pyCoCo *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_8get_fit_params(struct __pyx_obj_6pyCoCo_pyCoCo *__pyx_v_self) {
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  PyObject *__pyx_t_1 = NULL;
+  __Pyx_RefNannySetupContext("get_fit_params", 0);
+
+  /* "pyCoCo.pyx":57
+ * 
+ *     def get_fit_params(self):
+ *         return self.thisptr.bestFitParams_             # <<<<<<<<<<<<<<
+ * 
+ *     def spec_photometry(self,
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_1 = __pyx_convert_vector_to_py_double(__pyx_v_self->thisptr->bestFitParams_); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 57, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_1);
+  __pyx_r = __pyx_t_1;
+  __pyx_t_1 = 0;
+  goto __pyx_L0;
+
+  /* "pyCoCo.pyx":56
+ *         return res
+ * 
+ *     def get_fit_params(self):             # <<<<<<<<<<<<<<
+ *         return self.thisptr.bestFitParams_
+ * 
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_1);
+  __Pyx_AddTraceback("pyCoCo.pyCoCo.get_fit_params", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "pyCoCo.pyx":59
+ *         return self.thisptr.bestFitParams_
  * 
  *     def spec_photometry(self,             # <<<<<<<<<<<<<<
  *                         string name,
@@ -2106,8 +2167,8 @@ static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_6simulate(struct __pyx_obj_6pyCoCo_pyC
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_6pyCoCo_6pyCoCo_9spec_photometry(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_pw_6pyCoCo_6pyCoCo_9spec_photometry(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_6pyCoCo_6pyCoCo_11spec_photometry(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyObject *__pyx_pw_6pyCoCo_6pyCoCo_11spec_photometry(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   std::string __pyx_v_name;
   double __pyx_v_z;
   std::string __pyx_v_flt;
@@ -2135,16 +2196,16 @@ static PyObject *__pyx_pw_6pyCoCo_6pyCoCo_9spec_photometry(PyObject *__pyx_v_sel
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_z)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("spec_photometry", 1, 3, 3, 1); __PYX_ERR(0, 55, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("spec_photometry", 1, 3, 3, 1); __PYX_ERR(0, 59, __pyx_L3_error)
         }
         case  2:
         if (likely((values[2] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_flt)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("spec_photometry", 1, 3, 3, 2); __PYX_ERR(0, 55, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("spec_photometry", 1, 3, 3, 2); __PYX_ERR(0, 59, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "spec_photometry") < 0)) __PYX_ERR(0, 55, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "spec_photometry") < 0)) __PYX_ERR(0, 59, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 3) {
       goto __pyx_L5_argtuple_error;
@@ -2153,26 +2214,26 @@ static PyObject *__pyx_pw_6pyCoCo_6pyCoCo_9spec_photometry(PyObject *__pyx_v_sel
       values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
       values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
     }
-    __pyx_v_name = __pyx_convert_string_from_py_std__in_string(values[0]); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 56, __pyx_L3_error)
-    __pyx_v_z = __pyx_PyFloat_AsDouble(values[1]); if (unlikely((__pyx_v_z == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 57, __pyx_L3_error)
-    __pyx_v_flt = __pyx_convert_string_from_py_std__in_string(values[2]); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 58, __pyx_L3_error)
+    __pyx_v_name = __pyx_convert_string_from_py_std__in_string(values[0]); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 60, __pyx_L3_error)
+    __pyx_v_z = __pyx_PyFloat_AsDouble(values[1]); if (unlikely((__pyx_v_z == (double)-1) && PyErr_Occurred())) __PYX_ERR(0, 61, __pyx_L3_error)
+    __pyx_v_flt = __pyx_convert_string_from_py_std__in_string(values[2]); if (unlikely(PyErr_Occurred())) __PYX_ERR(0, 62, __pyx_L3_error)
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("spec_photometry", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 55, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("spec_photometry", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 59, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("pyCoCo.pyCoCo.spec_photometry", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_6pyCoCo_6pyCoCo_8spec_photometry(((struct __pyx_obj_6pyCoCo_pyCoCo *)__pyx_v_self), __pyx_v_name, __pyx_v_z, __pyx_v_flt);
+  __pyx_r = __pyx_pf_6pyCoCo_6pyCoCo_10spec_photometry(((struct __pyx_obj_6pyCoCo_pyCoCo *)__pyx_v_self), __pyx_v_name, __pyx_v_z, __pyx_v_flt);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_8spec_photometry(struct __pyx_obj_6pyCoCo_pyCoCo *__pyx_v_self, std::string __pyx_v_name, double __pyx_v_z, std::string __pyx_v_flt) {
+static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_10spec_photometry(struct __pyx_obj_6pyCoCo_pyCoCo *__pyx_v_self, std::string __pyx_v_name, double __pyx_v_z, std::string __pyx_v_flt) {
   PyArrayObject *__pyx_v_res = 0;
   __Pyx_LocalBuf_ND __pyx_pybuffernd_res;
   __Pyx_Buffer __pyx_pybuffer_res;
@@ -2190,7 +2251,7 @@ static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_8spec_photometry(struct __pyx_obj_6pyC
   __pyx_pybuffernd_res.data = NULL;
   __pyx_pybuffernd_res.rcbuffer = &__pyx_pybuffer_res;
 
-  /* "pyCoCo.pyx":60
+  /* "pyCoCo.pyx":64
  *                         string flt):
  * 
  *         self.thisptr.spec_photometry(name,z,flt)             # <<<<<<<<<<<<<<
@@ -2201,24 +2262,24 @@ static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_8spec_photometry(struct __pyx_obj_6pyC
     __pyx_v_self->thisptr->spec_photometry(__pyx_v_name, __pyx_v_z, __pyx_v_flt);
   } catch(...) {
     __Pyx_CppExn2PyErr();
-    __PYX_ERR(0, 60, __pyx_L1_error)
+    __PYX_ERR(0, 64, __pyx_L1_error)
   }
 
-  /* "pyCoCo.pyx":62
+  /* "pyCoCo.pyx":66
  *         self.thisptr.spec_photometry(name,z,flt)
  * 
  *         cdef np.ndarray[double, ndim=2] res = np.zeros((2,self.thisptr.flux_.size()), dtype=np.float64)             # <<<<<<<<<<<<<<
  *         res[0] = self.thisptr.mjd_
  *         res[1] = self.thisptr.flux_
  */
-  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 62, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 66, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_zeros); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 62, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_zeros); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 66, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_self->thisptr->flux_.size()); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 62, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_FromSize_t(__pyx_v_self->thisptr->flux_.size()); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 66, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 62, __pyx_L1_error)
+  __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 66, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_INCREF(__pyx_int_2);
   __Pyx_GIVEREF(__pyx_int_2);
@@ -2226,32 +2287,32 @@ static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_8spec_photometry(struct __pyx_obj_6pyC
   __Pyx_GIVEREF(__pyx_t_1);
   PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_t_1);
   __pyx_t_1 = 0;
-  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 62, __pyx_L1_error)
+  __pyx_t_1 = PyTuple_New(1); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 66, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_GIVEREF(__pyx_t_3);
   PyTuple_SET_ITEM(__pyx_t_1, 0, __pyx_t_3);
   __pyx_t_3 = 0;
-  __pyx_t_3 = PyDict_New(); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 62, __pyx_L1_error)
+  __pyx_t_3 = PyDict_New(); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 66, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 62, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 66, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_float64); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 62, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_GetAttrStr(__pyx_t_4, __pyx_n_s_float64); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 66, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_dtype, __pyx_t_5) < 0) __PYX_ERR(0, 62, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_dtype, __pyx_t_5) < 0) __PYX_ERR(0, 66, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_1, __pyx_t_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 62, __pyx_L1_error)
+  __pyx_t_5 = __Pyx_PyObject_Call(__pyx_t_2, __pyx_t_1, __pyx_t_3); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 66, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (!(likely(((__pyx_t_5) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_5, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 62, __pyx_L1_error)
+  if (!(likely(((__pyx_t_5) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_5, __pyx_ptype_5numpy_ndarray))))) __PYX_ERR(0, 66, __pyx_L1_error)
   __pyx_t_6 = ((PyArrayObject *)__pyx_t_5);
   {
     __Pyx_BufFmt_StackElem __pyx_stack[1];
     if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_res.rcbuffer->pybuffer, (PyObject*)__pyx_t_6, &__Pyx_TypeInfo_double, PyBUF_FORMAT| PyBUF_STRIDES, 2, 0, __pyx_stack) == -1)) {
       __pyx_v_res = ((PyArrayObject *)Py_None); __Pyx_INCREF(Py_None); __pyx_pybuffernd_res.rcbuffer->pybuffer.buf = NULL;
-      __PYX_ERR(0, 62, __pyx_L1_error)
+      __PYX_ERR(0, 66, __pyx_L1_error)
     } else {__pyx_pybuffernd_res.diminfo[0].strides = __pyx_pybuffernd_res.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_res.diminfo[0].shape = __pyx_pybuffernd_res.rcbuffer->pybuffer.shape[0]; __pyx_pybuffernd_res.diminfo[1].strides = __pyx_pybuffernd_res.rcbuffer->pybuffer.strides[1]; __pyx_pybuffernd_res.diminfo[1].shape = __pyx_pybuffernd_res.rcbuffer->pybuffer.shape[1];
     }
   }
@@ -2259,31 +2320,31 @@ static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_8spec_photometry(struct __pyx_obj_6pyC
   __pyx_v_res = ((PyArrayObject *)__pyx_t_5);
   __pyx_t_5 = 0;
 
-  /* "pyCoCo.pyx":63
+  /* "pyCoCo.pyx":67
  * 
  *         cdef np.ndarray[double, ndim=2] res = np.zeros((2,self.thisptr.flux_.size()), dtype=np.float64)
  *         res[0] = self.thisptr.mjd_             # <<<<<<<<<<<<<<
  *         res[1] = self.thisptr.flux_
  * 
  */
-  __pyx_t_5 = __pyx_convert_vector_to_py_double(__pyx_v_self->thisptr->mjd_); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 63, __pyx_L1_error)
+  __pyx_t_5 = __pyx_convert_vector_to_py_double(__pyx_v_self->thisptr->mjd_); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 67, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (unlikely(__Pyx_SetItemInt(((PyObject *)__pyx_v_res), 0, __pyx_t_5, long, 1, __Pyx_PyInt_From_long, 0, 0, 0) < 0)) __PYX_ERR(0, 63, __pyx_L1_error)
+  if (unlikely(__Pyx_SetItemInt(((PyObject *)__pyx_v_res), 0, __pyx_t_5, long, 1, __Pyx_PyInt_From_long, 0, 0, 0) < 0)) __PYX_ERR(0, 67, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "pyCoCo.pyx":64
+  /* "pyCoCo.pyx":68
  *         cdef np.ndarray[double, ndim=2] res = np.zeros((2,self.thisptr.flux_.size()), dtype=np.float64)
  *         res[0] = self.thisptr.mjd_
  *         res[1] = self.thisptr.flux_             # <<<<<<<<<<<<<<
  * 
  *         return res
  */
-  __pyx_t_5 = __pyx_convert_vector_to_py_double(__pyx_v_self->thisptr->flux_); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 64, __pyx_L1_error)
+  __pyx_t_5 = __pyx_convert_vector_to_py_double(__pyx_v_self->thisptr->flux_); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 68, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
-  if (unlikely(__Pyx_SetItemInt(((PyObject *)__pyx_v_res), 1, __pyx_t_5, long, 1, __Pyx_PyInt_From_long, 0, 0, 0) < 0)) __PYX_ERR(0, 64, __pyx_L1_error)
+  if (unlikely(__Pyx_SetItemInt(((PyObject *)__pyx_v_res), 1, __pyx_t_5, long, 1, __Pyx_PyInt_From_long, 0, 0, 0) < 0)) __PYX_ERR(0, 68, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-  /* "pyCoCo.pyx":66
+  /* "pyCoCo.pyx":70
  *         res[1] = self.thisptr.flux_
  * 
  *         return res             # <<<<<<<<<<<<<<
@@ -2293,8 +2354,8 @@ static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_8spec_photometry(struct __pyx_obj_6pyC
   __pyx_r = ((PyObject *)__pyx_v_res);
   goto __pyx_L0;
 
-  /* "pyCoCo.pyx":55
- *         return res
+  /* "pyCoCo.pyx":59
+ *         return self.thisptr.bestFitParams_
  * 
  *     def spec_photometry(self,             # <<<<<<<<<<<<<<
  *                         string name,
@@ -5223,7 +5284,8 @@ static void __pyx_tp_dealloc_6pyCoCo_pyCoCo(PyObject *o) {
 static PyMethodDef __pyx_methods_6pyCoCo_pyCoCo[] = {
   {"init", (PyCFunction)__pyx_pw_6pyCoCo_6pyCoCo_5init, METH_NOARGS, 0},
   {"simulate", (PyCFunction)__pyx_pw_6pyCoCo_6pyCoCo_7simulate, METH_VARARGS|METH_KEYWORDS, 0},
-  {"spec_photometry", (PyCFunction)__pyx_pw_6pyCoCo_6pyCoCo_9spec_photometry, METH_VARARGS|METH_KEYWORDS, 0},
+  {"get_fit_params", (PyCFunction)__pyx_pw_6pyCoCo_6pyCoCo_9get_fit_params, METH_NOARGS, 0},
+  {"spec_photometry", (PyCFunction)__pyx_pw_6pyCoCo_6pyCoCo_11spec_photometry, METH_VARARGS|METH_KEYWORDS, 0},
   {0, 0, 0, 0}
 };
 
@@ -5550,9 +5612,9 @@ PyMODINIT_FUNC PyInit_pyCoCo(void)
   /*--- Variable export code ---*/
   /*--- Function export code ---*/
   /*--- Type init code ---*/
-  if (PyType_Ready(&__pyx_type_6pyCoCo_pyCoCo) < 0) __PYX_ERR(0, 23, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_6pyCoCo_pyCoCo) < 0) __PYX_ERR(0, 24, __pyx_L1_error)
   __pyx_type_6pyCoCo_pyCoCo.tp_print = 0;
-  if (PyObject_SetAttrString(__pyx_m, "pyCoCo", (PyObject *)&__pyx_type_6pyCoCo_pyCoCo) < 0) __PYX_ERR(0, 23, __pyx_L1_error)
+  if (PyObject_SetAttrString(__pyx_m, "pyCoCo", (PyObject *)&__pyx_type_6pyCoCo_pyCoCo) < 0) __PYX_ERR(0, 24, __pyx_L1_error)
   __pyx_ptype_6pyCoCo_pyCoCo = &__pyx_type_6pyCoCo_pyCoCo;
   /*--- Type import code ---*/
   __pyx_ptype_7cpython_4type_type = __Pyx_ImportType(__Pyx_BUILTIN_MODULE_NAME, "type", 
