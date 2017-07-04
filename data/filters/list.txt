@@ -82,6 +82,7 @@ SNLSr.dat
 SNLSz.dat
 swift_U.dat
 swift_UVW1.dat
+swift_V.dat
 u'.dat
 u.dat
 V.dat
