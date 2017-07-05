@@ -24,6 +24,8 @@
 
 #include "core/utils.hpp"
 #include "core/SN.hpp"
+#include "models/Bazin09.hpp"
+#include "models/Kessler10.hpp"
 #include "models/Karpenka12.hpp"
 #include "models/Karpenka12Afterglow.hpp"
 #include "models/Firth17Complex.hpp"
@@ -146,22 +148,35 @@ void fitLC(std::shared_ptr<Workspace> w) {
         // Loop though each filter
         for (auto lc : sn.second.lc_) {
             // Initialise the model
-            std::shared_ptr<Karpenka12> karpenka12(new Karpenka12);
-            karpenka12->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
-            karpenka12->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
-            karpenka12->sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
-            std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(karpenka12);
-            std::shared_ptr<Karpenka12Afterglow> karpenka12afterglow(new Karpenka12Afterglow);
-            // karpenka12afterglow->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
-            // karpenka12afterglow->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
-            // karpenka12afterglow->sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
-            // std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(karpenka12afterglow);
+//            std::shared_ptr<Bazin09> bazin09(new Bazin09);
+//            bazin09->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+//            bazin09->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+//            bazin09->sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
+//            std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(bazin09);
 
-            // std::shared_ptr<Firth17Complex> firth17complex(new Firth17Complex);
-            // firth17complex->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
-            // firth17complex->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
-            // firth17complex->sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
-            // std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(firth17complex);
+            std::shared_ptr<Kessler10> kessler10(new Kessler10);
+            kessler10->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+            kessler10->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+            kessler10->sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
+            std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(kessler10);
+
+//            std::shared_ptr<Karpenka12> karpenka12(new Karpenka12);
+//            karpenka12->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+//            karpenka12->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+//            karpenka12->sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
+//            std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(karpenka12);
+
+//            std::shared_ptr<Karpenka12Afterglow> karpenka12afterglow(new Karpenka12Afterglow);
+//             karpenka12afterglow->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+//             karpenka12afterglow->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+//             karpenka12afterglow->sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
+//             std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(karpenka12afterglow);
+
+//             std::shared_ptr<Firth17Complex> firth17complex(new Firth17Complex);
+//             firth17complex->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+//             firth17complex->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+//             firth17complex->sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
+//             std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(firth17complex);
 
             // Initialise solver
             MNest solver(model);

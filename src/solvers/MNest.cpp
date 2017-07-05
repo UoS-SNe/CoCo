@@ -86,7 +86,8 @@ void MNest::fit() {
     int mmodal = 1;					// do mode separation?
     int ceff = 0;					// run in constant efficiency mode?
     double efr = 0.1;				// set the required efficiency
-    double tol = 0.05;				// tol, defines the stopping criteria
+//    double tol = 0.05;				// tol, defines the stopping criteria
+    double tol = 0.01;				// tol, defines the stopping criteria
     int ndims = noParams_;	        // dimensionality (no. of free parameters)
     int nPar = ndims;				// total no. of parameters including free & derived parameters
     int nClsPar = ndims;			// no. of parameters to do mode separation on
