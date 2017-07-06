@@ -39,10 +39,10 @@ Karpenka12::Karpenka12() : Model() {
 
     paramGuess_ = {1.0,   // A
                    0.01,   // B
-                   99.0,  // t1
+                   65.0,  // t1
                    5.0,   // Trise
                    99.0,  // Tfall
-                   59.0};  // t0
+                   50.0};  // t0
 
     // paramGuess_ = {1.0,   // A
     //               0.01,   // B

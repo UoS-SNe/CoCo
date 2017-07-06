@@ -154,17 +154,17 @@ void fitLC(std::shared_ptr<Workspace> w) {
 //            bazin09->sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
 //            std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(bazin09);
 
-            std::shared_ptr<Kessler10> kessler10(new Kessler10);
-            kessler10->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
-            kessler10->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
-            kessler10->sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
-            std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(kessler10);
+//            std::shared_ptr<Kessler10> kessler10(new Kessler10);
+//            kessler10->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+//            kessler10->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+//            kessler10->sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
+//            std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(kessler10);
 
-//            std::shared_ptr<Karpenka12> karpenka12(new Karpenka12);
-//            karpenka12->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
-//            karpenka12->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
-//            karpenka12->sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
-//            std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(karpenka12);
+            std::shared_ptr<Karpenka12> karpenka12(new Karpenka12);
+            karpenka12->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+            karpenka12->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+            karpenka12->sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
+            std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(karpenka12);
 
 //            std::shared_ptr<Karpenka12Afterglow> karpenka12afterglow(new Karpenka12Afterglow);
 //             karpenka12afterglow->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
