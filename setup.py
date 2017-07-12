@@ -6,9 +6,10 @@ from Cython.Distutils import build_ext
 
 compile_args = ['-O3', '-std=c++11', '-stdlib=libc++']
 link_args = ['-std=c++11', '-stdlib=libc++']
-inc = [numpy.get_include(), ".", "/usr/local/include", "/usr/local/include/"]
-# lib = [".", "/usr/local/lib", "/usr/local/lib/",  "/opt/local/lib/", "/usr/local/gfortran/lib/"]
-lib = [".", "/usr/local/lib", "/usr/local/lib/",  "/opt/local/lib/"]
+# inc = [numpy.get_include(), ".", "/usr/local/include", "/usr/local/include/"]
+inc = [numpy.get_include(), ".", "/usr/local/include", "/usr/local/include/", "/usr/local/gfortran/lib/"]
+lib = [".", "/usr/local/lib", "/usr/local/lib/",  "/opt/local/lib/", "/usr/local/gfortran/lib/"]
+# lib = [".", "/usr/local/lib", "/usr/local/lib/",  "/opt/local/lib/"]
 
 
 if sys.platform == 'darwin':
