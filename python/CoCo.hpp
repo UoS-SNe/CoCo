@@ -42,6 +42,8 @@ public:
     std::vector<double> fluxErr_;
     std::vector<double> bestFitParams_;
 
+    std::unordered_map<std::string, std::vector<double> > paramMap_;
+
     // Templates
     std::unordered_map<std::string, SN> templateSNe_;
 

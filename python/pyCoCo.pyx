@@ -1,6 +1,7 @@
 import cython
 from libcpp.string cimport string
 from libcpp.vector cimport vector
+from libcpp.unordered_map cimport unordered_map
 import numpy as np
 cimport numpy as np
 
@@ -11,7 +12,7 @@ cdef extern from "python/CoCo.hpp":
         vector[double] mjd_
         vector[double] flux_
         vector[double] fluxErr_
-        vector[double] bestFitParams_
+        unordered_map[string, vector[double]] paramMap_
         CoCo(string,string) except +
         void init()
         void simulate(string,double,double,double,double,double,double,
@@ -81,7 +82,7 @@ cdef class pyCoCo:
         return res
 
     def get_fit_params(self):
-        return self.thisptr.bestFitParams_
+        return self.thisptr.paramMap_
 
     def spec_photometry(self,
                         string name,
