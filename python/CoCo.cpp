@@ -138,6 +138,9 @@ void CoCo::simulate(std::string templateName,
         solver.bestFit_ = vmath::mult<double>(solver.bestFit_, lc.second.normalization_);
 
         bestFitParams_ = model->params_;
+        bestFitParams_.push_back(lc.second.normalization_);
+
+        paramMap_[lc.second.filter_] = bestFitParams_;
 
         size_t j = 0;
         for (size_t i = 0; i < filterSim.size(); ++i) {
