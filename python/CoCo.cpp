@@ -82,7 +82,8 @@ void CoCo::simulate(std::string templateName,
                     double mjdPeak,
                     std::vector<double> mjdSim,
                     std::vector<std::string> filterSim,
-                    std::vector<double> guessParams) {
+                    std::vector<double> guessParams,
+                    double lumDist) {
 
     flux_ = std::vector<double>(mjdSim.size(), 0);
     fluxErr_ = std::vector<double>(mjdSim.size(), 0);
@@ -155,7 +156,7 @@ void CoCo::simulate(std::string templateName,
                     double mjdPeak,
                     std::vector<double> mjdSim,
                     std::vector<std::string> filterSim) {
-    simulate(templateName, z, absMag, Ebv_MW, Ebv_Host, R_v, mjdPeak, mjdSim, filterSim, {});
+    simulate(templateName, z, absMag, Ebv_MW, Ebv_Host, R_v, mjdPeak, mjdSim, filterSim, {}, 0);
 }
 
  void CoCo::spec_photometry(std::string templateName,
