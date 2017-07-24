@@ -82,8 +82,7 @@ void CoCo::simulate(std::string templateName,
                     double mjdPeak,
                     std::vector<double> mjdSim,
                     std::vector<std::string> filterSim,
-                    std::vector<double> guessParams,
-                    double lumDist) {
+                    std::vector<double> guessParams) {
 
     flux_ = std::vector<double>(mjdSim.size(), 0);
     fluxErr_ = std::vector<double>(mjdSim.size(), 0);
@@ -117,7 +116,7 @@ void CoCo::simulate(std::string templateName,
         std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(karpenka12);
 
         if (guessParams.size() > 0) {
-            model->params_ = guessParams;
+            model->paramGuess_ = guessParams;
         }
 
         // Initialise solver
@@ -156,7 +155,7 @@ void CoCo::simulate(std::string templateName,
                     double mjdPeak,
                     std::vector<double> mjdSim,
                     std::vector<std::string> filterSim) {
-    simulate(templateName, z, absMag, Ebv_MW, Ebv_Host, R_v, mjdPeak, mjdSim, filterSim, {}, 0);
+    simulate(templateName, z, absMag, Ebv_MW, Ebv_Host, R_v, mjdPeak, mjdSim, filterSim, {});
 }
 
  void CoCo::spec_photometry(std::string templateName,

@@ -18,8 +18,7 @@ cdef extern from "python/CoCo.hpp":
         void simulate(string,double,double,double,double,double,double,
             vector[double],
             vector[string],
-            vector[double],
-            double) except +
+            vector[double]) except +
         void simulate(string,double,double,double,double,double,double,
             vector[double],
             vector[string]) except +
@@ -48,8 +47,7 @@ cdef class pyCoCo:
                             double mjdPeak,
                             np.ndarray[double, ndim=1, mode="c"] mjdSim not None,
                             np.ndarray flt not None,
-                            np.ndarray[double, ndim=1, mode="c"] params not None,
-                            double lum_dist):
+                            np.ndarray[double, ndim=1, mode="c"] params not None):
 
         self.thisptr.simulate(name,z,absMag,Ebv_MW,Ebv_Host,R_v,mjdPeak,
             <vector[double]> mjdSim,
