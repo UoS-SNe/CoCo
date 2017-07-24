@@ -1559,7 +1559,7 @@ static PyObject *__pyx_n_s_zeros;
 static int __pyx_pf_6pyCoCo_6pyCoCo___cinit__(struct __pyx_obj_6pyCoCo_pyCoCo *__pyx_v_self, std::string __pyx_v_flt, std::string __pyx_v_root); /* proto */
 static void __pyx_pf_6pyCoCo_6pyCoCo_2__dealloc__(struct __pyx_obj_6pyCoCo_pyCoCo *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_4init(struct __pyx_obj_6pyCoCo_pyCoCo *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_6simulate_set_params(struct __pyx_obj_6pyCoCo_pyCoCo *__pyx_v_self, std::string __pyx_v_name, double __pyx_v_z, double __pyx_v_absMag, double __pyx_v_Ebv_MW, double __pyx_v_Ebv_Host, double __pyx_v_R_v, double __pyx_v_mjdPeak, PyArrayObject *__pyx_v_mjdSim, PyArrayObject *__pyx_v_flt, PyArrayObject *__pyx_v_params); /* proto */
+static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_6simulate_debug(struct __pyx_obj_6pyCoCo_pyCoCo *__pyx_v_self, std::string __pyx_v_name, double __pyx_v_z, double __pyx_v_absMag, double __pyx_v_Ebv_MW, double __pyx_v_Ebv_Host, double __pyx_v_R_v, double __pyx_v_mjdPeak, PyArrayObject *__pyx_v_mjdSim, PyArrayObject *__pyx_v_flt, PyArrayObject *__pyx_v_params); /* proto */
 static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_8simulate(struct __pyx_obj_6pyCoCo_pyCoCo *__pyx_v_self, std::string __pyx_v_name, double __pyx_v_z, double __pyx_v_absMag, double __pyx_v_Ebv_MW, double __pyx_v_Ebv_Host, double __pyx_v_R_v, double __pyx_v_mjdPeak, PyArrayObject *__pyx_v_mjdSim, PyArrayObject *__pyx_v_flt); /* proto */
 static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_10get_fit_params(struct __pyx_obj_6pyCoCo_pyCoCo *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_12spec_photometry(struct __pyx_obj_6pyCoCo_pyCoCo *__pyx_v_self, std::string __pyx_v_name, double __pyx_v_z, std::string __pyx_v_flt); /* proto */
@@ -1758,7 +1758,7 @@ static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_4init(struct __pyx_obj_6pyCoCo_pyCoCo 
  *     def init(self):
  *         self.thisptr.init()             # <<<<<<<<<<<<<<
  * 
- *     def simulate_set_params(self,
+ *     def simulate_debug(self,
  */
   __pyx_v_self->thisptr->init();
 
@@ -1780,14 +1780,14 @@ static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_4init(struct __pyx_obj_6pyCoCo_pyCoCo 
 /* "pyCoCo.pyx":39
  *         self.thisptr.init()
  * 
- *     def simulate_set_params(self,             # <<<<<<<<<<<<<<
+ *     def simulate_debug(self,             # <<<<<<<<<<<<<<
  *                             string name,
  *                             double z,
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_6pyCoCo_6pyCoCo_7simulate_set_params(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static PyObject *__pyx_pw_6pyCoCo_6pyCoCo_7simulate_set_params(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_6pyCoCo_6pyCoCo_7simulate_debug(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static PyObject *__pyx_pw_6pyCoCo_6pyCoCo_7simulate_debug(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   std::string __pyx_v_name;
   double __pyx_v_z;
   double __pyx_v_absMag;
@@ -1800,7 +1800,7 @@ static PyObject *__pyx_pw_6pyCoCo_6pyCoCo_7simulate_set_params(PyObject *__pyx_v
   PyArrayObject *__pyx_v_params = 0;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("simulate_set_params (wrapper)", 0);
+  __Pyx_RefNannySetupContext("simulate_debug (wrapper)", 0);
   {
     static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_name,&__pyx_n_s_z,&__pyx_n_s_absMag,&__pyx_n_s_Ebv_MW,&__pyx_n_s_Ebv_Host,&__pyx_n_s_R_v,&__pyx_n_s_mjdPeak,&__pyx_n_s_mjdSim,&__pyx_n_s_flt,&__pyx_n_s_params,0};
     PyObject* values[10] = {0,0,0,0,0,0,0,0,0,0};
@@ -1829,51 +1829,91 @@ static PyObject *__pyx_pw_6pyCoCo_6pyCoCo_7simulate_set_params(PyObject *__pyx_v
         case  1:
         if (likely((values[1] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_z)) != 0)) kw_args--;
         else {
+<<<<<<< HEAD
           __Pyx_RaiseArgtupleInvalid("simulate_set_params", 1, 10, 10, 1); __PYX_ERR(0, 39, __pyx_L3_error)
+=======
+          __Pyx_RaiseArgtupleInvalid("simulate_debug", 1, 10, 10, 1); __PYX_ERR(0, 40, __pyx_L3_error)
+>>>>>>> e932b64996244a58581950022546e51048cb6cca
         }
         case  2:
         if (likely((values[2] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_absMag)) != 0)) kw_args--;
         else {
+<<<<<<< HEAD
           __Pyx_RaiseArgtupleInvalid("simulate_set_params", 1, 10, 10, 2); __PYX_ERR(0, 39, __pyx_L3_error)
+=======
+          __Pyx_RaiseArgtupleInvalid("simulate_debug", 1, 10, 10, 2); __PYX_ERR(0, 40, __pyx_L3_error)
+>>>>>>> e932b64996244a58581950022546e51048cb6cca
         }
         case  3:
         if (likely((values[3] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_Ebv_MW)) != 0)) kw_args--;
         else {
+<<<<<<< HEAD
           __Pyx_RaiseArgtupleInvalid("simulate_set_params", 1, 10, 10, 3); __PYX_ERR(0, 39, __pyx_L3_error)
+=======
+          __Pyx_RaiseArgtupleInvalid("simulate_debug", 1, 10, 10, 3); __PYX_ERR(0, 40, __pyx_L3_error)
+>>>>>>> e932b64996244a58581950022546e51048cb6cca
         }
         case  4:
         if (likely((values[4] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_Ebv_Host)) != 0)) kw_args--;
         else {
+<<<<<<< HEAD
           __Pyx_RaiseArgtupleInvalid("simulate_set_params", 1, 10, 10, 4); __PYX_ERR(0, 39, __pyx_L3_error)
+=======
+          __Pyx_RaiseArgtupleInvalid("simulate_debug", 1, 10, 10, 4); __PYX_ERR(0, 40, __pyx_L3_error)
+>>>>>>> e932b64996244a58581950022546e51048cb6cca
         }
         case  5:
         if (likely((values[5] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_R_v)) != 0)) kw_args--;
         else {
+<<<<<<< HEAD
           __Pyx_RaiseArgtupleInvalid("simulate_set_params", 1, 10, 10, 5); __PYX_ERR(0, 39, __pyx_L3_error)
+=======
+          __Pyx_RaiseArgtupleInvalid("simulate_debug", 1, 10, 10, 5); __PYX_ERR(0, 40, __pyx_L3_error)
+>>>>>>> e932b64996244a58581950022546e51048cb6cca
         }
         case  6:
         if (likely((values[6] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_mjdPeak)) != 0)) kw_args--;
         else {
+<<<<<<< HEAD
           __Pyx_RaiseArgtupleInvalid("simulate_set_params", 1, 10, 10, 6); __PYX_ERR(0, 39, __pyx_L3_error)
+=======
+          __Pyx_RaiseArgtupleInvalid("simulate_debug", 1, 10, 10, 6); __PYX_ERR(0, 40, __pyx_L3_error)
+>>>>>>> e932b64996244a58581950022546e51048cb6cca
         }
         case  7:
         if (likely((values[7] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_mjdSim)) != 0)) kw_args--;
         else {
+<<<<<<< HEAD
           __Pyx_RaiseArgtupleInvalid("simulate_set_params", 1, 10, 10, 7); __PYX_ERR(0, 39, __pyx_L3_error)
+=======
+          __Pyx_RaiseArgtupleInvalid("simulate_debug", 1, 10, 10, 7); __PYX_ERR(0, 40, __pyx_L3_error)
+>>>>>>> e932b64996244a58581950022546e51048cb6cca
         }
         case  8:
         if (likely((values[8] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_flt)) != 0)) kw_args--;
         else {
+<<<<<<< HEAD
           __Pyx_RaiseArgtupleInvalid("simulate_set_params", 1, 10, 10, 8); __PYX_ERR(0, 39, __pyx_L3_error)
+=======
+          __Pyx_RaiseArgtupleInvalid("simulate_debug", 1, 10, 10, 8); __PYX_ERR(0, 40, __pyx_L3_error)
+>>>>>>> e932b64996244a58581950022546e51048cb6cca
         }
         case  9:
         if (likely((values[9] = PyDict_GetItem(__pyx_kwds, __pyx_n_s_params)) != 0)) kw_args--;
         else {
+<<<<<<< HEAD
           __Pyx_RaiseArgtupleInvalid("simulate_set_params", 1, 10, 10, 9); __PYX_ERR(0, 39, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
         if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "simulate_set_params") < 0)) __PYX_ERR(0, 39, __pyx_L3_error)
+=======
+          __Pyx_RaiseArgtupleInvalid("simulate_debug", 1, 10, 10, 9); __PYX_ERR(0, 40, __pyx_L3_error)
+        }
+      }
+      if (unlikely(kw_args > 0)) {
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "simulate_debug") < 0)) __PYX_ERR(0, 40, __pyx_L3_error)
+>>>>>>> e932b64996244a58581950022546e51048cb6cca
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 10) {
       goto __pyx_L5_argtuple_error;
@@ -1902,16 +1942,27 @@ static PyObject *__pyx_pw_6pyCoCo_6pyCoCo_7simulate_set_params(PyObject *__pyx_v
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
+<<<<<<< HEAD
   __Pyx_RaiseArgtupleInvalid("simulate_set_params", 1, 10, 10, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 39, __pyx_L3_error)
+=======
+  __Pyx_RaiseArgtupleInvalid("simulate_debug", 1, 10, 10, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 40, __pyx_L3_error)
+>>>>>>> e932b64996244a58581950022546e51048cb6cca
   __pyx_L3_error:;
-  __Pyx_AddTraceback("pyCoCo.pyCoCo.simulate_set_params", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("pyCoCo.pyCoCo.simulate_debug", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
+<<<<<<< HEAD
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_mjdSim), __pyx_ptype_5numpy_ndarray, 0, "mjdSim", 0))) __PYX_ERR(0, 47, __pyx_L1_error)
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_flt), __pyx_ptype_5numpy_ndarray, 0, "flt", 0))) __PYX_ERR(0, 48, __pyx_L1_error)
   if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_params), __pyx_ptype_5numpy_ndarray, 0, "params", 0))) __PYX_ERR(0, 49, __pyx_L1_error)
   __pyx_r = __pyx_pf_6pyCoCo_6pyCoCo_6simulate_set_params(((struct __pyx_obj_6pyCoCo_pyCoCo *)__pyx_v_self), __pyx_v_name, __pyx_v_z, __pyx_v_absMag, __pyx_v_Ebv_MW, __pyx_v_Ebv_Host, __pyx_v_R_v, __pyx_v_mjdPeak, __pyx_v_mjdSim, __pyx_v_flt, __pyx_v_params);
+=======
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_mjdSim), __pyx_ptype_5numpy_ndarray, 0, "mjdSim", 0))) __PYX_ERR(0, 48, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_flt), __pyx_ptype_5numpy_ndarray, 0, "flt", 0))) __PYX_ERR(0, 49, __pyx_L1_error)
+  if (unlikely(!__Pyx_ArgTypeTest(((PyObject *)__pyx_v_params), __pyx_ptype_5numpy_ndarray, 0, "params", 0))) __PYX_ERR(0, 50, __pyx_L1_error)
+  __pyx_r = __pyx_pf_6pyCoCo_6pyCoCo_6simulate_debug(((struct __pyx_obj_6pyCoCo_pyCoCo *)__pyx_v_self), __pyx_v_name, __pyx_v_z, __pyx_v_absMag, __pyx_v_Ebv_MW, __pyx_v_Ebv_Host, __pyx_v_R_v, __pyx_v_mjdPeak, __pyx_v_mjdSim, __pyx_v_flt, __pyx_v_params);
+>>>>>>> e932b64996244a58581950022546e51048cb6cca
 
   /* function exit code */
   goto __pyx_L0;
@@ -1922,7 +1973,7 @@ static PyObject *__pyx_pw_6pyCoCo_6pyCoCo_7simulate_set_params(PyObject *__pyx_v
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_6simulate_set_params(struct __pyx_obj_6pyCoCo_pyCoCo *__pyx_v_self, std::string __pyx_v_name, double __pyx_v_z, double __pyx_v_absMag, double __pyx_v_Ebv_MW, double __pyx_v_Ebv_Host, double __pyx_v_R_v, double __pyx_v_mjdPeak, PyArrayObject *__pyx_v_mjdSim, PyArrayObject *__pyx_v_flt, PyArrayObject *__pyx_v_params) {
+static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_6simulate_debug(struct __pyx_obj_6pyCoCo_pyCoCo *__pyx_v_self, std::string __pyx_v_name, double __pyx_v_z, double __pyx_v_absMag, double __pyx_v_Ebv_MW, double __pyx_v_Ebv_Host, double __pyx_v_R_v, double __pyx_v_mjdPeak, PyArrayObject *__pyx_v_mjdSim, PyArrayObject *__pyx_v_flt, PyArrayObject *__pyx_v_params) {
   PyArrayObject *__pyx_v_res = 0;
   __Pyx_LocalBuf_ND __pyx_pybuffernd_mjdSim;
   __Pyx_Buffer __pyx_pybuffer_mjdSim;
@@ -1941,7 +1992,7 @@ static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_6simulate_set_params(struct __pyx_obj_
   PyObject *__pyx_t_7 = NULL;
   PyObject *__pyx_t_8 = NULL;
   PyArrayObject *__pyx_t_9 = NULL;
-  __Pyx_RefNannySetupContext("simulate_set_params", 0);
+  __Pyx_RefNannySetupContext("simulate_debug", 0);
   __pyx_pybuffer_res.pybuffer.buf = NULL;
   __pyx_pybuffer_res.refcount = 0;
   __pyx_pybuffernd_res.data = NULL;
@@ -2100,7 +2151,7 @@ static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_6simulate_set_params(struct __pyx_obj_
   /* "pyCoCo.pyx":39
  *         self.thisptr.init()
  * 
- *     def simulate_set_params(self,             # <<<<<<<<<<<<<<
+ *     def simulate_debug(self,             # <<<<<<<<<<<<<<
  *                             string name,
  *                             double z,
  */
@@ -2120,7 +2171,7 @@ static PyObject *__pyx_pf_6pyCoCo_6pyCoCo_6simulate_set_params(struct __pyx_obj_
     __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_params.rcbuffer->pybuffer);
     __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_res.rcbuffer->pybuffer);
   __Pyx_ErrRestore(__pyx_type, __pyx_value, __pyx_tb);}
-  __Pyx_AddTraceback("pyCoCo.pyCoCo.simulate_set_params", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("pyCoCo.pyCoCo.simulate_debug", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   goto __pyx_L2;
   __pyx_L0:;
@@ -5643,7 +5694,7 @@ static void __pyx_tp_dealloc_6pyCoCo_pyCoCo(PyObject *o) {
 
 static PyMethodDef __pyx_methods_6pyCoCo_pyCoCo[] = {
   {"init", (PyCFunction)__pyx_pw_6pyCoCo_6pyCoCo_5init, METH_NOARGS, 0},
-  {"simulate_set_params", (PyCFunction)__pyx_pw_6pyCoCo_6pyCoCo_7simulate_set_params, METH_VARARGS|METH_KEYWORDS, 0},
+  {"simulate_debug", (PyCFunction)__pyx_pw_6pyCoCo_6pyCoCo_7simulate_debug, METH_VARARGS|METH_KEYWORDS, 0},
   {"simulate", (PyCFunction)__pyx_pw_6pyCoCo_6pyCoCo_9simulate, METH_VARARGS|METH_KEYWORDS, 0},
   {"get_fit_params", (PyCFunction)__pyx_pw_6pyCoCo_6pyCoCo_11get_fit_params, METH_NOARGS, 0},
   {"spec_photometry", (PyCFunction)__pyx_pw_6pyCoCo_6pyCoCo_13spec_photometry, METH_VARARGS|METH_KEYWORDS, 0},

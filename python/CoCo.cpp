@@ -123,7 +123,7 @@ void CoCo::simulate(std::string templateName,
 //        std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(bazin09);
 
         if (guessParams.size() > 0) {
-            model->params_ = guessParams;
+            model->paramGuess_ = guessParams;
         }
 
         // Initialise solver
