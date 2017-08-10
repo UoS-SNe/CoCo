@@ -30,6 +30,9 @@ def parse_command_line(description=("CoCo 'lightcurve' test submission "
     parser.add_argument("-d", "--jobdir", default='./split/',
                         help="Directory to store input job files.")
                         
+    parser.add_argument("-e", "--eups", help="EUPS tarball location",
+                    default='/lsst/user/d/darren.white/eupscoco.tar.gz')
+                        
     parser.add_argument("-l", "--local", action="store_true",
         help="Flag to run locally. WARNING: Must set local infiles")
 
@@ -84,16 +87,12 @@ def make_jobs(splitlist,prefix,local):
     # Set up splitter to generate subjobs for each job
     j.splitter = GenericSplitter()
     
-    # Set input files sent to each worker node (need to be defined as
-    # LocalFile(), DiracFile(), etc depending on where job is being run)
-    j.inputfiles = [LocalFile('testScript.py')]
-    
     # Set arguments and individual input files for each subjob, assign 
     # to splitter (makes subjobs across args/infiles pairs) - NOTE:
     # inputfiles here hsould be path strings, not Local/DiracFile as 
     # above.
     appargs = [[os.path.basename(fname),outfile] for fname in splitlist]
-    infiles = [[fname] for fame in splitlist]
+    infiles = [[fname] for fname in splitlist]
     j.splitter.multi_attrs = { "application.args": appargs, 
                                "inputfiles": infiles}
     
@@ -102,7 +101,13 @@ def make_jobs(splitlist,prefix,local):
     j.outputfiles = [LocalFile(outfile)]
     
     # Set backend to GridPP if local flag not set.
-    if not local: j.backend = Dirac()
+    # Set input files sent to each worker node (need to be defined as
+    # LocalFile(), DiracFile(), etc depending on where job is being run)
+    if local: 
+        j.inputfiles = [LocalFile(args.eups), LocalFile('testScript.py')]
+    else:
+        j.inputfiles = [DiracFile(args.eups), LocalFile('testScript.py')]
+        j.backend = Dirac()
     
     # Submit job, sent as individual subjobs that run independantly.
     j.submit()
