@@ -2,7 +2,7 @@ import argparse
 import numpy as np
 import os
 
-def parse_command_line(description=("CoCo 'lightcurve' test submission"
+def parse_command_line(description=("CoCo 'lightcurve' test submission "
                 "script, that will read in a list of 'lightcurves' and "
                 "print the result(in reality square the number).")):
     """
@@ -13,10 +13,10 @@ def parse_command_line(description=("CoCo 'lightcurve' test submission"
         description=description,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument("-f", "--infile", default='test.txt',
+    parser.add_argument("-f", "--infile", default='testinput.txt',
                         help="Input file")
                         
-    parser.add_argument("-n", "--nlines", default=10, type=int,
+    parser.add_argument("-n", "--nlines", default=25, type=int,
                         help="Number of lines of input per job")
                         
     parser.add_argument("-m", "--maxjobs", default=0, type=int,
@@ -27,8 +27,11 @@ def parse_command_line(description=("CoCo 'lightcurve' test submission"
                         help="Output prefix of filename: "
                         "<prefix>.txt")
                         
-    parser.add_argument("-d", "--jobdir", default='./',
-                        help="Directory to store input job files.")                   
+    parser.add_argument("-d", "--jobdir", default='./split/',
+                        help="Directory to store input job files.")
+                        
+    parser.add_argument("-l", "--local", action="store_true",
+        help="Flag to run locally. WARNING: Must set local infiles")
 
     return parser.parse_args()
 
@@ -69,7 +72,7 @@ def split_infile(infile,nline,maxjobs,jobdir):
     return splitfiles
 
 
-def make_jobs(splitfiles,prefix):
+def make_jobs(splitlist,prefix,local):
 
     # Set up a job with an executable application
     j = Job(application=Executable())
@@ -82,15 +85,15 @@ def make_jobs(splitfiles,prefix):
     j.splitter = GenericSplitter()
     
     # Set input files sent to each worker node (need to be defined as
-    # LocalFile(), DiracFile(), etc
+    # LocalFile(), DiracFile(), etc depending on where job is being run)
     j.inputfiles = [LocalFile('testScript.py')]
     
     # Set arguments and individual input files for each subjob, assign 
     # to splitter (makes subjobs across args/infiles pairs) - NOTE:
     # inputfiles here hsould be path strings, not Local/DiracFile as 
     # above.
-    appargs = [[os.path.basename(filename),outfile] for filename in splitfiles]
-    infiles = [[filename] for filename in splitfiles]
+    appargs = [[os.path.basename(fname),outfile] for fname in splitlist]
+    infiles = [[fname] for fame in splitlist]
     j.splitter.multi_attrs = { "application.args": appargs, 
                                "inputfiles": infiles}
     
@@ -98,12 +101,15 @@ def make_jobs(splitfiles,prefix):
     # LocalFile brings back to local machines ganga directory
     j.outputfiles = [LocalFile(outfile)]
     
-    #j.backend = Dirac()
+    # Set backend to GridPP if local flag not set.
+    if not local: j.backend = Dirac()
+    
     # Submit job, sent as individual subjobs that run independantly.
     j.submit()
 
     return 
 
 args = parse_command_line()
-splitfiles = split_infile(args.infile,args.nlines,args.maxjobs,args.jobdir)
-make_jobs(splitfiles,args.prefix)
+splitlist = split_infile(args.infile,args.nlines,args.maxjobs,
+                                                            args.jobdir)
+make_jobs(splitlist,args.prefix,args.local)

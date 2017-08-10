@@ -48,7 +48,7 @@ def submit(arglist):
         # Define input files
         j.inputfiles = [#LocalFile('CoCosim.py'),
                         DiracFile(lfn=args.eups),
-                        DiracFile(lfn=args.spectra)]
+                        DiracFile(lfn=args.spec)]
         j.backend = Dirac() 
     
     # Define output file from script. LocalFile(..) brings back to 
