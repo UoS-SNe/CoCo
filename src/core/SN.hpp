@@ -44,7 +44,7 @@ struct LCData {
 };
 
 
-// Data structure for specta
+// Data structure for spectra
 struct SpecData {
     double mjd_;
     std::string file_;
@@ -70,7 +70,7 @@ struct Obs {
 };
 
 
-// Supernova(SN) class prividing the main data object in the code.
+// Supernova(SN) class providing the main data object in the code.
 // The class can be initialised multiple ways depending on the usage:
 // 1)  SN() - Initialises an empty data structure, used when light curves and
 //     spectra are results of simulations and not loaded from text files.

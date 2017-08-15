@@ -28,6 +28,7 @@
 #include "core/SN.hpp"
 #include "core/utils.hpp"
 #include "models/Karpenka12.hpp"
+#include "models/Bazin09.hpp"
 #include "solvers/MNest.hpp"
 
 
@@ -149,11 +150,17 @@ void fitPhase(std::shared_ptr<Workspace> w) {
         auto lc = sn.second.lc_[w->zeroFilter_];
 
         // Initialise the model
-        std::shared_ptr<Karpenka12> karpenka12(new Karpenka12);
-        karpenka12->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
-        karpenka12->y_ = vmath::div<double>(lc.flux_, lc.normalization_);
-        karpenka12->sigma_ = std::vector<double>(lc.flux_.size(), 0.001);
-        std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(karpenka12);
+//        std::shared_ptr<Karpenka12> karpenka12(new Karpenka12);
+//        karpenka12->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
+//        karpenka12->y_ = vmath::div<double>(lc.flux_, lc.normalization_);
+//        karpenka12->sigma_ = std::vector<double>(lc.flux_.size(), 0.001);
+//        std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(karpenka12);
+
+        std::shared_ptr<Bazin09> bazin09(new Bazin09);
+        bazin09->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
+        bazin09->y_ = vmath::div<double>(lc.flux_, lc.normalization_);
+        bazin09->sigma_ = std::vector<double>(lc.flux_.size(), 0.001);
+        std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(bazin09);
 
         // Initialise solver
         MNest solver(model);
