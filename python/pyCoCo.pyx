@@ -37,7 +37,7 @@ cdef class pyCoCo:
     def init(self):
         self.thisptr.init()
 
-    def simulate_set_params(self,
+    def simulate_debug(self,
                             string name,
                             double z,
                             double absMag,

@@ -249,7 +249,7 @@ void mangleSpectra(std::shared_ptr<Workspace> w) {
             solver->median_ = vmath::mult<double>(solver->median_, lcNorm);
             solver->medianSigma_ = vmath::mult<double>(solver->medianSigma_, lcNorm);
 
-            // File handels for spectrum mangling results
+            // File handles for spectrum mangling results
             ofstream reconSpecFile;
             ofstream reconStatFile;
             reconSpecFile.open("recon/" + sn.second.name_ + "_" +
