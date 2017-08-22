@@ -31,6 +31,7 @@
 #include "core/Filters.hpp"
 #include "core/SN.hpp"
 #include "solvers/MNest.hpp"
+#include "solvers/Minuit.hpp"
 #include "models/SpecMangle.hpp"
 
 
@@ -232,12 +233,14 @@ void mangleSpectra(std::shared_ptr<Workspace> w) {
 
             // Initialise the solver
             std::shared_ptr<Model> model = dynamic_pointer_cast<Model>(specMangle);
-            std::shared_ptr<MNest> mnest(new MNest(model));
-            mnest->livePoints_ = 100;
+            // std::shared_ptr<MNest> mnest(new MNest(model));
+            std::shared_ptr<Minuit> minuit(new Minuit(model));
+            // mnest->livePoints_ = 100;
 
-            std::shared_ptr<Solver> solver = dynamic_pointer_cast<Solver>(mnest);
+            // std::shared_ptr<Solver> solver = dynamic_pointer_cast<Solver>(mnest);
+            std::shared_ptr<Solver> solver = dynamic_pointer_cast<Solver>(minuit);
             solver->xRecon_ = spec.second.wav_;
-            solver->chainPath_ = "chains/" + sn.second.name_ + "/" + to_string(spec.second.mjd_);
+            // solver->chainPath_ = "chains/" + sn.second.name_ + "/" + to_string(spec.second.mjd_);
 
             // Perform fitting
             solver->analyse();
