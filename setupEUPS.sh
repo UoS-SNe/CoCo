@@ -2,7 +2,7 @@
 
 # EUPS setup script to mimic GridPP environment, for development locally.
 # User to pass eups location as argument, e.g.:
-# source eupsCoCo.sh ./eups
+# source eups.sh <path-to-eups>
 
 source /cvmfs/lsst.opensciencegrid.org/fnal/products/eups/bin/setups.sh
 MY_EUPS="$(cd "$(dirname "$1")"; pwd)/$(basename "$1")"

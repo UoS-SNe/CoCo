@@ -43,6 +43,7 @@ recon
 #data
 #data/lc
 #data/spectra
+GridPP/split
 test_lists/
 shared
 spectra

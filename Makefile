@@ -1,8 +1,8 @@
 CC = gcc
 CXX = g++
 CFLAGS = -c -fPIC -O3
-CXXFLAGS = -c -O3 -fPIC -std=c++0x -I $(GSL_DIR)/include
-LDFLAGS = -L $(GSL_DIR)/lib -lgsl -lgslcblas -lminuit2
+CXXFLAGS = -c -O3 -fPIC -std=c++0x -I $(GSL_DIR)/include -I $(MINUIT2_DIR)/include
+LDFLAGS = -L $(GSL_DIR)/lib -lgsl -lgslcblas -L $(MINUIT2_DIR)/lib -lMinuit2
 .cpp.o:
 	$(CXX) $(CXXFLAGS) $< -o $@
 
