@@ -52,3 +52,11 @@ build
 eups
 # Temporary test files
 test.*
+eups/
+*/.ipynb_checkpoints/
+examples/.ipynb_checkpoints/
+.ipynb_checkpoints/
+
+# Added by Rob
+.idea
+data/filters/gaussian_6000_500.dat

@@ -40,6 +40,9 @@ public:
     std::vector<double> mjd_;
     std::vector<double> flux_;
     std::vector<double> fluxErr_;
+    std::vector<double> bestFitParams_;
+
+    std::unordered_map<std::string, std::vector<double> > paramMap_;
 
     // Templates
     std::unordered_map<std::string, SN> templateSNe_;
@@ -56,6 +59,11 @@ public:
     void simulate(std::string,double,double,double,double,double,double,
                   std::vector<double>,
                   std::vector<std::string>);
+
+    void simulate(std::string,double,double,double,double,double,double,
+                  std::vector<double>,
+                  std::vector<std::string>,
+                  std::vector<double>);
 
     std::vector<double> mjdRange(std::string,
         const std::vector<double>&,

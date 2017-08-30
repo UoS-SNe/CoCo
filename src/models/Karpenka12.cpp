@@ -39,10 +39,17 @@ Karpenka12::Karpenka12() : Model() {
 
     paramGuess_ = {1.0,   // A
                    0.01,   // B
-                   10.0,  // t1
+                   99.0,  // t1
                    5.0,   // Trise
-                   20.0,  // Tfall
-                   40.0};  // t0
+                   99.0,  // Tfall
+                   59.0};  // t0
+
+    // paramGuess_ = {1.0,   // A
+    //               0.01,   // B
+    //               10.0,  // t1
+    //               5.0,   // Trise
+    //               20.0,  // Tfall
+    //               40.0};  // t0
 
     priorType_ = {"log",  // A
                   "log",  // B
@@ -83,6 +90,10 @@ std::vector<double> Karpenka12::residual() {
 
         } else {
             res[i] = (y_[i] - flux) / sigma_[i];
+
+            if (y_[i] <= 0) {
+                res[i] *= 0;
+            }
         }
     }
 
