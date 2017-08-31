@@ -15,6 +15,7 @@ echo "gsl"; setup gsl
 echo "numpy v1_9_1"; setup numpy v1_9_1
 echo "setuptools"; setup setuptools
 echo "minuit2"; setup minuit2
+echo "scipy v0_14_0"; setup scipy v0_14_0
 
 read -p "Python v2_7_8 setup breaks eups. Do you wish to continue [y/n]? " -n 1 -r
 echo    # (optional) move to a new line
