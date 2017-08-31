@@ -2,6 +2,7 @@ import argparse
 import os
 import glob
 import shutil
+import fnmatch
 
 def parse_command_line(description=("CoCo 'lightcurve' test submission "
                 "script, that will read in a list of 'lightcurves' and "
@@ -14,7 +15,7 @@ def parse_command_line(description=("CoCo 'lightcurve' test submission "
         description=description,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument("-j", "--jobnum", default='testinput.txt',
+    parser.add_argument("-j", "--jobnum", default='0',
                         help="Job number of completed run")
                         
     parser.add_argument("-o", "--outdir", default='./output', 
@@ -45,7 +46,7 @@ def transfer_files(jn, outdir, wc):
         pass
         
     if os.path.isdir(gangaOutDir): # Is a single job, files should be here
-        files = glob.glob("{}/{}".format(gangaOutDir,wc))
+        files = glob.glob("{0}/{1}".format(gangaOutDir,wc))
     else: # A job made of subjobs, so need to check each subjob output
         gangaJobDir = gangaOutDir.replace('output/','')
         files = locate_subjob_files(wc, gangaJobDir)
