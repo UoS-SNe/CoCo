@@ -22,6 +22,7 @@ tar -xzf $(basename $SPECTRA) --directory CoCo 2>&1
 enduntar=`date +%s`
 echo "$((enduntar-endclone)) seconds to untar" >> $(basename $INFILE.log.dat)
 
+cp $INFILE CoCo
 cd CoCo 
 echo "Switching to gridPP branch"
 git checkout gridPP 
@@ -55,7 +56,7 @@ echo "$((endbuild-endeups)) seconds to build pyCoCo" >> $(basename $INFILE.log.d
 
 echo "Running on" `date`
 echo "Running CoCo: python CoCoSim2.py "
-python CoCosim2.py $INFILE $NLCS
+python CoCosim2.py $(basename $INFILE) $NLCS
 echo "DONE"
 
 endsim=`date +%s`
