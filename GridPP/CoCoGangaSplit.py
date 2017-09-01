@@ -19,7 +19,7 @@ def parse_command_line(description=("CoCo 'lightcurve' test submission"
                     default='/lsst/user/d/darren.white/spectra.tar.gz')
     
     parser.add_argument("-i", "--infiles", nargs='+', 
-                                            help="List of input files".)
+                                            help="List of input files")
                     
     parser.add_argument("-n", "--nlcs", default='1000', 
                                 help="Number of required light curves "
@@ -33,7 +33,7 @@ def parse_command_line(description=("CoCo 'lightcurve' test submission"
 
 
 def submit(arglist):
-	
+
     j = Job(application=Executable())
     
     # Set the application executable to that stored at the top of
@@ -47,12 +47,12 @@ def submit(arglist):
     # to splitter (makes subjobs across args/infiles pairs) - NOTE:
     # inputfiles here should be path strings, not Local/DiracFile as 
     # above.
-    appargs = [[os.path.basename(args.eups)
-                os.path.basename(args.spectra),
+    appargs = [[os.path.basename(args.eups),
+                os.path.basename(args.spec),
                 os.path.basename(fname), 
-                arglist.nlcs] for fname in filelist]
+                arglist.nlcs] for fname in arglist.infiles]
                 
-    infiles = [[fname] for fname in filelist]
+    infiles = [[fname] for fname in arglist.infiles]
     
     j.splitter.multi_attrs = { "application.args": appargs, 
                                "inputfiles": infiles}
@@ -60,10 +60,10 @@ def submit(arglist):
     # Set backend to GridPP if local flag not set.
     # Set input files sent to each worker node (need to be defined as
     # LocalFile(), DiracFile(), etc depending on where job is being run)
-    if local: 
-        j.inputfiles = [LocalFile(args.eups), LocalFile(args.spectra)]
+    if arglist.local: 
+        j.inputfiles = [LocalFile(args.eups), LocalFile(args.spec)]
     else:
-        j.inputfiles = [DiracFile(args.eups), DiracFile(args.spectra)]
+        j.inputfiles = [DiracFile(args.eups), DiracFile(args.spec)]
         j.backend = Dirac()
         
     # Define output file wildcard from script and where to put it after 
