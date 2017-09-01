@@ -20,7 +20,10 @@ else:
         return codecs.latin_1_encode(x)[0]
 
 if __name__ == "__main__":
-
+    """
+    arg1 = path to opsim csv
+    arg2 = n_sne required
+    """
     print [i for i in sys.argv]
 
     # DDF = False
@@ -44,11 +47,12 @@ if __name__ == "__main__":
     #     infile = "WFDinput.csv"
     #
     infile = sys.argv[1]
+    n_req = sys.argv[2]
 
     plot = False
     verbose = False
 
-    n_req = 100
+    # n_req = 100
     z_max = 0.1
 
     z_binsize = 0.01
@@ -151,7 +155,7 @@ if __name__ == "__main__":
         if verbose:
             print outpath
 
-        # phot.write(outpath, format = "ascii.fast_commented_header")
+        phot.write(outpath, format = "ascii.fast_commented_header")
 
         end = time.time()
         time_list.append(end-start)
