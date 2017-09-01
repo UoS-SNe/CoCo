@@ -113,25 +113,13 @@ if __name__ == "__main__":
         # print w_trim
         mjd_to_sim = mjd_to_sim[w_trim.values]
         filters_to_sim = filters_to_sim[w_trim.values]
-        # mjdmax = mjdmax - np.nanmin(mjd_to_sim)
-        # mjd_to_sim = mjd_to_sim - np.nanmin(mjd_to_sim)
-        # out = coco.simulate(b"SN2009jf",
-        # out = coco.simulate(b"SN2009jf",
+
         flux, dflux = coco.simulate(b"SN1998bw",
                                     z_sim, -0.0, 0.1, 0.1, 3.1,
                                     mjdmax, mjd_to_sim,
                                     filters_to_sim)
 
-        # out = coco.simulate(b"SN2009jf",
-        # out = coco.simulate(b"SN2011dh",
-        #                     z_sim, -0.0, 0.1, 0.1, 3.1,
-        #                     mjdmax, mjd_to_sim,
-        #                     filters_to_sim)
-        # out = [0,0]
-        # print out[0]
-        # print out[1]
 
-        #print flux
         #print dflux
 
         phot = simulate_out_to_ap_table(mjd_to_sim, flux, dflux, filters_to_sim)
