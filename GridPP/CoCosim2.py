@@ -47,7 +47,7 @@ if __name__ == "__main__":
     #     infile = "WFDinput.csv"
     #
     infile = sys.argv[1]
-    n_req = sys.argv[2]
+    n_req = np.int(sys.argv[2])
 
     plot = False
     verbose = False
