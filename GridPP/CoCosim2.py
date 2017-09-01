@@ -4,18 +4,21 @@ import time
 import numpy as np
 import pandas as pd
 from scipy.interpolate import InterpolatedUnivariateSpline
-#import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 
 from sim_functions import *
 
 from pyCoCo import pyCoCo
 
 import sys
+
 if sys.version_info < (3,):
     def b(x):
         return x
 else:
     import codecs
+
+
     def b(x):
         return codecs.latin_1_encode(x)[0]
 
@@ -24,7 +27,7 @@ if __name__ == "__main__":
     arg1 = path to opsim csv
     arg2 = n_sne required
     """
-    print [i for i in sys.argv]
+    print[i for i in sys.argv]
 
     # DDF = False
     # WFD = False
@@ -48,7 +51,7 @@ if __name__ == "__main__":
     #
     infile = sys.argv[1]
     n_req = np.int(sys.argv[2])
-
+    print n_req
     plot = False
     verbose = False
 
@@ -92,7 +95,9 @@ if __name__ == "__main__":
     time_list = []
 
     ##
+    print n_req
     while n_sne < n_req:
+        print n_sne, n_req
         start = time.time()
 
         ##
@@ -132,9 +137,9 @@ if __name__ == "__main__":
         # out = coco.simulate(b"SN2009jf",
         # out = coco.simulate(b"SN2009jf",
         flux, dflux = coco.simulate(b"SN1998bw",
-                            z_sim, -0.0, 0.1, 0.1, 3.1,
-                            mjdmax, mjd_to_sim,
-                            filters_to_sim)
+                                    z_sim, -0.0, 0.1, 0.1, 3.1,
+                                    mjdmax, mjd_to_sim,
+                                    filters_to_sim)
 
         # out = coco.simulate(b"SN2009jf",
         # out = coco.simulate(b"SN2011dh",
@@ -144,40 +149,43 @@ if __name__ == "__main__":
         # out = [0,0]
         # print out[0]
         # print out[1]
-        if verbose:
-            print flux
-            print dflux
+
+        print flux
+        print dflux
 
         phot = simulate_out_to_ap_table(mjd_to_sim, flux, dflux, filters_to_sim)
+
+        print phot
 
         outpath = os.path.join(os.pardir, "SN_" + str(w) + "_" + str(n_sne + 1).rjust(9, "0") + ".dat")
 
         if verbose:
             print outpath
 
-        phot.write(outpath, format = "ascii.fast_commented_header")
+        phot.write(outpath, format="ascii.fast_commented_header")
 
         end = time.time()
-        time_list.append(end-start)
+        time_list.append(end - start)
 
-        n_sne+=1
-        n+=1
+        n_sne += 1
+        n += 1
 
         if plot:
             fig = plt.figure(figsize=[8, 4])
-            fig.subplots_adjust(left = 0.09, bottom = 0.13, top = 0.95,
-                             right = 0.92, hspace=0, wspace = 0)
+            fig.subplots_adjust(left=0.09, bottom=0.13, top=0.95,
+                                right=0.92, hspace=0, wspace=0)
             ax = fig.add_subplot(111)
             ax.scatter(mjd_to_sim, out[0])
-            ax.plot([mjdmax, mjdmax],[0, 1.1*np.nanmax(out[0])], ls=":", color="Black")
-            ax.set_ylim(0, 1.05*np.nanmax(out[0]))
+            ax.plot([mjdmax, mjdmax], [0, 1.1 * np.nanmax(out[0])], ls=":", color="Black")
+            ax.set_ylim(0, 1.05 * np.nanmax(out[0]))
 
             plt.show()
-            
+
     timefile = os.path.join(os.pardir, "average_time.dat")
     ofile = open(timefile, "w")
     print(n_sne, np.nanmean(time_list), np.median(time_list), np.std(time_list), np.sum(time_list))
-    ofile.write(str(n_sne) + " " + str(np.nanmean(time_list)) + " " + str(np.median(time_list)) + " " + str(np.std(time_list)) + " " + str(np.sum(time_list)))
+    ofile.write(str(n_sne) + " " + str(np.nanmean(time_list)) + " " + str(np.median(time_list)) + " " + str(
+        np.std(time_list)) + " " + str(np.sum(time_list)))
     ofile.close()
 
 
