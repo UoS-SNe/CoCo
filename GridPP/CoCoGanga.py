@@ -18,6 +18,12 @@ def parse_command_line(description=("CoCo 'lightcurve' test submission"
     parser.add_argument("-s", "--spec", help="Spectra tarball location",
                     default='/lsst/user/d/darren.white/spectra.tar.gz')
     
+    parser.add_argument("-i", "--infile", help="Input csv",
+                    default='GridPP/WFDinput.csv')
+                    
+    parser.add_argument("-n", "--nlcs", help="Number of required light curves",
+                    default='1000')
+    
     parser.add_argument("-l", "--local", action="store_true",
         help="Flag to run locally. WARNING: Must set local EUPS/Spec " 
              "file if set.")
@@ -37,23 +43,22 @@ def submit(arglist):
     # Define the arguments passed to the script on running on the 
     # worker nodes.
     j.application.args = [os.path.basename(args.eups),
-                          os.path.basename(args.spec)]
+                          os.path.basename(args.spec),
+                          arglist.infile, arglist.nlcs]
     
     if args.local: # Local submission, need local tarballs
         # Define input files
-        j.inputfiles = [#LocalFile('CoCosim.py'),
-                        LocalFile(args.eups),
+        j.inputfiles = [LocalFile(args.eups),
                         LocalFile(args.spec)]
     else: # GridPP submission, need DiracFile tarballs and set backend
         # Define input files
-        j.inputfiles = [#LocalFile('CoCosim.py'),
-                        DiracFile(lfn=args.eups),
+        j.inputfiles = [DiracFile(lfn=args.eups),
                         DiracFile(lfn=args.spec)]
         j.backend = Dirac() 
     
     # Define output file from script. LocalFile(..) brings back to 
     # local machine from GridPP (in to ganga working directory)
-    j.outputfiles = []
+    j.outputfiles = [LocalFile('*.dat')]
     
     j.submit()
 

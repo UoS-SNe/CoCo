@@ -4,7 +4,7 @@ import time
 import numpy as np
 import pandas as pd
 from scipy.interpolate import InterpolatedUnivariateSpline
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 from sim_functions import *
 
