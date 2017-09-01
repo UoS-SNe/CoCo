@@ -8,7 +8,7 @@ from scipy.interpolate import InterpolatedUnivariateSpline
 
 from sim_functions import *
 
-# from pyCoCo import pyCoCo
+from pyCoCo import pyCoCo
 
 import sys
 
