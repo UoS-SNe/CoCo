@@ -29,26 +29,6 @@ if __name__ == "__main__":
     """
     print[i for i in sys.argv]
 
-    # DDF = False
-    # WFD = False
-    #
-    # if "DDF" in sys.argv:
-    #     DDF = True
-    # if "WFD" in sys.argv:
-    #     WFD = True
-    #
-    # if WFD and DDF:
-    #     print("Choose Either/Or WFD/DDF")
-    #     raise RuntimeError
-    # if not WFD and not DDF:
-    #     print("assume you want a DDF")
-    #     DDF = True
-    #
-    # if DDF:
-    #     infile = "DDFinput.csv"
-    # elif WFD:
-    #     infile = "WFDinput.csv"
-    #
     infile = sys.argv[1]
     n_req = np.int(sys.argv[2])
     print n_req
