@@ -130,8 +130,9 @@ if __name__ == "__main__":
 
         w_trim = np.logical_and(run_df["expMJD"] < mjdmax + 200, run_df["expMJD"] > mjdmax - 50)
 
-        mjd_to_sim = mjd_to_sim[w_trim]
-        filters_to_sim = filters_to_sim[w_trim]
+        # print w_trim
+        mjd_to_sim = mjd_to_sim[w_trim.values]
+        filters_to_sim = filters_to_sim[w_trim.values]
         # mjdmax = mjdmax - np.nanmin(mjd_to_sim)
         # mjd_to_sim = mjd_to_sim - np.nanmin(mjd_to_sim)
         # out = coco.simulate(b"SN2009jf",
@@ -150,19 +151,19 @@ if __name__ == "__main__":
         # print out[0]
         # print out[1]
 
-        print flux
-        print dflux
+        #print flux
+        #print dflux
 
         phot = simulate_out_to_ap_table(mjd_to_sim, flux, dflux, filters_to_sim)
 
-        print phot
+        #print phot
 
         outpath = os.path.join(os.pardir, "SN_" + str(w) + "_" + str(n_sne + 1).rjust(9, "0") + ".dat")
 
         if verbose:
             print outpath
 
-        phot.write(outpath, format="ascii.fast_commented_header")
+        phot.write(outpath, format="ascii.fast_commented_header", overwrite=True)
 
         end = time.time()
         time_list.append(end - start)
