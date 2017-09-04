@@ -63,9 +63,10 @@ def submit(arglist):
     if arglist.local: 
         j.inputfiles = [LocalFile(args.eups), LocalFile(args.spec)]
     else:
-        j.inputfiles = [DiracFile(args.eups), DiracFile(args.spec)]
+        j.inputfiles = [DiracFile(lfn=args.eups), 
+                        DiracFile(lfn=args.spec)]
         j.backend = Dirac()
-        
+
     # Define output file wildcard from script and where to put it after 
     # completion LocalFile brings back to local machines ganga directory
     j.outputfiles = [LocalFile("*.dat")]

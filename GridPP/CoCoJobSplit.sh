@@ -61,4 +61,4 @@ echo "DONE"
 
 endsim=`date +%s`
 echo "$((endsim-endbuild)) seconds to run simulations" >> $(basename $INFILE.log.dat)
-echo "$((endsim-start)) seconds to run simulations" >> $(basename $INFILE.log.dat)
+echo "$((endsim-start)) seconds to run whole script" >> $(basename $INFILE.log.dat)

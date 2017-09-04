@@ -44,16 +44,19 @@ def submit(arglist):
     # worker nodes.
     j.application.args = [os.path.basename(args.eups),
                           os.path.basename(args.spec),
-                          arglist.infile, arglist.nlcs]
+                          os.path.basename(arglist.infile), 
+                          arglist.nlcs]
     
     if args.local: # Local submission, need local tarballs
         # Define input files
         j.inputfiles = [LocalFile(args.eups),
-                        LocalFile(args.spec)]
+                        LocalFile(args.spec),
+                        LocalFile(arglist.infile)]
     else: # GridPP submission, need DiracFile tarballs and set backend
         # Define input files
         j.inputfiles = [DiracFile(lfn=args.eups),
-                        DiracFile(lfn=args.spec)]
+                        DiracFile(lfn=args.spec),
+                        LocalFile(arglist.infile)]
         j.backend = Dirac() 
     
     # Define output file from script. LocalFile(..) brings back to 

@@ -22,6 +22,7 @@ tar -xzf $(basename $SPECTRA) --directory CoCo 2>&1
 enduntar=`date +%s`
 echo "$((enduntar-endclone)) seconds to untar" >> $(basename $INFILE.log.dat)
 
+cp $INFILE CoCo
 cd CoCo 
 echo "Switching to gridPP branch"
 git checkout gridPP 
