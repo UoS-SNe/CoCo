@@ -174,7 +174,7 @@ void fitLC(std::shared_ptr<Workspace> w) {
         // Loop though each filter
         for (auto lc : sn.second.lc_) {
             // Initialise the model
-
+            std::cout << "Fitting " << lc.second.filter_ << std::endl;
             std::cout << "With model: " << w->modelWanted_ << std::endl;  // Check the passed args
 
             std::shared_ptr<Model> model = NULL;  // Declare here to ensure presence in scope
@@ -214,7 +214,7 @@ void fitLC(std::shared_ptr<Workspace> w) {
                 model = std::dynamic_pointer_cast<Model>(firth17complex);
             } else {
                 std::cout << "eggs" << std::endl;
-                std::cout << "Don't recognise " << w->modelWanted_ << ". Defaulting to Bazin09" << std::endl;
+                std::cout << "Either blank or didn't recognise " << w->modelWanted_ << ". Defaulting to Bazin09" << std::endl;
                 std::shared_ptr<Bazin09> bazin09(new Bazin09);
                 bazin09->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
                 bazin09->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);

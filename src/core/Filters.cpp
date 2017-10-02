@@ -53,7 +53,7 @@ void Filters::loadFilter(std::string fileName) {
     std::string path = folderPath_+ "/" + fileName;
     vmath::loadtxt<double>(path, 2, data);
 
-    // Truncate filters at the 3% level
+    // Truncate filters at the 3% level TODO double check rationale
     double truncLimit = 0.03 * vmath::max(data[1]);
     for (int i = data[0].size() - 1; i >= 0; --i) {
         if (data[1][i] < truncLimit) {

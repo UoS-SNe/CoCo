@@ -1,5 +1,5 @@
 // CoCo - Supernova templates and simulations package
-// Copyright (C) 2016, 2017  Szymon Prajs
+// Copyright (C) 2016, 2017  Szymon Prajs, Robert Firth
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -11,7 +11,7 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-// Contact author: S.Prajs@soton.ac.uk
+// Contact author: S.Prajs@soton.ac.uk; R.E.Firth@soton.ac.uk
 
 #include <iostream>
 #include <vector>
@@ -36,6 +36,7 @@ struct Workspace {
     // Code inputs
     std::string zeroFilter_;
     std::string inputLCList_;
+    std::string modelWanted_;
 
     // Filter info
     std::string filterPath_;
@@ -56,39 +57,112 @@ void help() {
     std::cout << "CoCo - SpecPhase: \n";
     std::cout << "Originally writen by Natasha Karpenka, ";
     std::cout << "currently maintained by Szymon Prajs (S.Prajs@soton.ac.uk) ";
-    std::cout << "and Rob Firth.\n";
+    std::cout << "and Rob Firth (R.E.Firth@soton.ac.uk).\n";
     std::cout << "\nUsage:\n";
     std::cout << "specphase filter_name\n";
+    std::cout << "\n";
+    std::cout << "----------------------------------------------------------\n";
+    std::cout << "Options:\n";
+    std::cout << "-m, -model <model_name>\n";
     std::cout << std::endl;
 }
 
 
+bool in_array(const std::string &value, const std::vector<string> &array){
+//    https://stackoverflow.com/a/20303915
+    return std::find(array.begin(), array.end(), value) != array.end();
+}
+
 // Assign input options to workspace parameters
 void applyOptions(std::vector<std::string> &options, std::shared_ptr<Workspace> w) {
+    std::cout << options.size() << std::endl;
+
+    std::vector<std::string> command;
+
+    std::vector<std::string> filterArray = vmath::loadtxt<std::string>(w->filterPath_ + "/list.txt", 1)[0];
+
+    for (size_t i = 0; i < filterArray.size(); ++i) {
+        std::cout << filterArray[i] << std::endl;
+    }
+
+    if (in_array("BessellV.dat", filterArray)){
+        std::cout << "foo" << std::endl;
+    }
+
     if (options.size() < 1 || options[0] == "-h" || options[0] == "--help") {
         help();
         exit(0);
+    }
 
-    } else if (options.size() == 2)  {
-        w->inputLCList_ = options[0];
-        w->zeroFilter_ = options[1];
+    for (size_t i = 0; i < options.size(); ++i) {
 
-        if (utils::fileExists(w->inputLCList_)) {
-            std::vector< std::vector<std::string> > temp;
-            vmath::loadtxt<std::string>(w->inputLCList_, 3, temp);
-            w->lcList_ = temp[0];
-            vmath::castString<double>(temp[1], w->z_);
-            vmath::castString<double>(temp[2], w->distMod_);
+
+        std::cout << i << "\t" << options[i] << std::endl;
+        // Deal with flags by loading pairs of options into commands
+        if (options[i] == "-m") {
+            if (i+1 < options.size()) {
+                command = {options[i], options[i+1]};
+                std::cout << options[i] << " " << options[i+1] << std::endl;
+                i++;  // skip the next option once the previous is assigned
+
+            } else {
+                std::cout << options[i] << " is not a valid flag" << std::endl;
+            }
+
+        } else if (options[i] == "-h" || options[i] == "--help"){
+            help();
+            continue;
+//        } else if (options[i] == filter is in list){
+//            do something:
+        } else {
+            utils::split(options[i], '=', command);
         }
 
-    } else if (options.size() == 4) {
-            w->lcList_ = {options[1]};
-            w->z_ = {atof(options[2].c_str())};
-            w->distMod_ = {atof(options[3].c_str())};
+        if(options[i].substr( options[i].length() - 5 ) == ".list"){
+            std::cout << options[i]  << " looks like a list file" << std::endl;
+            w->inputLCList_ = options[0];
+            if (utils::fileExists(w->inputLCList_)) {
+                std::vector< std::vector<std::string> > temp;
+                vmath::loadtxt<std::string>(w->inputLCList_, 3, temp);
+                w->lcList_ = temp[0];
+                vmath::castString<double>(temp[1], w->z_);
+                vmath::castString<double>(temp[2], w->distMod_);
+             }
+        } else if (in_array(options[i]+ ".dat", filterArray)){
+            std::cout << options[i]  << " looks like a filter" << std::endl;
+            w->zeroFilter_ = options[1];
 
-    } else {
-        std::cout << "Options are not currently implemented\n";
-        std::cout << "Program will continue executing" << std::endl;
+//            w->inputLCList_ = options[0];
+//            w->zeroFilter_ = options[1];
+        } else {
+            std::cout << options[i]  << " doesn't look like a filter" << std::endl;
+        }
+
+
+
+
+
+        //} else if (options.size() == 2)  {
+//            w->inputLCList_ = options[0];
+//            w->zeroFilter_ = options[1];
+//
+//            if (utils::fileExists(w->inputLCList_)) {
+//                std::vector< std::vector<std::string> > temp;
+//                vmath::loadtxt<std::string>(w->inputLCList_, 3, temp);
+//                w->lcList_ = temp[0];
+//                vmath::castString<double>(temp[1], w->z_);
+//                vmath::castString<double>(temp[2], w->distMod_);
+//            }
+
+//        } else if (options.size() == 4) {
+//                w->lcList_ = {options[1]};
+//                w->z_ = {atof(options[2].c_str())};
+//                w->distMod_ = {atof(options[3].c_str())};
+
+//        } else {
+//            std::cout << "Options are not currently implemented\n";
+//            std::cout << "Program will continue executing" << std::endl;
+//        }
     }
 }
 
@@ -167,22 +241,22 @@ void fitPhase(std::shared_ptr<Workspace> w) {
         solver.xRecon_ = vmath::range<double>(-15, lc.mjdMax_ - lc.mjdMin_ + 20, 1);
         solver.chainPath_ = "chains/" + sn.second.name_ + "/phase";
 
-        // Perform fitting
-        solver.analyse();
-
-        size_t indexMax = std::distance(solver.bestFit_.begin(),
-                                        max_element(solver.bestFit_.begin(),
-                                                    solver.bestFit_.end()));
-        double mjdZeroPhase = solver.xRecon_[indexMax] + lc.mjdMin_;
-
-        for (auto &spec : sn.second.spec_) {
-            phaseFile << "spectra/" << utils::split(spec.second.file_, '/').back();
-            phaseFile << " " << (spec.second.mjd_ - mjdZeroPhase) / (1.0 + sn.second.zRaw_) << "\n";
-        }
-
-        phaseFile.close();
-
-        sn.second.saveSpec(mjdZeroPhase);
+//        // Perform fitting
+//        solver.analyse();
+//
+//        size_t indexMax = std::distance(solver.bestFit_.begin(),
+//                                        max_element(solver.bestFit_.begin(),
+//                                                    solver.bestFit_.end()));
+//        double mjdZeroPhase = solver.xRecon_[indexMax] + lc.mjdMin_;
+//
+//        for (auto &spec : sn.second.spec_) {
+//            phaseFile << "spectra/" << utils::split(spec.second.file_, '/').back();
+//            phaseFile << " " << (spec.second.mjd_ - mjdZeroPhase) / (1.0 + sn.second.zRaw_) << "\n";
+//        }
+//
+//        phaseFile.close();
+//
+//        sn.second.saveSpec(mjdZeroPhase);
     }
 }
 
@@ -192,18 +266,39 @@ int main (int argc, char* argv[]) {
     std::shared_ptr<Workspace> w(new Workspace());
 
     utils::getArgv(argc, argv, options);
-    applyOptions(options, w);
-    fillUnassigned(w);
+
+//    for (size_t i = 1; i < options.size(); ++i) {
+//        std::cout << options[i] << ", " << std::endl;
+//        }
 
     // Read in filters and find the ID of the filter used to determine the phase
     w->filterPath_ = "data/filters";
     w->filters_ = std::shared_ptr<Filters>(new Filters(w->filterPath_));
     w->cosmology_ = std::shared_ptr<Cosmology>(new Cosmology(0));
 
+    applyOptions(options, w);
+//    fillUnassigned(w);
+
+
+
+//    std::vector<std::string> filterArray = vmath::loadtxt<std::string>(w->filterPath_ + "/list.txt", 1)[0];
+//
+//    for (size_t i = 0; i < filterArray.size(); ++i) {
+//        std::cout << filterArray[i] << std::endl;
+//    }
+//
+//    if (in_array("BessellV.dat", filterArray)){
+//        std::cout << "foo" << std::endl;
+//    }
+
+//    for (size_t i = 1; i < options.size(); ++i) {
+//        std::cout << options[i] << ", " << std::endl;
+//        }
+
     // run SpecPhase pipeline
-    scanRecon(w);
-    makeSyntheticLC(w);
-    fitPhase(w);
+//    scanRecon(w);
+//    makeSyntheticLC(w);
+//    fitPhase(w);
 
     return 0;
 }
