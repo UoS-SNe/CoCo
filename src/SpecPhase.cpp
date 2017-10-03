@@ -71,6 +71,7 @@ void help() {
 }
 
 
+// Helper function to search for filter in the listfile
 bool in_array(const std::string &value, const std::vector<string> &array){
 //    https://stackoverflow.com/a/20303915
     return std::find(array.begin(), array.end(), value) != array.end();
@@ -85,24 +86,16 @@ void applyOptions(std::vector<std::string> &options, std::shared_ptr<Workspace> 
 
     // initialise list of filters to match against
     std::vector<std::string> filterArray = vmath::loadtxt<std::string>(w->filterPath_ + "/list.txt", 1)[0];
-    std::cout << options[3] << std::endl;
-//    for (size_t i = 0; i < filterArray.size(); ++i) {
-//        std::cout << filterArray[i] << std::endl;
-//    }
-//
-//    if (in_array("BessellV.dat", filterArray)){
-//        std::cout << "foo" << std::endl;
-//    }
 
     if (options.size() < 1 || options[0] == "-h" || options[0] == "--help") {
         help();
         exit(0);
     }
 
-//    for (size_t i = 0; i < options.size(); ++i) {
     for (size_t i = 0; i < options.size(); ++i) {
 
         std::cout << i << "\t" << options[i] << std::endl;
+
 
         if (options[i].length() > 5){
             if(options[i].substr( options[i].length() - 5 ) == ".list"){
@@ -152,38 +145,6 @@ void applyOptions(std::vector<std::string> &options, std::shared_ptr<Workspace> 
                 }
          }
 
-////
-////        } else if (options[i] == "-h" || options[i] == "--help"){
-////            help();
-////            continue;
-//////        } else if (options[i] == filter is in list){
-//////            do something:
-////        } else {
-////
-////            std::cout << options[i]  << " doesn't look like a filter, list or command" << std::endl;
-////            utils::split(options[i], '=', command);
-////        }
-//        //} else if (options.size() == 2)  {
-////            w->inputLCList_ = options[0];
-////            w->zeroFilter_ = options[1];
-////
-////            if (utils::fileExists(w->inputLCList_)) {
-////                std::vector< std::vector<std::string> > temp;
-////                vmath::loadtxt<std::string>(w->inputLCList_, 3, temp);
-////                w->lcList_ = temp[0];
-////                vmath::castString<double>(temp[1], w->z_);
-////                vmath::castString<double>(temp[2], w->distMod_);
-////            }
-//
-////        } else if (options.size() == 4) {
-////                w->lcList_ = {options[1]};
-////                w->z_ = {atof(options[2].c_str())};
-////                w->distMod_ = {atof(options[3].c_str())};
-//
-////        } else {
-////            std::cout << "Options are not currently implemented\n";
-////            std::cout << "Program will continue executing" << std::endl;
-////        }
     }
 }
 
@@ -240,13 +201,14 @@ void makeSyntheticLC(std::shared_ptr<Workspace> w) {
 void fitPhase(std::shared_ptr<Workspace> w) {
     for (auto &sn : w->sn_) {
         std::ofstream phaseFile;
-        phaseFile.open("recon/" + sn.second.name_ + ".phase");
+        phaseFile.open("recon/" +  + ".phase"); // Open file for output
 
         auto lc = sn.second.lc_[w->zeroFilter_];
 
         // Initialise the model
-        std::cout << "Fitting " << lc.filter_ << std::endl;
-        std::cout << "With model: " << w->modelWanted_ << std::endl;  // Check the passed args
+        std::cout << "Fitting SN:\t" << sn.second.name_ << std::endl;
+        std::cout << "Relative to filter:\t"lc.filter_ << std::endl;
+        std::cout << "With model:\t" << w->modelWanted_ << std::endl;  // Check the passed args
 
         std::shared_ptr<Model> model = NULL;  // Declare here to ensure presence in scope
 
@@ -255,7 +217,6 @@ void fitPhase(std::shared_ptr<Workspace> w) {
             std::shared_ptr<Karpenka12> karpenka12(new Karpenka12);
             karpenka12->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
             karpenka12->y_ = vmath::div<double>(lc.flux_, lc.normalization_);
-//            karpenka12->sigma_ = vmath::div<double>(lc.fluxErr_, lc.normalization_);
             karpenka12->sigma_ = std::vector<double>(lc.flux_.size(), 0.001);
             model = std::dynamic_pointer_cast<Model>(karpenka12);
         } else if (w->modelWanted_ == "Kessler10") {
@@ -263,7 +224,6 @@ void fitPhase(std::shared_ptr<Workspace> w) {
             std::shared_ptr<Kessler10> kessler10(new Kessler10);
             kessler10->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
             kessler10->y_ = vmath::div<double>(lc.flux_, lc.normalization_);
-//            kessler10->sigma_ = vmath::div<double>(lc.fluxErr_, lc.normalization_);
             kessler10->sigma_ = std::vector<double>(lc.flux_.size(), 0.001);
             model = std::dynamic_pointer_cast<Model>(kessler10);
         } else if (w->modelWanted_ == "Bazin09") {
@@ -271,21 +231,18 @@ void fitPhase(std::shared_ptr<Workspace> w) {
             std::shared_ptr<Bazin09> bazin09(new Bazin09);
             bazin09->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
             bazin09->y_ = vmath::div<double>(lc.flux_, lc.normalization_);
-//            bazin09->sigma_ = vmath::div<double>(lc.fluxErr_, lc.normalization_);
             bazin09->sigma_ = std::vector<double>(lc.flux_.size(), 0.001);
             model = std::dynamic_pointer_cast<Model>(bazin09);
         } else if (w->modelWanted_ == "Karpenka12Afterglow") {
             std::shared_ptr<Karpenka12Afterglow> karpenka12afterglow(new Karpenka12Afterglow);
             karpenka12afterglow->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
             karpenka12afterglow->y_ = vmath::div<double>(lc.flux_, lc.normalization_);
-//            karpenka12afterglow->sigma_ = vmath::div<double>(lc.fluxErr_, lc.normalization_);
             karpenka12afterglow->sigma_ = std::vector<double>(lc.flux_.size(), 0.001);
             model = std::dynamic_pointer_cast<Model>(karpenka12afterglow);
         } else if (w->modelWanted_ == "Firth17Complex") {
             std::shared_ptr<Firth17Complex> firth17complex(new Firth17Complex);
             firth17complex->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
             firth17complex->y_ = vmath::div<double>(lc.flux_, lc.normalization_);
-//            firth17complex->sigma_ = vmath::div<double>(lc.fluxErr_, lc.normalization_);
             firth17complex->sigma_ = std::vector<double>(lc.flux_.size(), 0.001);
             model = std::dynamic_pointer_cast<Model>(firth17complex);
         } else {
@@ -294,31 +251,16 @@ void fitPhase(std::shared_ptr<Workspace> w) {
             std::shared_ptr<Bazin09> bazin09(new Bazin09);
             bazin09->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
             bazin09->y_ = vmath::div<double>(lc.flux_, lc.normalization_);
-//            bazin09->sigma_ = vmath::div<double>(lc.fluxErr_, lc.normalization_);
             bazin09->sigma_ = std::vector<double>(lc.flux_.size(), 0.001);
             model = std::dynamic_pointer_cast<Model>(bazin09);
 
         }
-//
-//        // Initialise the model
-////        std::shared_ptr<Karpenka12> karpenka12(new Karpenka12);
-////        karpenka12->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
-////        karpenka12->y_ = vmath::div<double>(lc.flux_, lc.normalization_);
-////        karpenka12->sigma_ = std::vector<double>(lc.flux_.size(), 0.001);
-////        std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(karpenka12);
-//
-//        std::shared_ptr<Bazin09> bazin09(new Bazin09);
-//        bazin09->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
-//        bazin09->y_ = vmath::div<double>(lc.flux_, lc.normalization_);
-//        bazin09->sigma_ = std::vector<double>(lc.flux_.size(), 0.001);
-//        std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(bazin09);
-//
+
         // Initialise solver
         MNest solver(model);
         solver.xRecon_ = vmath::range<double>(-15, lc.mjdMax_ - lc.mjdMin_ + 20, 1);
         solver.chainPath_ = "chains/" + sn.second.name_ + "/phase";
         std::cout << sn.second.name_  << std::endl;
-
 
         // Perform fitting
         solver.analyse();
@@ -333,7 +275,7 @@ void fitPhase(std::shared_ptr<Workspace> w) {
             phaseFile << " " << (spec.second.mjd_ - mjdZeroPhase) / (1.0 + sn.second.zRaw_) << "\n";
         }
 
-        phaseFile.close();
+        phaseFile.close(); // Close output file
 
         sn.second.saveSpec(mjdZeroPhase);
     }
@@ -346,10 +288,6 @@ int main (int argc, char* argv[]) {
 
     utils::getArgv(argc, argv, options);
 
-//    for (size_t i = 1; i < options.size(); ++i) {
-//        std::cout << options[i] << ", " << std::endl;
-//        }
-
     // Read in filters and find the ID of the filter used to determine the phase
     w->filterPath_ = "data/filters";
     w->filters_ = std::shared_ptr<Filters>(new Filters(w->filterPath_));
@@ -360,19 +298,6 @@ int main (int argc, char* argv[]) {
 
 
 
-//    std::vector<std::string> filterArray = vmath::loadtxt<std::string>(w->filterPath_ + "/list.txt", 1)[0];
-//
-//    for (size_t i = 0; i < filterArray.size(); ++i) {
-//        std::cout << filterArray[i] << std::endl;
-//    }
-//
-//    if (in_array("BessellV.dat", filterArray)){
-//        std::cout << "foo" << std::endl;
-//    }
-
-//    for (size_t i = 1; i < options.size(); ++i) {
-//        std::cout << options[i] << ", " << std::endl;
-//        }
 
     // run SpecPhase pipeline
     scanRecon(w);
