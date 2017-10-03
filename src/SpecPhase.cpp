@@ -311,9 +311,9 @@ void fitPhase(std::shared_ptr<Workspace> w) {
         solver.xRecon_ = vmath::range<double>(-15, lc.mjdMax_ - lc.mjdMin_ + 20, 1);
         solver.chainPath_ = "chains/" + sn.second.name_ + "/phase";
 
-//        // Perform fitting
-//        solver.analyse();
-//
+        // Perform fitting
+        solver.analyse();
+
 //        size_t indexMax = std::distance(solver.bestFit_.begin(),
 //                                        max_element(solver.bestFit_.begin(),
 //                                                    solver.bestFit_.end()));
@@ -323,9 +323,9 @@ void fitPhase(std::shared_ptr<Workspace> w) {
 //            phaseFile << "spectra/" << utils::split(spec.second.file_, '/').back();
 //            phaseFile << " " << (spec.second.mjd_ - mjdZeroPhase) / (1.0 + sn.second.zRaw_) << "\n";
 //        }
-//
-//        phaseFile.close();
-//
+
+        phaseFile.close();
+
 //        sn.second.saveSpec(mjdZeroPhase);
     }
 }
