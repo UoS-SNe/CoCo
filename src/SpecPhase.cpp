@@ -118,13 +118,8 @@ void applyOptions(std::vector<std::string> &options, std::shared_ptr<Workspace> 
             std::cout << options[i]  << " looks like a filter" << std::endl;
             w->zeroFilter_ = options[i];
 
-//            w->inputLCList_ = options[0];
-//            w->zeroFilter_ = options[1];
         }
 
-//            std::cout << options[i] << std::endl;
-//        }
-//
         if (options.size() > 2 && i > 1){
             std::cout << "more than 2 args" << std::endl;
                 if (options[i] == "-m"||
@@ -213,21 +208,18 @@ void fitPhase(std::shared_ptr<Workspace> w) {
         std::shared_ptr<Model> model = NULL;  // Declare here to ensure presence in scope
 
         if (w->modelWanted_ == "Karpenka12") {
-            std::cout << "foo" << std::endl;
             std::shared_ptr<Karpenka12> karpenka12(new Karpenka12);
             karpenka12->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
             karpenka12->y_ = vmath::div<double>(lc.flux_, lc.normalization_);
             karpenka12->sigma_ = std::vector<double>(lc.flux_.size(), 0.001);
             model = std::dynamic_pointer_cast<Model>(karpenka12);
         } else if (w->modelWanted_ == "Kessler10") {
-            std::cout << "bar" << std::endl;
             std::shared_ptr<Kessler10> kessler10(new Kessler10);
             kessler10->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
             kessler10->y_ = vmath::div<double>(lc.flux_, lc.normalization_);
             kessler10->sigma_ = std::vector<double>(lc.flux_.size(), 0.001);
             model = std::dynamic_pointer_cast<Model>(kessler10);
         } else if (w->modelWanted_ == "Bazin09") {
-            std::cout << "spam" << std::endl;
             std::shared_ptr<Bazin09> bazin09(new Bazin09);
             bazin09->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
             bazin09->y_ = vmath::div<double>(lc.flux_, lc.normalization_);
@@ -246,7 +238,6 @@ void fitPhase(std::shared_ptr<Workspace> w) {
             firth17complex->sigma_ = std::vector<double>(lc.flux_.size(), 0.001);
             model = std::dynamic_pointer_cast<Model>(firth17complex);
         } else {
-            std::cout << "eggs" << std::endl;
             std::cout << "Either blank or didn't recognise " << w->modelWanted_ << ". Defaulting to Bazin09" << std::endl;
             std::shared_ptr<Bazin09> bazin09(new Bazin09);
             bazin09->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
