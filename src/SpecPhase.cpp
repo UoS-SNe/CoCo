@@ -255,33 +255,38 @@ void fitPhase(std::shared_ptr<Workspace> w) {
             std::shared_ptr<Karpenka12> karpenka12(new Karpenka12);
             karpenka12->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
             karpenka12->y_ = vmath::div<double>(lc.flux_, lc.normalization_);
-            karpenka12->sigma_ = vmath::div<double>(lc.fluxErr_, lc.normalization_);
+//            karpenka12->sigma_ = vmath::div<double>(lc.fluxErr_, lc.normalization_);
+            karpenka12->sigma_ = std::vector<double>(lc.flux_.size(), 0.001);
             model = std::dynamic_pointer_cast<Model>(karpenka12);
         } else if (w->modelWanted_ == "Kessler10") {
             std::cout << "bar" << std::endl;
             std::shared_ptr<Kessler10> kessler10(new Kessler10);
             kessler10->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
             kessler10->y_ = vmath::div<double>(lc.flux_, lc.normalization_);
-            kessler10->sigma_ = vmath::div<double>(lc.fluxErr_, lc.normalization_);
+//            kessler10->sigma_ = vmath::div<double>(lc.fluxErr_, lc.normalization_);
+            kessler10->sigma_ = std::vector<double>(lc.flux_.size(), 0.001);
             model = std::dynamic_pointer_cast<Model>(kessler10);
         } else if (w->modelWanted_ == "Bazin09") {
             std::cout << "spam" << std::endl;
             std::shared_ptr<Bazin09> bazin09(new Bazin09);
             bazin09->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
             bazin09->y_ = vmath::div<double>(lc.flux_, lc.normalization_);
-            bazin09->sigma_ = vmath::div<double>(lc.fluxErr_, lc.normalization_);
+//            bazin09->sigma_ = vmath::div<double>(lc.fluxErr_, lc.normalization_);
+            bazin09->sigma_ = std::vector<double>(lc.flux_.size(), 0.001);
             model = std::dynamic_pointer_cast<Model>(bazin09);
         } else if (w->modelWanted_ == "Karpenka12Afterglow") {
             std::shared_ptr<Karpenka12Afterglow> karpenka12afterglow(new Karpenka12Afterglow);
             karpenka12afterglow->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
             karpenka12afterglow->y_ = vmath::div<double>(lc.flux_, lc.normalization_);
-            karpenka12afterglow->sigma_ = vmath::div<double>(lc.fluxErr_, lc.normalization_);
+//            karpenka12afterglow->sigma_ = vmath::div<double>(lc.fluxErr_, lc.normalization_);
+            karpenka12afterglow->sigma_ = std::vector<double>(lc.flux_.size(), 0.001);
             model = std::dynamic_pointer_cast<Model>(karpenka12afterglow);
         } else if (w->modelWanted_ == "Firth17Complex") {
             std::shared_ptr<Firth17Complex> firth17complex(new Firth17Complex);
             firth17complex->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
             firth17complex->y_ = vmath::div<double>(lc.flux_, lc.normalization_);
-            firth17complex->sigma_ = vmath::div<double>(lc.fluxErr_, lc.normalization_);
+//            firth17complex->sigma_ = vmath::div<double>(lc.fluxErr_, lc.normalization_);
+            firth17complex->sigma_ = std::vector<double>(lc.flux_.size(), 0.001);
             model = std::dynamic_pointer_cast<Model>(firth17complex);
         } else {
             std::cout << "eggs" << std::endl;
@@ -289,8 +294,10 @@ void fitPhase(std::shared_ptr<Workspace> w) {
             std::shared_ptr<Bazin09> bazin09(new Bazin09);
             bazin09->x_ = vmath::sub<double>(lc.mjd_, lc.mjdMin_);
             bazin09->y_ = vmath::div<double>(lc.flux_, lc.normalization_);
-            bazin09->sigma_ = vmath::div<double>(lc.fluxErr_, lc.normalization_);
+//            bazin09->sigma_ = vmath::div<double>(lc.fluxErr_, lc.normalization_);
+            bazin09->sigma_ = std::vector<double>(lc.flux_.size(), 0.001);
             model = std::dynamic_pointer_cast<Model>(bazin09);
+
         }
 //
 //        // Initialise the model
@@ -310,23 +317,25 @@ void fitPhase(std::shared_ptr<Workspace> w) {
         MNest solver(model);
         solver.xRecon_ = vmath::range<double>(-15, lc.mjdMax_ - lc.mjdMin_ + 20, 1);
         solver.chainPath_ = "chains/" + sn.second.name_ + "/phase";
+        std::cout << sn.second.name_  << std::endl;
+
 
         // Perform fitting
         solver.analyse();
 
-//        size_t indexMax = std::distance(solver.bestFit_.begin(),
-//                                        max_element(solver.bestFit_.begin(),
-//                                                    solver.bestFit_.end()));
-//        double mjdZeroPhase = solver.xRecon_[indexMax] + lc.mjdMin_;
-//
-//        for (auto &spec : sn.second.spec_) {
-//            phaseFile << "spectra/" << utils::split(spec.second.file_, '/').back();
-//            phaseFile << " " << (spec.second.mjd_ - mjdZeroPhase) / (1.0 + sn.second.zRaw_) << "\n";
-//        }
+        size_t indexMax = std::distance(solver.bestFit_.begin(),
+                                        max_element(solver.bestFit_.begin(),
+                                                    solver.bestFit_.end()));
+        double mjdZeroPhase = solver.xRecon_[indexMax] + lc.mjdMin_;
+
+        for (auto &spec : sn.second.spec_) {
+            phaseFile << "spectra/" << utils::split(spec.second.file_, '/').back();
+            phaseFile << " " << (spec.second.mjd_ - mjdZeroPhase) / (1.0 + sn.second.zRaw_) << "\n";
+        }
 
         phaseFile.close();
 
-//        sn.second.saveSpec(mjdZeroPhase);
+        sn.second.saveSpec(mjdZeroPhase);
     }
 }
 
