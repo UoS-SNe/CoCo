@@ -306,10 +306,10 @@ void fitPhase(std::shared_ptr<Workspace> w) {
 //        bazin09->sigma_ = std::vector<double>(lc.flux_.size(), 0.001);
 //        std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(bazin09);
 //
-//        // Initialise solver
-//        MNest solver(model);
-//        solver.xRecon_ = vmath::range<double>(-15, lc.mjdMax_ - lc.mjdMin_ + 20, 1);
-//        solver.chainPath_ = "chains/" + sn.second.name_ + "/phase";
+        // Initialise solver
+        MNest solver(model);
+        solver.xRecon_ = vmath::range<double>(-15, lc.mjdMax_ - lc.mjdMin_ + 20, 1);
+        solver.chainPath_ = "chains/" + sn.second.name_ + "/phase";
 
 //        // Perform fitting
 //        solver.analyse();
