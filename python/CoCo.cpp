@@ -192,3 +192,84 @@ void CoCo::spec_photometry(std::string templateName,
         }
     }
 }
+
+void CoCo::simulate_model(std::string templateName,
+                    std::string modelName,
+                    double z,
+                    double absMag,
+                    double Ebv_MW,
+                    double Ebv_Host,
+                    double R_v,
+                    double mjdPeak,
+                    std::vector<double> mjdSim,
+                    std::vector<std::string> filterSim,
+                    std::vector<double> guessParams) {
+
+    flux_ = std::vector<double>(mjdSim.size(), 0);
+    fluxErr_ = std::vector<double>(mjdSim.size(), 0);
+
+    SN sn = templateSNe_[templateName];
+
+    // offset absolute magnitude
+    sn.scaleSpectra(pow(10, -0.4 * (absMag)));
+
+    // Apply host galaxy reddening
+    sn.applyReddening(Ebv_Host, R_v);
+
+    // Move the spectra to new redshift
+    sn.redshift(z, cosmology_, true);
+    sn.moveMJD((1.0 + z), mjdPeak);
+
+    // Apply Milky Way extinction
+    sn.applyReddening(Ebv_MW, 3.1);
+
+    // synthesise LC for every unique filter
+    std::vector<std::string> uniqueFilters = filterSim;
+    utils::removeDuplicates(uniqueFilters);
+    sn.synthesiseLC(uniqueFilters, filters_);
+
+    for (auto &lc : sn.lc_) {
+        // Initialise model
+//        std::shared_ptr<Karpenka12> karpenka12(new Karpenka12);
+//        karpenka12->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+//        karpenka12->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+//        // karpenka12->sigma_ = std::vector<double>(lc.second.flux_.size(), 1.0e-2);
+//        karpenka12->sigma_ = std::vector<double>(lc.second.flux_.size(), 1);
+//        std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(karpenka12);
+
+        std::shared_ptr<Bazin09> bazin09(new Bazin09);
+        bazin09->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+        bazin09->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+        bazin09->sigma_ = std::vector<double>(lc.second.flux_.size(), 0.1);
+        std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(bazin09);
+//        std::cout << 126;
+
+        if (guessParams.size() > 0) {
+            model->paramGuess_ = guessParams;
+        }
+
+        // Initialise solver
+        Minuit solver(model);
+        std::vector<double> xTemp = mjdRange(lc.second.filter_, mjdSim, filterSim);
+        xTemp = vmath::sub<double>(xTemp, mjdPeak);
+        solver.xRecon_ = vmath::sub<double>(xTemp, lc.second.mjdMin_);
+
+        // Perform fitting
+        solver.analyse();
+        solver.xRecon_ = vmath::add<double>(solver.xRecon_, lc.second.mjdMin_);
+        solver.bestFit_ = vmath::mult<double>(solver.bestFit_, lc.second.normalization_);
+
+        bestFitParams_ = model->params_;
+        bestFitParams_.push_back(lc.second.normalization_);
+
+        paramMap_[lc.second.filter_] = bestFitParams_;
+
+        size_t j = 0;
+        for (size_t i = 0; i < filterSim.size(); ++i) {
+            if (filterSim[i] == lc.second.filter_) {
+                flux_[i] = solver.bestFit_[j];
+                j++;
+            }
+        }
+    }
+}

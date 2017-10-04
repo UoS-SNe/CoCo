@@ -287,9 +287,6 @@ int main (int argc, char* argv[]) {
     applyOptions(options, w);
     fillUnassigned(w);
 
-
-
-
     // run SpecPhase pipeline
     scanRecon(w);
     makeSyntheticLC(w);

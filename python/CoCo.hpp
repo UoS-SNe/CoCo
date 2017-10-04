@@ -65,6 +65,11 @@ public:
                   std::vector<std::string>,
                   std::vector<double>);
 
+    void simulate_model(std::string,std::string,double,double,double,double,double,double,
+                  std::vector<double>,
+                  std::vector<std::string>,
+                  std::vector<double>);
+
     std::vector<double> mjdRange(std::string,
         const std::vector<double>&,
         const std::vector<std::string>&);
