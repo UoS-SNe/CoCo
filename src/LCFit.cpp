@@ -174,27 +174,24 @@ void fitLC(std::shared_ptr<Workspace> w) {
         // Loop though each filter
         for (auto lc : sn.second.lc_) {
             // Initialise the model
-
+            std::cout << "Fitting " << lc.second.filter_ << std::endl;
             std::cout << "With model: " << w->modelWanted_ << std::endl;  // Check the passed args
 
             std::shared_ptr<Model> model = NULL;  // Declare here to ensure presence in scope
 
             if (w->modelWanted_ == "Karpenka12") {
-                std::cout << "foo" << std::endl;
                 std::shared_ptr<Karpenka12> karpenka12(new Karpenka12);
                 karpenka12->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
                 karpenka12->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
                 karpenka12->sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
                 model = std::dynamic_pointer_cast<Model>(karpenka12);
             } else if (w->modelWanted_ == "Kessler10") {
-                std::cout << "bar" << std::endl;
                 std::shared_ptr<Kessler10> kessler10(new Kessler10);
                 kessler10->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
                 kessler10->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
                 kessler10->sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
                 model = std::dynamic_pointer_cast<Model>(kessler10);
             } else if (w->modelWanted_ == "Bazin09") {
-                std::cout << "spam" << std::endl;
                 std::shared_ptr<Bazin09> bazin09(new Bazin09);
                 bazin09->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
                 bazin09->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
@@ -213,8 +210,7 @@ void fitLC(std::shared_ptr<Workspace> w) {
                 firth17complex->sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
                 model = std::dynamic_pointer_cast<Model>(firth17complex);
             } else {
-                std::cout << "eggs" << std::endl;
-                std::cout << "Don't recognise " << w->modelWanted_ << ". Defaulting to Bazin09" << std::endl;
+                std::cout << "Either blank or didn't recognise " << w->modelWanted_ << ". Defaulting to Bazin09" << std::endl;
                 std::shared_ptr<Bazin09> bazin09(new Bazin09);
                 bazin09->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
                 bazin09->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
@@ -262,10 +258,6 @@ int main(int argc, char *argv[]) {
     std::shared_ptr<Workspace> w(new Workspace);
 
     utils::getArgv(argc, argv, options);
-
-//    for (size_t i = 1; i < options.size(); ++i) {
-//        std::cout << options[i] << ", " << std::endl;
-//        }
 
     applyOptions(options, w);
     fillUnassigned(w);
