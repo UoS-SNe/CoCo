@@ -196,13 +196,13 @@ void makeSyntheticLC(std::shared_ptr<Workspace> w) {
 void fitPhase(std::shared_ptr<Workspace> w) {
     for (auto &sn : w->sn_) {
         std::ofstream phaseFile;
-        phaseFile.open("recon/" +  + ".phase"); // Open file for output
+        phaseFile.open("recon/" + sn.second.name_ + ".phase"); // Open file for output
 
         auto lc = sn.second.lc_[w->zeroFilter_];
 
         // Initialise the model
         std::cout << "Fitting SN:\t" << sn.second.name_ << std::endl;
-        std::cout << "Relative to filter:\t"lc.filter_ << std::endl;
+        std::cout << "Relative to filter:\t" << lc.filter_ << std::endl;
         std::cout << "With model:\t" << w->modelWanted_ << std::endl;  // Check the passed args
 
         std::shared_ptr<Model> model = NULL;  // Declare here to ensure presence in scope
@@ -286,9 +286,6 @@ int main (int argc, char* argv[]) {
 
     applyOptions(options, w);
     fillUnassigned(w);
-
-
-
 
     // run SpecPhase pipeline
     scanRecon(w);
