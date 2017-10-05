@@ -24,8 +24,13 @@
 #include "../src/vmath/stat.hpp"
 
 #include "../src/core/utils.hpp"
+#include "../src/core/SN.hpp"
 #include "../src/models/Bazin09.hpp"
+#include "../src/models/Kessler10.hpp"
 #include "../src/models/Karpenka12.hpp"
+#include "../src/models/Karpenka12Afterglow.hpp"
+#include "../src/models/Firth17Complex.hpp"
+#include "../src/solvers/MNest.hpp"
 #include "../src/solvers/Minuit.hpp"
 
 
@@ -205,6 +210,8 @@ void CoCo::simulate_model(std::string templateName,
                     std::vector<std::string> filterSim,
                     std::vector<double> guessParams) {
 
+    std::cout << modelName << std::endl;
+
     flux_ = std::vector<double>(mjdSim.size(), 0);
     fluxErr_ = std::vector<double>(mjdSim.size(), 0);
 
@@ -229,20 +236,62 @@ void CoCo::simulate_model(std::string templateName,
     sn.synthesiseLC(uniqueFilters, filters_);
 
     for (auto &lc : sn.lc_) {
-        // Initialise model
-//        std::shared_ptr<Karpenka12> karpenka12(new Karpenka12);
-//        karpenka12->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
-//        karpenka12->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
-//        // karpenka12->sigma_ = std::vector<double>(lc.second.flux_.size(), 1.0e-2);
-//        karpenka12->sigma_ = std::vector<double>(lc.second.flux_.size(), 1);
-//        std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(karpenka12);
+//        // Initialise model
+////        std::shared_ptr<Karpenka12> karpenka12(new Karpenka12);
+////        karpenka12->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+////        karpenka12->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+////        // karpenka12->sigma_ = std::vector<double>(lc.second.flux_.size(), 1.0e-2);
+////        karpenka12->sigma_ = std::vector<double>(lc.second.flux_.size(), 1);
+////        std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(karpenka12);
+//
+//        std::shared_ptr<Bazin09> bazin09(new Bazin09);
+//        bazin09->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+//        bazin09->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+//        bazin09->sigma_ = std::vector<double>(lc.second.flux_.size(), 0.1);
+//        std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(bazin09);
+////        std::cout << 126;
 
-        std::shared_ptr<Bazin09> bazin09(new Bazin09);
-        bazin09->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
-        bazin09->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
-        bazin09->sigma_ = std::vector<double>(lc.second.flux_.size(), 0.1);
-        std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(bazin09);
-//        std::cout << 126;
+        std::shared_ptr<Model> model = NULL;  // Declare here to ensure presence in scope
+
+        if (modelName == "Karpenka12") {
+            std::shared_ptr<Karpenka12> karpenka12(new Karpenka12);
+            karpenka12->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+            karpenka12->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+            karpenka12->sigma_ = std::vector<double>(lc.second.flux_.size(), 0.001);
+            model = std::dynamic_pointer_cast<Model>(karpenka12);
+        } else if (modelName == "Kessler10") {
+            std::shared_ptr<Kessler10> kessler10(new Kessler10);
+            kessler10->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+            kessler10->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+            kessler10->sigma_ = std::vector<double>(lc.second.flux_.size(), 0.001);
+            model = std::dynamic_pointer_cast<Model>(kessler10);
+        } else if (modelName == "Bazin09") {
+            std::shared_ptr<Bazin09> bazin09(new Bazin09);
+            bazin09->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+            bazin09->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+            bazin09->sigma_ = std::vector<double>(lc.second.flux_.size(), 0.001);
+            model = std::dynamic_pointer_cast<Model>(bazin09);
+        } else if (modelName == "Karpenka12Afterglow") {
+            std::shared_ptr<Karpenka12Afterglow> karpenka12afterglow(new Karpenka12Afterglow);
+            karpenka12afterglow->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+            karpenka12afterglow->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+            karpenka12afterglow->sigma_ = std::vector<double>(lc.second.flux_.size(), 0.001);
+            model = std::dynamic_pointer_cast<Model>(karpenka12afterglow);
+        } else if (modelName == "Firth17Complex") {
+            std::shared_ptr<Firth17Complex> firth17complex(new Firth17Complex);
+            firth17complex->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+            firth17complex->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+            firth17complex->sigma_ = std::vector<double>(lc.second.flux_.size(), 0.001);
+            model = std::dynamic_pointer_cast<Model>(firth17complex);
+        } else {
+            std::cout << "Either blank or didn't recognise " << modelName << ". Defaulting to Bazin09" << std::endl;
+            std::shared_ptr<Bazin09> bazin09(new Bazin09);
+            bazin09->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+            bazin09->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+            bazin09->sigma_ = std::vector<double>(lc.second.flux_.size(), 0.001);
+            model = std::dynamic_pointer_cast<Model>(bazin09);
+
+        }
 
         if (guessParams.size() > 0) {
             model->paramGuess_ = guessParams;
