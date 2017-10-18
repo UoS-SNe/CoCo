@@ -22,6 +22,9 @@ cdef extern from "python/CoCo.hpp":
         void simulate(string,double,double,double,double,double,double,
             vector[double],
             vector[string]) except +
+        void simulate_model(string, string, double,double,double,double,double,double,
+            vector[double],
+            vector[string]) except +
         void spec_photometry(string,double,string) except +
 
 @cython.boundscheck(False)
@@ -38,16 +41,16 @@ cdef class pyCoCo:
         self.thisptr.init()
 
     def simulate_debug(self,
-                            string name,
-                            double z,
-                            double absMag,
-                            double Ebv_MW,
-                            double Ebv_Host,
-                            double R_v,
-                            double mjdPeak,
-                            np.ndarray[double, ndim=1, mode="c"] mjdSim not None,
-                            np.ndarray flt not None,
-                            np.ndarray[double, ndim=1, mode="c"] params not None):
+                       string name,
+                       double z,
+                       double absMag,
+                       double Ebv_MW,
+                       double Ebv_Host,
+                       double R_v,
+                       double mjdPeak,
+                       np.ndarray[double, ndim=1, mode="c"] mjdSim not None,
+                       np.ndarray flt not None,
+                       np.ndarray[double, ndim=1, mode="c"] params not None):
 
         self.thisptr.simulate(name,z,absMag,Ebv_MW,Ebv_Host,R_v,mjdPeak,
             <vector[double]> mjdSim,
@@ -62,6 +65,29 @@ cdef class pyCoCo:
 
     def simulate(self,
                  string name,
+                 double z,
+                 double absMag,
+                 double Ebv_MW,
+                 double Ebv_Host,
+                 double R_v,
+                 double mjdPeak,
+                 np.ndarray[double, ndim=1, mode="c"] mjdSim not None,
+                 np.ndarray flt not None):
+
+        self.thisptr.simulate(name,z,absMag,Ebv_MW,Ebv_Host,R_v,mjdPeak,
+            <vector[double]> mjdSim,
+            <vector[string]> flt)
+
+        cdef np.ndarray[double, ndim=2] res = np.zeros((2,mjdSim.shape[0]), dtype=np.float64)
+        res[0] = self.thisptr.flux_
+        res[1] = self.thisptr.fluxErr_
+
+        return res
+
+
+    def simulate_model(self,
+                 string name,
+                 string model,
                  double z,
                  double absMag,
                  double Ebv_MW,
