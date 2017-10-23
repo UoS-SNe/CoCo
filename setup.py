@@ -6,8 +6,11 @@ from Cython.Distutils import build_ext
 
 compile_args = ['-O3', '-std=c++11', '-stdlib=libc++']
 link_args = ['-std=c++11', '-stdlib=libc++']
-inc = [numpy.get_include(), ".", "/usr/local/include", "/usr/local/include/"]
-lib = [".", "/usr/local/lib", "/usr/local/lib/"]
+# inc = [numpy.get_include(), ".", "/usr/local/include", "/usr/local/include/"]
+inc = [numpy.get_include(), ".", "/usr/local/include", "/usr/local/include/", "/usr/local/gfortran/lib/"]
+lib = [".", "/usr/local/lib", "/usr/local/lib/",  "/opt/local/lib/", "/usr/local/gfortran/lib/"]
+# lib = [".", "/usr/local/lib", "/usr/local/lib/",  "/opt/local/lib/"]
+
 
 if sys.platform == 'darwin':
     compile_args.append('-mmacosx-version-min=10.7')
@@ -24,7 +27,7 @@ setup(
               extra_link_args=link_args,
               runtime_library_dirs=lib,
               library_dirs=lib,
-              libraries=["coco", "gsl", "multinest", "gfortran", "lapack", "minuit2"],
+              libraries=["coco", "gsl", "minuit2"],
               language="c++"),
             ],
   cmdclass = {'build_ext': build_ext},

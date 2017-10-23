@@ -17,6 +17,7 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include <map>
 
 #include "vmath/algebra.hpp"
 #include "vmath/loadtxt.hpp"
@@ -24,7 +25,11 @@
 
 #include "core/utils.hpp"
 #include "core/SN.hpp"
+#include "models/Bazin09.hpp"
+#include "models/Kessler10.hpp"
 #include "models/Karpenka12.hpp"
+#include "models/Karpenka12Afterglow.hpp"
+#include "models/Firth17Complex.hpp"
 #include "solvers/MNest.hpp"
 
 
@@ -34,6 +39,8 @@ struct Workspace {
     std::string inputFileName_;
     std::vector<std::string> fileList_;
     std::vector<std::string> filterList_;
+//    std::vector<std::string> modelWanted_; // List of models
+    std::string modelWanted_;
 
     // Hash table of SN light curves
     std::unordered_map<std::string, SN> sn_;
@@ -72,7 +79,9 @@ void applyOptions(std::vector<std::string> &options, std::shared_ptr<Workspace> 
 
     // Iterate though each option and assign its properties
     std::vector<std::string> command;
+
     for (size_t i = 1; i < options.size(); ++i) {
+        std::cout << i << std::endl;
         // Deal with flags by loading pairs of options into commands
         if (options[i] == "-f") {
             if (i+1 < options.size()) {
@@ -82,7 +91,14 @@ void applyOptions(std::vector<std::string> &options, std::shared_ptr<Workspace> 
             } else {
                 std::cout << options[i] << " is not a valid flag" << std::endl;
             }
+        } else if (options[i] == "-m") {
+            if (i+1 < options.size()) {
+                command = {options[i], options[i+1]};
+                i++;  // skip the next option once the previous is assigned
 
+            } else {
+                std::cout << options[i] << " is not a valid flag" << std::endl;
+            }
         } else if (options[i] == "-h" || options[i] == "--help"){
             help();
             continue;
@@ -92,17 +108,31 @@ void applyOptions(std::vector<std::string> &options, std::shared_ptr<Workspace> 
         }
 
         // Assign properties based on commands
-        if (command.size() != 2) {
-            std::cout << command[0] << " is not a valid command." << std::endl;
-            continue;
-
-        } else if (command[0] == "-f" ||
+//        if (command.size() != 2) {
+//            std::cout << command[0] << " is not a valid command." << std::endl;
+//            continue;
+//
+//        } else if (command[0] == "-f" ||
+//                   command[0] == "--filters" ||
+//                   command[0] == "--filter" ) {
+//            w->filterList_ = utils::split(command[1], ',');
+        if (command[0] == "-f" ||
                    command[0] == "--filters" ||
                    command[0] == "--filter" ) {
-            w->filterList_ = utils::split(command[1], ',');
+                std::cout << "Filter is " << command[1] << std::endl;
+                w->filterList_ = utils::split(command[1], ',');
+            }
+        if (command[0] == "-m" ||
+               command[0] == "--mod" ||
+               command[0] == "--model" ) {
+//               std::cout << command[0] << std::endl;
+               std::cout << "Model is " << command[1] << std::endl;
+//              w->modelWanted_ = utils::split(command[1], ','); // List of models
+                w->modelWanted_ = command[1]; // single model
 
-        } else {
-            std::cout << command[0] << " is not a valid command." << std::endl;
+
+            } else {
+                std::cout << command[0] << " is not a valid command." << std::endl;
         }
     }
 }
@@ -144,11 +174,49 @@ void fitLC(std::shared_ptr<Workspace> w) {
         // Loop though each filter
         for (auto lc : sn.second.lc_) {
             // Initialise the model
-            std::shared_ptr<Karpenka12> karpenka12(new Karpenka12);
-            karpenka12->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
-            karpenka12->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
-            karpenka12->sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
-            std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(karpenka12);
+            std::cout << "Fitting " << lc.second.filter_ << std::endl;
+            std::cout << "With model: " << w->modelWanted_ << std::endl;  // Check the passed args
+
+            std::shared_ptr<Model> model = NULL;  // Declare here to ensure presence in scope
+
+            if (w->modelWanted_ == "Karpenka12") {
+                std::shared_ptr<Karpenka12> karpenka12(new Karpenka12);
+                karpenka12->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+                karpenka12->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+                karpenka12->sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
+                model = std::dynamic_pointer_cast<Model>(karpenka12);
+            } else if (w->modelWanted_ == "Kessler10") {
+                std::shared_ptr<Kessler10> kessler10(new Kessler10);
+                kessler10->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+                kessler10->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+                kessler10->sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
+                model = std::dynamic_pointer_cast<Model>(kessler10);
+            } else if (w->modelWanted_ == "Bazin09") {
+                std::shared_ptr<Bazin09> bazin09(new Bazin09);
+                bazin09->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+                bazin09->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+                bazin09->sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
+                model = std::dynamic_pointer_cast<Model>(bazin09);
+            } else if (w->modelWanted_ == "Karpenka12Afterglow") {
+                std::shared_ptr<Karpenka12Afterglow> karpenka12afterglow(new Karpenka12Afterglow);
+                karpenka12afterglow->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+                karpenka12afterglow->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+                karpenka12afterglow->sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
+                model = std::dynamic_pointer_cast<Model>(karpenka12afterglow);
+            } else if (w->modelWanted_ == "Firth17Complex") {
+                std::shared_ptr<Firth17Complex> firth17complex(new Firth17Complex);
+                firth17complex->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+                firth17complex->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+                firth17complex->sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
+                model = std::dynamic_pointer_cast<Model>(firth17complex);
+            } else {
+                std::cout << "Either blank or didn't recognise " << w->modelWanted_ << ". Defaulting to Bazin09" << std::endl;
+                std::shared_ptr<Bazin09> bazin09(new Bazin09);
+                bazin09->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+                bazin09->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+                bazin09->sigma_ = vmath::div<double>(lc.second.fluxErr_, lc.second.normalization_);
+                model = std::dynamic_pointer_cast<Model>(bazin09);
+            }
 
             // Initialise solver
             MNest solver(model);
@@ -190,6 +258,7 @@ int main(int argc, char *argv[]) {
     std::shared_ptr<Workspace> w(new Workspace);
 
     utils::getArgv(argc, argv, options);
+
     applyOptions(options, w);
     fillUnassigned(w);
 

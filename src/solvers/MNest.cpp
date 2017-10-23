@@ -86,7 +86,8 @@ void MNest::fit() {
     int mmodal = 1;					// do mode separation?
     int ceff = 0;					// run in constant efficiency mode?
     double efr = 0.1;				// set the required efficiency
-    double tol = 0.05;				// tol, defines the stopping criteria
+//    double tol = 0.05;				// tol, defines the stopping criteria
+    double tol = 0.01;				// tol, defines the stopping criteria
     int ndims = noParams_;	        // dimensionality (no. of free parameters)
     int nPar = ndims;				// total no. of parameters including free & derived parameters
     int nClsPar = ndims;			// no. of parameters to do mode separation on
@@ -94,7 +95,7 @@ void MNest::fit() {
     int updInt = 10000;				// after how many iterations feedback is required & the output files should be updated
                                     // note: posterior files are updated & dumper routine is called after every updInt*10 iterations
     double Ztol = -1e90;			// all the modes with logZ < Ztol are ignored
-    int maxModes = 10;				// expected max no. of modes (used only for memory allocation)
+    int maxModes = 15;				// expected max no. of modes (used only for memory allocation)
     int pWrap[ndims];				// which parameters to have periodic boundary conditions?
     for (size_t i = 0; i < ndims; ++i) {
         pWrap[i] = 0;

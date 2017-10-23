@@ -88,3 +88,7 @@ std::vector<double> Kessler10::residual() {
 
     return res;
 }
+
+int Kessler10::get_num_parameters() {
+    return y_.size();
+}

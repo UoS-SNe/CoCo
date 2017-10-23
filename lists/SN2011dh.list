@@ -1,17 +1,18 @@
 data/spec/SN2011dh/2011dh_-17.67.txt	SN2011dh 55715.03 0.0015
 data/spec/SN2011dh/2011dh_-16.67.txt	SN2011dh 55716.03 0.0015
 data/spec/SN2011dh/2011dh_-15.68.txt	SN2011dh 55717.02 0.0015
-data/spec/SN2011dh/2011dh_-13.68.txt	SN2011dh 55718.02 0.0015
-data/spec/SN2011dh/2011dh_-14.68.txt	SN2011dh 55719.02 0.0015
+data/spec/SN2011dh/2011dh_-14.68.txt	SN2011dh 55718.02 0.0015
+data/spec/SN2011dh/2011dh_-13.68.txt	SN2011dh 55719.02 0.0015
 data/spec/SN2011dh/2011dh_-12.68.txt	SN2011dh 55720.02 0.0015
-data/spec/SN2011dh/2011dh_-11.68.txt	SN2011dh 55721.02 0.0015
+# data/spec/SN2011dh/2011dh_-11.68.txt	SN2011dh 55721.02 0.0015 ## Multi mode
 data/spec/SN2011dh/2011dh_-10.68.txt	SN2011dh 55722.02 0.0015
 data/spec/SN2011dh/2011dh_-8.69.txt	SN2011dh 55724.01 0.0015
 data/spec/SN2011dh/2011dh_-3.69.txt	SN2011dh 55729.01 0.0015
 data/spec/SN2011dh/2011dh_-0.7.txt	SN2011dh 55732.0 0.0015
+# data/spec/SN2011dh/SN2011dh-2011-06-20-NOT-ALFOSC-Grism_4-Grism_5.dat SN2011dh 55732.0 0.0015
 data/spec/SN2011dh/2011dh_4.29.txt	SN2011dh 55736.99 0.0015
-data/spec/SN2011dh/2011dh_9.29.txt	SN2011dh 55740.99 0.0015
-data/spec/SN2011dh/2011dh_8.29.txt	SN2011dh 55741.99 0.0015
+# data/spec/SN2011dh/2011dh_8.29.txt    SN2011dh 55740.99 0.0015 ## Multi mode
+data/spec/SN2011dh/2011dh_9.29.txt	SN2011dh 55741.99 0.0015
 data/spec/SN2011dh/2011dh_14.28.txt	SN2011dh 55746.98 0.0015
 data/spec/SN2011dh/2011dh_19.27.txt	SN2011dh 55751.97 0.0015
 data/spec/SN2011dh/2011dh_23.27.txt	SN2011dh 55755.97 0.0015

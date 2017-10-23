@@ -31,6 +31,7 @@
 #include "core/Filters.hpp"
 #include "core/SN.hpp"
 #include "solvers/MNest.hpp"
+#include "solvers/Minuit.hpp"
 #include "models/SpecMangle.hpp"
 
 
@@ -227,15 +228,18 @@ void mangleSpectra(std::shared_ptr<Workspace> w) {
             double specNorm = w->filters_->flux(specMangle->specData_.flux_, specMangle->lcData_[0].filter_);
             specMangle->specData_.flux_ = vmath::div<double>(specMangle->specData_.flux_, specNorm);
 
-            // Set priors and number of paramters
+            // Set priors and number of parameters
             specMangle->setPriors();
 
             // Initialise the solver
             std::shared_ptr<Model> model = dynamic_pointer_cast<Model>(specMangle);
+
             std::shared_ptr<MNest> mnest(new MNest(model));
+//            std::shared_ptr<Minuit> minuit(new Minuit(model));
             mnest->livePoints_ = 100;
 
             std::shared_ptr<Solver> solver = dynamic_pointer_cast<Solver>(mnest);
+//            std::shared_ptr<Solver> solver = dynamic_pointer_cast<Solver>(minuit);
             solver->xRecon_ = spec.second.wav_;
             solver->chainPath_ = "chains/" + sn.second.name_ + "/" + to_string(spec.second.mjd_);
 
@@ -249,7 +253,7 @@ void mangleSpectra(std::shared_ptr<Workspace> w) {
             solver->median_ = vmath::mult<double>(solver->median_, lcNorm);
             solver->medianSigma_ = vmath::mult<double>(solver->medianSigma_, lcNorm);
 
-            // File handels for spectrum mangling results
+            // File handles for spectrum mangling results
             ofstream reconSpecFile;
             ofstream reconStatFile;
             reconSpecFile.open("recon/" + sn.second.name_ + "_" +
