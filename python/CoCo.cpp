@@ -207,7 +207,8 @@ void CoCo::simulate_model(std::string templateName,
                     double R_v,
                     double mjdPeak,
                     std::vector<double> mjdSim,
-                    std::vector<std::string> filterSim,{
+                    std::vector<std::string> filterSim,
+                    std::vector<double> guessParams){
 
     std::cout << modelName << std::endl;
 
@@ -307,5 +308,3 @@ void CoCo::simulate_model(std::string templateName,
         }
     }
 }
-
-                    std::vector<double> guessParams)

@@ -288,8 +288,13 @@ int main (int argc, char* argv[]) {
     fillUnassigned(w);
 
     // run SpecPhase pipeline
+    std::cout << "Scanning /recon.\n" << std::endl;
     scanRecon(w);
+
+    std::cout << "Making Synthetic LC.\n" << std::endl;
     makeSyntheticLC(w);
+
+    std::cout << "Running fitPhase\n" << std::endl;
     fitPhase(w);
 
     return 0;
