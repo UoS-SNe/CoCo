@@ -60,3 +60,5 @@ examples/.ipynb_checkpoints/
 # Added by Rob
 .idea
 data/filters/gaussian_6000_500.dat
+
+data/* linguist-vendored
