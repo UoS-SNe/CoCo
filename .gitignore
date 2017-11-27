@@ -62,3 +62,4 @@ examples/.ipynb_checkpoints/
 data/filters/gaussian_6000_500.dat
 
 data/* linguist-vendored
+spectra/* linguist-vendored
