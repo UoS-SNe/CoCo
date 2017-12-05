@@ -175,8 +175,10 @@ void scanRecon(std::shared_ptr<Workspace> w) {
     std::string snname;
     double mjd;
     for (auto &file : files) {
+        std::cout << "Scanning "<< file << std::endl;
         if (utils::fileExtention(file) == "spec") {
             snname = utils::split(utils::baseName(file), '_').front();
+            std::cout << "belongs to " << snname << std::endl;
             mjd = atof(utils::split(utils::baseName(file), '_').back().c_str());
             w->sn_[snname].addSpec("recon/" + file, mjd);
         }
@@ -195,6 +197,7 @@ void makeSyntheticLC(std::shared_ptr<Workspace> w) {
 
 void fitPhase(std::shared_ptr<Workspace> w) {
     for (auto &sn : w->sn_) {
+
         std::ofstream phaseFile;
         phaseFile.open("recon/" + sn.second.name_ + ".phase"); // Open file for output
 
@@ -288,8 +291,13 @@ int main (int argc, char* argv[]) {
     fillUnassigned(w);
 
     // run SpecPhase pipeline
+    std::cout << "Scanning /recon.\n" << std::endl;
     scanRecon(w);
+
+    std::cout << "Making Synthetic LC.\n" << std::endl;
     makeSyntheticLC(w);
+    
+    std::cout << "Running fitPhase\n" << std::endl;
     fitPhase(w);
 
     return 0;
