@@ -22,7 +22,6 @@ DESy.dat
 DESz.dat
 F2_Y.dat
 g.dat
-gaussian_6000_500.dat
 gsSAGEMrf4.dat
 H.dat
 hardware_g.dat

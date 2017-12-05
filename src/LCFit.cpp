@@ -220,7 +220,7 @@ void fitLC(std::shared_ptr<Workspace> w) {
 
             // Initialise solver
             MNest solver(model);
-            solver.xRecon_ = vmath::range<double>(-15, lc.second.mjdMax_ - lc.second.mjdMin_ + 20, 1);
+            solver.xRecon_ = vmath::range<double>(-15, lc.second.mjdMax_ - lc.second.mjdMin_ + 20, 1); // TODO query choice
             solver.chainPath_ = "chains/" + sn.second.name_ + "/" + lc.second.filter_;
 
             // Perform fitting
