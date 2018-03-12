@@ -4,10 +4,10 @@ from distutils.core import setup
 from distutils.extension import Extension
 from Cython.Distutils import build_ext
 
-compile_args = ['-O3', '-std=c++11']
-# compile_args = ['-O3', '-std=c++11', '-stdlib=libc++']
-link_args = ['-std=c++11']
-# link_args = ['-std=c++11', '-stdlib=libc++']
+# compile_args = ['-O3', '-std=c++11']
+compile_args = ['-O3', '-std=c++11', '-stdlib=libc++']
+# link_args = ['-std=c++11']
+link_args = ['-std=c++11', '-stdlib=libc++']
 # inc = [numpy.get_include(), ".", "/usr/local/include", "/usr/local/include/"]
 inc = [numpy.get_include(), ".", "/usr/local/include", "/usr/local/include/", "/usr/local/lib/"]
 # inc = [numpy.get_include(), ".", "/usr/local/include", "/usr/local/include/", "/usr/local/gfortran/lib/"]
