@@ -152,7 +152,7 @@ void CoCo::simulate(std::string templateName,
         size_t j = 0;
         for (size_t i = 0; i < filterSim.size(); ++i) {
             if (filterSim[i] == lc.second.filter_) {
-                flux_[i] = solver.bestFit_[j];
+                flux_[i] = solver.bestFit_[j] / pow(1.0 + z, 2);
                 j++;
             }
         }

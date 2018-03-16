@@ -240,6 +240,9 @@ void SN::redshift(double zNew, std::shared_ptr<Cosmology> cosmology, bool zScale
         spec.second.wav_ = vmath::mult(spec.second.wav_, shift);
         spec.second.flux_ = vmath::mult(spec.second.flux_, scale);
         spec.second.fluxNorm_ *= scale;
+
+        spec.second.flux_ = vmath::div(spec.second.flux_, shift);
+        spec.second.fluxNorm_ /= shift;
     }
 
     zRaw_ = z_;
