@@ -39,13 +39,10 @@ lcsim
 # Data directories
 scripts
 chains
-recon
-#data
-#data/lc
-#data/spectra
-test_lists/
+recon*
+test*
 shared
-spectra
+spectra*
 sim
 build
 .ipynb_checkpoints

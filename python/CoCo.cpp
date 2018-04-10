@@ -115,19 +115,17 @@ void CoCo::simulate(std::string templateName,
 
     for (auto &lc : sn.lc_) {
         // Initialise model
-//        std::shared_ptr<Karpenka12> karpenka12(new Karpenka12);
-//        karpenka12->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
-//        karpenka12->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
-//        // karpenka12->sigma_ = std::vector<double>(lc.second.flux_.size(), 1.0e-2);
-//        karpenka12->sigma_ = std::vector<double>(lc.second.flux_.size(), 1);
-//        std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(karpenka12);
+       // std::shared_ptr<Karpenka12> karpenka12(new Karpenka12);
+       // karpenka12->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
+       // karpenka12->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
+       // karpenka12->sigma_ = std::vector<double>(lc.second.flux_.size(), 1);
+       // std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(karpenka12);
 
         std::shared_ptr<Bazin09> bazin09(new Bazin09);
         bazin09->x_ = vmath::sub<double>(lc.second.mjd_, lc.second.mjdMin_);
         bazin09->y_ = vmath::div<double>(lc.second.flux_, lc.second.normalization_);
         bazin09->sigma_ = std::vector<double>(lc.second.flux_.size(), 0.1);
         std::shared_ptr<Model> model = std::dynamic_pointer_cast<Model>(bazin09);
-//        std::cout << 126;
 
         if (guessParams.size() > 0) {
             model->paramGuess_ = guessParams;

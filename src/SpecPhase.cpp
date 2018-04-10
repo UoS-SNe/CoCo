@@ -296,7 +296,7 @@ int main (int argc, char* argv[]) {
 
     std::cout << "Making Synthetic LC.\n" << std::endl;
     makeSyntheticLC(w);
-    
+
     std::cout << "Running fitPhase\n" << std::endl;
     fitPhase(w);
 
