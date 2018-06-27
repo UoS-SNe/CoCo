@@ -1,9 +1,7 @@
 import argparse
 import os
 
-def parse_command_line(description=("CoCo 'lightcurve' test submission"
-                "script, that will read in a list of 'lightcurves' and "
-                "print the result(in reality square the job number).")):
+def parse_command_line(description=("CoCo submission script")):
     """
     Parser of command line arguments
     """
@@ -31,13 +29,10 @@ def parse_command_line(description=("CoCo 'lightcurve' test submission"
 
     return parser.parse_args()
 
-
 def submit(arglist):
-
     j = Job(application=Executable())
     
-    # Set the application executable to that stored at the top of
-    # the script
+    # Set the application executable (this also contains EUPS setup steps)
     j.application.exe = File('CoCoJobSplit.sh')
     
     # Set up splitter to generate subjobs for each job
@@ -46,7 +41,7 @@ def submit(arglist):
     # Set arguments and individual input files for each subjob, assign 
     # to splitter (makes subjobs across args/infiles pairs) - NOTE:
     # inputfiles here should be path strings, not Local/DiracFile as 
-    # above.
+    # below.
     appargs = [[os.path.basename(args.eups),
                 os.path.basename(args.spec),
                 os.path.basename(fname), 
@@ -63,12 +58,11 @@ def submit(arglist):
     if arglist.local: 
         j.inputfiles = [LocalFile(args.eups), LocalFile(args.spec)]
     else:
-        j.inputfiles = [DiracFile(lfn=args.eups), 
-                        DiracFile(lfn=args.spec)]
+        j.inputfiles = [DiracFile(lfn=args.eups), DiracFile(lfn=args.spec)]
         j.backend = Dirac()
 
     # Define output file wildcard from script and where to put it after 
-    # completion LocalFile brings back to local machines ganga directory
+    # completion LocalFile brings back to local machines Ganga directory
     j.outputfiles = [LocalFile("*.dat")]
     
     j.submit()
@@ -77,6 +71,4 @@ def submit(arglist):
 
 args = parse_command_line()
 submit(args)
-
-
 
